@@ -14,8 +14,10 @@ namespace UCBeditor {
         readonly Pen DragColor = Pens.Blue;
         readonly Pen HoverColor = Pens.Blue;
 		readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f);
+		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
 
-        enum RecordType {
+
+		enum RecordType {
             INVALID,
             CURSOL,
             LINE,
@@ -639,8 +641,7 @@ namespace UCBeditor {
 		}
 
         private void drawToolPanel(string type) {
-            var dir = System.AppDomain.CurrentDomain.BaseDirectory + "icon\\";
-			var paths = Directory.GetFiles(dir + type);
+			var paths = Directory.GetFiles(ElementPath + "solid\\" + type);
 
             var curTop = 0;
             pnlParts.Controls.Clear();
@@ -682,9 +683,7 @@ namespace UCBeditor {
         }
 
 		private void setPartsList() {
-			var dir = System.AppDomain.CurrentDomain.BaseDirectory + "icon\\";
-			var files = Directory.GetFiles(dir);
-
+			var files = Directory.GetFiles(ElementPath);
 			foreach (var filePath in files) {
 				var tsb = new ToolStripButton();
 				tsb.Image = new Bitmap(filePath);
@@ -877,12 +876,11 @@ namespace UCBeditor {
 			}
 			foreach (var d in mList.Values) {
 				if (RecordType.PARTS == d.Type) {
-					var filePath = d.Parts.Replace(System.AppDomain.CurrentDomain.BaseDirectory + "icon", "");
+					var filePath = d.Parts.Replace(ElementPath + "solid\\", "");
 					if (tsbReverse.Checked || isOnLine(d, mRect)) {
-						filePath = System.AppDomain.CurrentDomain.BaseDirectory + "icon\\alpha" + filePath;
-					}
-					else {
-						filePath = System.AppDomain.CurrentDomain.BaseDirectory + "icon" + filePath;
+						filePath = ElementPath + "alpha\\" + filePath;
+					} else {
+						filePath = ElementPath + "solid\\" + filePath;
 					}
 
 					var temp = new Bitmap(filePath);
@@ -920,8 +918,8 @@ namespace UCBeditor {
 			}
 			foreach (var d in mClipBoard.Values) {
 				if (RecordType.PARTS == d.Type) {
-					var filePath = d.Parts.Replace(System.AppDomain.CurrentDomain.BaseDirectory + "icon", "");
-					filePath = System.AppDomain.CurrentDomain.BaseDirectory + "icon\\alpha" + filePath;
+					var filePath = d.Parts.Replace(ElementPath + "solid\\", "");
+					filePath = ElementPath + "alpha\\" + filePath;
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(d.Rotate);
@@ -978,9 +976,7 @@ namespace UCBeditor {
 				break;
 
 			case RecordType.PARTS:
-				var filePath = mSelectedPartsPath.Replace(System.AppDomain.CurrentDomain.BaseDirectory + "icon", "");
-				filePath = System.AppDomain.CurrentDomain.BaseDirectory + "icon\\alpha" + filePath;
-
+				var filePath = ElementPath + "alpha\\" + mSelectedPartsPath.Replace(ElementPath + "solid\\", "");
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(mCurRotate);
 				g.DrawImage(temp, new Point(
