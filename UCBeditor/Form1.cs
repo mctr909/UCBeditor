@@ -14,6 +14,7 @@ namespace UCBeditor {
         readonly Pen DragColor = Pens.Blue;
         readonly Pen HoverColor = Pens.Blue;
 		readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f);
+		readonly string ExePath = AppDomain.CurrentDomain.BaseDirectory;
 		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
 
 
@@ -330,7 +331,7 @@ namespace UCBeditor {
 					rec.End = rec.Begin;
 					rec.Offset = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
 					rec.Rotate = (RotateFlipType)int.Parse(cols[5]);
-					rec.Parts = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cols[6]);
+					rec.Parts = cols[6];
 					mList.Add(mList.Count, rec);
 					break;
 				case "LINE":
@@ -662,7 +663,7 @@ namespace UCBeditor {
 				lbl.Left = 8;
 
                 var panel = new Panel();
-                panel.Name = paths[i];
+                panel.Name = paths[i].Replace(ElementPath, "").Replace("solid\\", "");
                 panel.Controls.Add(picture);
                 panel.BackColor = SystemColors.ButtonFace;
 				panel.Width = bmp.Width + 8;
@@ -781,7 +782,7 @@ namespace UCBeditor {
 						rec.Offset.X,
 						rec.Offset.Y,
 						(int)rec.Rotate,
-						rec.Parts.Replace(AppDomain.CurrentDomain.BaseDirectory, "")
+						rec.Parts
 					);
 					break;
 				case RecordType.LINE:
@@ -876,7 +877,7 @@ namespace UCBeditor {
 			}
 			foreach (var d in mList.Values) {
 				if (RecordType.PARTS == d.Type) {
-					var filePath = d.Parts.Replace(ElementPath + "solid\\", "");
+					var filePath = d.Parts;
 					if (tsbReverse.Checked || isOnLine(d, mRect)) {
 						filePath = ElementPath + "alpha\\" + filePath;
 					} else {
@@ -918,8 +919,7 @@ namespace UCBeditor {
 			}
 			foreach (var d in mClipBoard.Values) {
 				if (RecordType.PARTS == d.Type) {
-					var filePath = d.Parts.Replace(ElementPath + "solid\\", "");
-					filePath = ElementPath + "alpha\\" + filePath;
+					var filePath = ElementPath + "alpha\\" + d.Parts;
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(d.Rotate);
@@ -976,7 +976,7 @@ namespace UCBeditor {
 				break;
 
 			case RecordType.PARTS:
-				var filePath = ElementPath + "alpha\\" + mSelectedPartsPath.Replace(ElementPath + "solid\\", "");
+				var filePath = ElementPath + "alpha\\" + mSelectedPartsPath.Replace("solid\\", "");
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(mCurRotate);
 				g.DrawImage(temp, new Point(
