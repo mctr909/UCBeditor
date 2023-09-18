@@ -326,20 +326,20 @@ namespace UCBeditor {
 				case "PARTS":
 					rec = new Record();
 					rec.Type = RecordType.PARTS;
-					rec.Rotate = (RotateFlipType)int.Parse(cols[1]);
-					rec.Begin = new Point(int.Parse(cols[2]), int.Parse(cols[3]));
+					rec.Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 					rec.End = rec.Begin;
-					rec.Offset = new Point(int.Parse(cols[4]), int.Parse(cols[5]));
-					rec.Parts = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, cols[6]);
+					rec.Offset = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
+					rec.Rotate = (RotateFlipType)int.Parse(cols[5]);
+					rec.Parts = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cols[6]);
 					mList.Add(mList.Count, rec);
 					break;
 				case "LINE":
 					rec = new Record();
 					rec.Type = RecordType.LINE;
-					rec.Color = (ColorType)int.Parse(cols[1]);
-					rec.Begin = new Point(int.Parse(cols[2]), int.Parse(cols[3]));
-					rec.End = new Point(int.Parse(cols[4]), int.Parse(cols[5]));
+					rec.Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
+					rec.End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
 					rec.Offset = new Point();
+					rec.Color = (ColorType)int.Parse(cols[5]);
 					rec.Parts = "";
 					mList.Add(mList.Count, rec);
 					break;
@@ -724,13 +724,13 @@ namespace UCBeditor {
 		}
 
 		private void setBeginPos() {
-			mBeginPos = picBoard.PointToClient(System.Windows.Forms.Cursor.Position);
+			mBeginPos = picBoard.PointToClient(Cursor.Position);
 			mBeginPos.X = ((mBeginPos.X + mCurGridWidth / 2) / mCurGridWidth) * mCurGridWidth;
 			mBeginPos.Y = ((mBeginPos.Y + mCurGridWidth / 2) / mCurGridWidth) * mCurGridWidth;
 		}
 
 		private void setEndPos() {
-			mEndPos = picBoard.PointToClient(System.Windows.Forms.Cursor.Position);
+			mEndPos = picBoard.PointToClient(Cursor.Position);
 
 			if (0 < mSelectedPartsPos.X || 0 < mSelectedPartsPos.Y) {
 				switch (mCurRotate) {
@@ -776,23 +776,23 @@ namespace UCBeditor {
 					sw.WriteLine(
 						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
 						rec.Type,
-						(int)rec.Rotate,
 						rec.Begin.X,
 						rec.Begin.Y,
 						rec.Offset.X,
 						rec.Offset.Y,
-						rec.Parts.Replace(System.AppDomain.CurrentDomain.BaseDirectory, "")
+						(int)rec.Rotate,
+						rec.Parts.Replace(AppDomain.CurrentDomain.BaseDirectory, "")
 					);
 					break;
 				case RecordType.LINE:
 					sw.WriteLine(
 						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
 						rec.Type,
-						(int)rec.Color,
 						rec.Begin.X,
 						rec.Begin.Y,
 						rec.End.X,
-						rec.End.Y
+						rec.End.Y,
+						(int)rec.Color
 					);
 					break;
 				}
