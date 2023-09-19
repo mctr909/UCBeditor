@@ -9,149 +9,149 @@ using System.Windows.Forms;
 using System.IO;
 
 namespace UCBeditor {
-    public partial class Form1 : Form {
-        readonly Pen GridColor = new Pen(Color.Black, 0.5f);
-        readonly Pen DragColor = Pens.Blue;
-        readonly Pen HoverColor = Pens.Blue;
+	public partial class Form1 : Form {
+		readonly Pen GridColor = new Pen(Color.Black, 0.5f);
+		readonly Pen DragColor = Pens.Blue;
+		readonly Pen HoverColor = Pens.Blue;
 		readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f);
 		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
 
-        enum EditMode {
-            INVALID,
-            SELECT,
-            WIRE,
-            PARTS,
-            LAND
-        }
+		enum EditMode {
+			INVALID,
+			SELECT,
+			WIRE,
+			PARTS,
+			LAND
+		}
 
-        enum RecordType {
-            WIRE,
-            PARTS,
-            LAND
-        }
+		enum RecordType {
+			WIRE,
+			PARTS,
+			LAND
+		}
 
-        enum WireColor {
-            BLACK,
-            WHITE,
-            BLUE,
-            RED,
-            GREEN,
-            YELLOW
-        }
+		enum WireColor {
+			BLACK,
+			WHITE,
+			BLUE,
+			RED,
+			GREEN,
+			YELLOW
+		}
 
-        struct Record {
+		struct Record {
 			public RecordType Type;
-            public Point Begin;
-            public Point End;
+			public Point Begin;
+			public Point End;
 			public Point Offset;
 
-            public RotateFlipType Rotate;
-            public string Parts;
+			public RotateFlipType Rotate;
+			public string Parts;
 
-            WireColor mWireColor;
+			WireColor mWireColor;
 
-            public Pen WireColor {
-                get {
-                    switch (mWireColor) {
-                    case Form1.WireColor.BLACK:
-                        return new Pen(Color.FromArgb(47, 47, 47), 2.0f);
-                    case Form1.WireColor.WHITE:
-                        return new Pen(Color.FromArgb(207, 207, 207), 2.0f);
-                    case Form1.WireColor.BLUE:
-                        return new Pen(Color.FromArgb(0, 0, 191), 2.0f);
-                    case Form1.WireColor.RED:
-                        return new Pen(Color.FromArgb(191, 0, 0), 2.0f);
-                    case Form1.WireColor.GREEN:
-                        return new Pen(Color.FromArgb(0, 127, 0), 2.0f);
-                    case Form1.WireColor.YELLOW:
-                        return new Pen(Color.FromArgb(191, 191, 0), 2.0f);
-                    default:
-                        return new Pen(Color.FromArgb(47, 47, 47), 2.0f);
-                    }
-                }
-            }
+			public Pen WireColor {
+				get {
+					switch (mWireColor) {
+					case Form1.WireColor.BLACK:
+						return new Pen(Color.FromArgb(47, 47, 47), 2.0f);
+					case Form1.WireColor.WHITE:
+						return new Pen(Color.FromArgb(207, 207, 207), 2.0f);
+					case Form1.WireColor.BLUE:
+						return new Pen(Color.FromArgb(0, 0, 191), 2.0f);
+					case Form1.WireColor.RED:
+						return new Pen(Color.FromArgb(191, 0, 0), 2.0f);
+					case Form1.WireColor.GREEN:
+						return new Pen(Color.FromArgb(0, 127, 0), 2.0f);
+					case Form1.WireColor.YELLOW:
+						return new Pen(Color.FromArgb(191, 191, 0), 2.0f);
+					default:
+						return new Pen(Color.FromArgb(47, 47, 47), 2.0f);
+					}
+				}
+			}
 
 			public void Load(string line) {
-                var cols = line.Split('\t');
-                switch (cols[0]) {
-                case "WIRE":
-                    SetWire(
-                        new Point(int.Parse(cols[1]), int.Parse(cols[2])),
-                        new Point(int.Parse(cols[3]), int.Parse(cols[4])),
-                        (WireColor)Enum.Parse(typeof(WireColor), cols[5])
-                    );
-                    break;
-                case "LAND":
-                    SetLand(new Point(int.Parse(cols[1]), int.Parse(cols[2])));
-                    break;
-                case "PARTS":
-                    SetParts(
-                        new Point(int.Parse(cols[1]), int.Parse(cols[2])),
-                        new Point(int.Parse(cols[3]), int.Parse(cols[4])),
-                        (RotateFlipType)int.Parse(cols[5]),
-                        cols[6]
-                    );
-                    break;
-                }
-            }
+				var cols = line.Split('\t');
+				switch (cols[0]) {
+				case "WIRE":
+					SetWire(
+						new Point(int.Parse(cols[1]), int.Parse(cols[2])),
+						new Point(int.Parse(cols[3]), int.Parse(cols[4])),
+						(WireColor)Enum.Parse(typeof(WireColor), cols[5])
+					);
+					break;
+				case "LAND":
+					SetLand(new Point(int.Parse(cols[1]), int.Parse(cols[2])));
+					break;
+				case "PARTS":
+					SetParts(
+						new Point(int.Parse(cols[1]), int.Parse(cols[2])),
+						new Point(int.Parse(cols[3]), int.Parse(cols[4])),
+						(RotateFlipType)int.Parse(cols[5]),
+						cols[6]
+					);
+					break;
+				}
+			}
 
 			public void Write(StreamWriter sw) {
-                switch (Type) {
-                case RecordType.WIRE:
-                    sw.WriteLine(
-                        "{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
-                        Type,
-                        Begin.X,
-                        Begin.Y,
-                        End.X,
-                        End.Y,
-                        mWireColor
-                    );
-                    break;
-                case RecordType.LAND:
-                    sw.WriteLine(
-                        "{0}\t{1}\t{2}",
-                        Type,
-                        Begin.X,
-                        Begin.Y
-                    );
-                    break;
-                case RecordType.PARTS:
-                    sw.WriteLine(
-                        "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
-                        Type,
-                        Begin.X,
-                        Begin.Y,
-                        Offset.X,
-                        Offset.Y,
-                        (int)Rotate,
-                        Parts
-                    );
-                    break;
-                }
-            }
-        
+				switch (Type) {
+				case RecordType.WIRE:
+					sw.WriteLine(
+						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+						Type,
+						Begin.X,
+						Begin.Y,
+						End.X,
+						End.Y,
+						mWireColor
+					);
+					break;
+				case RecordType.LAND:
+					sw.WriteLine(
+						"{0}\t{1}\t{2}",
+						Type,
+						Begin.X,
+						Begin.Y
+					);
+					break;
+				case RecordType.PARTS:
+					sw.WriteLine(
+						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
+						Type,
+						Begin.X,
+						Begin.Y,
+						Offset.X,
+						Offset.Y,
+						(int)Rotate,
+						Parts
+					);
+					break;
+				}
+			}
+
 			public void SetWire(Point begin, Point end, WireColor color) {
-                Type = RecordType.WIRE;
-                Begin = begin;
-                End = end;
-                mWireColor = color;
-            }
-		
+				Type = RecordType.WIRE;
+				Begin = begin;
+				End = end;
+				mWireColor = color;
+			}
+
 			public void SetLand(Point pos) {
-                Type = RecordType.LAND;
-                Begin = pos;
-                End = pos;
-            }
+				Type = RecordType.LAND;
+				Begin = pos;
+				End = pos;
+			}
 
 			public void SetParts(Point pos, Point ofs, RotateFlipType rot, string path) {
-                Type = RecordType.PARTS;
-                Begin = pos;
+				Type = RecordType.PARTS;
+				Begin = pos;
 				End = pos;
-                Offset = ofs;
-                Rotate = rot;
-                Parts = path;
-            }
+				Offset = ofs;
+				Rotate = rot;
+				Parts = path;
+			}
 		}
 
 		struct Rect {
@@ -165,28 +165,28 @@ namespace UCBeditor {
 
 		string mFilePath = "";
 
-        Dictionary<int, Record> mList = new Dictionary<int, Record>();
+		Dictionary<int, Record> mList = new Dictionary<int, Record>();
 		Dictionary<int, Record> mClipBoard = new Dictionary<int, Record>();
-        EditMode mEditMode = EditMode.WIRE;
-        WireColor mWireColor = WireColor.BLACK;
-        RotateFlipType mCurRotate = RotateFlipType.Rotate270FlipXY;
+		EditMode mEditMode = EditMode.WIRE;
+		WireColor mWireColor = WireColor.BLACK;
+		RotateFlipType mCurRotate = RotateFlipType.Rotate270FlipXY;
 		int mCurGridWidth = 12;
 
-        bool mIsDrag;
+		bool mIsDrag;
 		Point mBeginPos = new Point();
 		Point mEndPos = new Point();
 		Rect mRect = new Rect();
 
-        string mSelectedPartsPath;
+		string mSelectedPartsPath;
 		Point mSelectedPartsOfs;
 		Point mSelectedPartsPos;
 		Point mSelectedPartsSize;
 		Point mCurOfs;
 
-        public Form1() {
-            InitializeComponent();
+		public Form1() {
+			InitializeComponent();
 
-            panelResize();
+			panelResize();
 			picBoard.Width = 12 * 80;
 			picBoard.Height = 12 * 80;
 
@@ -195,59 +195,59 @@ namespace UCBeditor {
 
 			tscGridWidth.SelectedIndex = 0;
 
-            timer1.Interval = 50;
-            timer1.Enabled = true;
-            timer1.Start();
-        }
+			timer1.Interval = 50;
+			timer1.Enabled = true;
+			timer1.Start();
+		}
 
-        #region resize
-        private void splitContainer1_Panel1_Resize(object sender, EventArgs e) {
-            panelResize();
-        }
+		#region resize
+		private void splitContainer1_Panel1_Resize(object sender, EventArgs e) {
+			panelResize();
+		}
 
-        private void splitContainer1_Panel2_Resize(object sender, EventArgs e) {
-            panelResize();
-        }
+		private void splitContainer1_Panel2_Resize(object sender, EventArgs e) {
+			panelResize();
+		}
 
-        private void panelResize() {
-            pnlBoard.Width = splitContainer1.Panel1.Width - 4;
-            pnlBoard.Height = splitContainer1.Panel1.Height - tsBoard.Height - 6;
-            pnlParts.Width = splitContainer1.Panel2.Width - 4;
-            pnlParts.Height = splitContainer1.Panel2.Height - tsParts.Height - 6;
-        }
-        #endregion
+		private void panelResize() {
+			pnlBoard.Width = splitContainer1.Panel1.Width - 4;
+			pnlBoard.Height = splitContainer1.Panel1.Height - tsBoard.Height - 6;
+			pnlParts.Width = splitContainer1.Panel2.Width - 4;
+			pnlParts.Height = splitContainer1.Panel2.Height - tsParts.Height - 6;
+		}
+		#endregion
 
-        #region ToolStripButton
-        private void tsbCursor_Click(object sender, EventArgs e) {
-            selectLine(tsbCursor);
-        }
+		#region ToolStripButton
+		private void tsbCursor_Click(object sender, EventArgs e) {
+			selectLine(tsbCursor);
+		}
 
-        private void tsbLand_Click(object sender, EventArgs e) {
-            selectLine(tsbLand);
-        }
+		private void tsbLand_Click(object sender, EventArgs e) {
+			selectLine(tsbLand);
+		}
 
-        private void tsbLineBlack_Click(object sender, EventArgs e) {
-            selectLine(tsbLineBlack);
-        }
+		private void tsbLineBlack_Click(object sender, EventArgs e) {
+			selectLine(tsbLineBlack);
+		}
 
-        private void tsbLineWhite_Click(object sender, EventArgs e) {
-            selectLine(tsbLineWhite);
-        }
+		private void tsbLineWhite_Click(object sender, EventArgs e) {
+			selectLine(tsbLineWhite);
+		}
 
-        private void tsbLineRed_Click(object sender, EventArgs e) {
-            selectLine(tsbLineRed);
-        }
+		private void tsbLineRed_Click(object sender, EventArgs e) {
+			selectLine(tsbLineRed);
+		}
 
-        private void tsbLineBlue_Click(object sender, EventArgs e) {
-            selectLine(tsbLineBlue);
-        }
+		private void tsbLineBlue_Click(object sender, EventArgs e) {
+			selectLine(tsbLineBlue);
+		}
 
-        private void tsbLineGreen_Click(object sender, EventArgs e) {
-            selectLine(tsbLineGreen);
-        }
+		private void tsbLineGreen_Click(object sender, EventArgs e) {
+			selectLine(tsbLineGreen);
+		}
 
-        private void tsbLineYellow_Click(object sender, EventArgs e) {
-            selectLine(tsbLineYellow);
+		private void tsbLineYellow_Click(object sender, EventArgs e) {
+			selectLine(tsbLineYellow);
 		}
 
 		private void tsbFront_Click(object sender, EventArgs e) {
@@ -273,68 +273,68 @@ namespace UCBeditor {
 				break;
 			}
 		}
-        #endregion
+		#endregion
 
-        #region MouseEvent
-        private void picBoard_MouseDown(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
+		#region MouseEvent
+		private void picBoard_MouseDown(object sender, MouseEventArgs e) {
+			if (e.Button == MouseButtons.Left) {
 				setBeginPos();
 
-                switch (mEditMode) {
-                case EditMode.SELECT:
-                case EditMode.WIRE:
+				switch (mEditMode) {
+				case EditMode.SELECT:
+				case EditMode.WIRE:
 					mRect = new Rect();
-                    mIsDrag = true;
-                    break;
-                }
-            }
+					mIsDrag = true;
+					break;
+				}
+			}
 
-            if (e.Button == MouseButtons.Right) {
-                var temp = new Dictionary<int, Record>();
-                var idx = 0;
+			if (e.Button == MouseButtons.Right) {
+				var temp = new Dictionary<int, Record>();
+				var idx = 0;
 				for (var d = 0; d < mList.Count; ++d) {
 					if (!isOnLine(mList[d], mEndPos)) {
 						temp.Add(idx, mList[d]);
-                        ++idx;
-                    }
-                }
+						++idx;
+					}
+				}
 				mList = temp;
-            }
-        }
+			}
+		}
 
-        private void picBoard_MouseMove(object sender, MouseEventArgs e) {
+		private void picBoard_MouseMove(object sender, MouseEventArgs e) {
 			setEndPos();
-        }
+		}
 
-        private void picBoard_MouseUp(object sender, MouseEventArgs e) {
-            if (e.Button != MouseButtons.Left) {
-                return;
-            }
+		private void picBoard_MouseUp(object sender, MouseEventArgs e) {
+			if (e.Button != MouseButtons.Left) {
+				return;
+			}
 
-            var rec = new Record();
+			var rec = new Record();
 
-            switch (mEditMode) {
-            case EditMode.SELECT:
+			switch (mEditMode) {
+			case EditMode.SELECT:
 				mRect = new Rect();
 				mRect.A = mBeginPos;
 				mRect.B = mEndPos;
 				mIsDrag = false;
-                break;
+				break;
 
-            case EditMode.WIRE:
-                rec.SetWire(mBeginPos, mEndPos, mWireColor);
-                mList.Add(mList.Count, rec);
-                mIsDrag = false;
-                break;
-            case EditMode.LAND:
+			case EditMode.WIRE:
+				rec.SetWire(mBeginPos, mEndPos, mWireColor);
+				mList.Add(mList.Count, rec);
+				mIsDrag = false;
+				break;
+			case EditMode.LAND:
 				rec.SetLand(mEndPos);
-                mList.Add(mList.Count, rec);
+				mList.Add(mList.Count, rec);
 				break;
 			case EditMode.PARTS:
 				rec.SetParts(mEndPos, mCurOfs, mCurRotate, mSelectedPartsPath);
-                mList.Add(mList.Count, rec);
+				mList.Add(mList.Count, rec);
 				break;
-            }
+			}
 
 			foreach (var p in mClipBoard) {
 				rec = p.Value;
@@ -345,10 +345,10 @@ namespace UCBeditor {
 				mList.Add(mList.Count, rec);
 			}
 			mClipBoard.Clear();
-        }
-        #endregion
+		}
+		#endregion
 
-        #region MenuberEvent
+		#region MenuberEvent
 		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e) {
 			mList.Clear();
 			mClipBoard.Clear();
@@ -402,8 +402,7 @@ namespace UCBeditor {
 					return;
 				}
 				mFilePath = filePath;
-			}
-			else {
+			} else {
 				filePath = mFilePath;
 			}
 
@@ -455,13 +454,12 @@ namespace UCBeditor {
 					if (end.Y < min.Y) {
 						min.Y = end.Y;
 					}
-				}
-				else {
+				} else {
 					temp.Add(temp.Count, mList[d]);
 				}
 			}
 
-			for (var i=0; i < mClipBoard.Count; ++i) {
+			for (var i = 0; i < mClipBoard.Count; ++i) {
 				var p = mClipBoard[i];
 				p.Begin.X -= (min.X / 12) * 12;
 				p.Begin.Y -= (min.Y / 12) * 12;
@@ -504,7 +502,7 @@ namespace UCBeditor {
 				}
 			}
 
-			for (var i=0; i < mClipBoard.Count; ++i) {
+			for (var i = 0; i < mClipBoard.Count; ++i) {
 				var p = mClipBoard[i];
 				p.Begin.X -= (min.X / 12) * 12;
 				p.Begin.Y -= (min.Y / 12) * 12;
@@ -578,7 +576,7 @@ namespace UCBeditor {
 			setEndPos();
 		}
 
-        #endregion
+		#endregion
 
 		private void timer1_Tick(object sender, EventArgs e) {
 			var bmp = new Bitmap(picBoard.Width, picBoard.Height);
@@ -586,8 +584,8 @@ namespace UCBeditor {
 
 			g.FillRectangle(Pens.White.Brush, 0, 0, bmp.Width, bmp.Height);
 
-			for (var y=0; y < bmp.Height; y += mCurGridWidth) {
-				for (var x=0; x < bmp.Width; x += mCurGridWidth) {
+			for (var y = 0; y < bmp.Height; y += mCurGridWidth) {
+				for (var x = 0; x < bmp.Width; x += mCurGridWidth) {
 					g.DrawRectangle(GridColor, x, y, 0.5f, 0.5f);
 				}
 			}
@@ -601,51 +599,51 @@ namespace UCBeditor {
 			picBoard.Image = bmp;
 		}
 
-        private void selectLine(ToolStripButton btn) {
-            tsbCursor.Checked = tsbCursor == btn;
-            tsbLand.Checked = tsbLand == btn;
-            tsbLineBlack.Checked = tsbLineBlack == btn;
-            tsbLineWhite.Checked = tsbLineWhite == btn;
-            tsbLineRed.Checked = tsbLineRed == btn;
-            tsbLineBlue.Checked = tsbLineBlue == btn;
-            tsbLineGreen.Checked = tsbLineGreen == btn;
-            tsbLineYellow.Checked = tsbLineYellow == btn;
+		private void selectLine(ToolStripButton btn) {
+			tsbCursor.Checked = tsbCursor == btn;
+			tsbLand.Checked = tsbLand == btn;
+			tsbLineBlack.Checked = tsbLineBlack == btn;
+			tsbLineWhite.Checked = tsbLineWhite == btn;
+			tsbLineRed.Checked = tsbLineRed == btn;
+			tsbLineBlue.Checked = tsbLineBlue == btn;
+			tsbLineGreen.Checked = tsbLineGreen == btn;
+			tsbLineYellow.Checked = tsbLineYellow == btn;
 
-            if (tsbCursor.Checked) {
-                mEditMode = EditMode.SELECT;
-            }
-            if (tsbLand.Checked) {
-                mEditMode = EditMode.LAND;
-                mWireColor = WireColor.BLACK;
-            }
-            if (tsbLineBlack.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.BLACK;
-            }
-            if (tsbLineWhite.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.WHITE;
-            }
-            if (tsbLineRed.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.RED;
-            }
-            if (tsbLineBlue.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.BLUE;
-            }
-            if (tsbLineGreen.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.GREEN;
-            }
-            if (tsbLineYellow.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.YELLOW;
-            }
+			if (tsbCursor.Checked) {
+				mEditMode = EditMode.SELECT;
+			}
+			if (tsbLand.Checked) {
+				mEditMode = EditMode.LAND;
+				mWireColor = WireColor.BLACK;
+			}
+			if (tsbLineBlack.Checked) {
+				mEditMode = EditMode.WIRE;
+				mWireColor = WireColor.BLACK;
+			}
+			if (tsbLineWhite.Checked) {
+				mEditMode = EditMode.WIRE;
+				mWireColor = WireColor.WHITE;
+			}
+			if (tsbLineRed.Checked) {
+				mEditMode = EditMode.WIRE;
+				mWireColor = WireColor.RED;
+			}
+			if (tsbLineBlue.Checked) {
+				mEditMode = EditMode.WIRE;
+				mWireColor = WireColor.BLUE;
+			}
+			if (tsbLineGreen.Checked) {
+				mEditMode = EditMode.WIRE;
+				mWireColor = WireColor.GREEN;
+			}
+			if (tsbLineYellow.Checked) {
+				mEditMode = EditMode.WIRE;
+				mWireColor = WireColor.YELLOW;
+			}
 
-            mSelectedPartsPath = "";
-            selectPartsList();
-        }
+			mSelectedPartsPath = "";
+			selectPartsList();
+		}
 
 		private void selectPartsList() {
 			mSelectedPartsOfs = new Point();
@@ -669,8 +667,7 @@ namespace UCBeditor {
 
 						mIsDrag = false;
 						mEditMode = EditMode.PARTS;
-					}
-					else {
+					} else {
 						panel.BackColor = SystemColors.ButtonFace;
 						panel.BorderStyle = BorderStyle.None;
 					}
@@ -678,22 +675,22 @@ namespace UCBeditor {
 			}
 		}
 
-        private void drawToolPanel(string type) {
-            var curTop = 0;
-            pnlParts.Controls.Clear();
+		private void drawToolPanel(string type) {
+			var curTop = 0;
+			pnlParts.Controls.Clear();
 
-            var dir = ElementPath + "solid\\" + type;
+			var dir = ElementPath + "solid\\" + type;
 			if (!Directory.Exists(dir)) {
 				return;
 			}
-            var paths = Directory.GetFiles(dir);
+			var paths = Directory.GetFiles(dir);
 
-            for (var i=0; i < paths.Length; ++i) {
-                var picture = new PictureBox();
-                var bmp = new Bitmap(paths[i]);
+			for (var i = 0; i < paths.Length; ++i) {
+				var picture = new PictureBox();
+				var bmp = new Bitmap(paths[i]);
 				var path = paths[i].Replace(ElementPath, "").Replace("solid\\", "");
 
-                picture.Image = bmp;
+				picture.Image = bmp;
 				picture.Top = 2;
 				picture.Left = 2;
 				picture.Width = bmp.Width;
@@ -705,26 +702,26 @@ namespace UCBeditor {
 				lbl.Top = curTop + picture.Height + lbl.Height;
 				lbl.Left = 8;
 
-                var panel = new Panel();
-                panel.Name = path;
-                panel.Controls.Add(picture);
-                panel.BackColor = SystemColors.ButtonFace;
+				var panel = new Panel();
+				panel.Name = path;
+				panel.Controls.Add(picture);
+				panel.BackColor = SystemColors.ButtonFace;
 				panel.Width = bmp.Width + 8;
 				panel.Height = bmp.Height + 8;
 				panel.Left = 8;
 				panel.Top = curTop + 8;
 
-                picture.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => {
-                    mSelectedPartsPath = panel.Name;
-                    selectPartsList();
-                });
+				picture.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => {
+					mSelectedPartsPath = panel.Name;
+					selectPartsList();
+				});
 
-                pnlParts.Controls.Add(panel);
+				pnlParts.Controls.Add(panel);
 				pnlParts.Controls.Add(lbl);
 
 				curTop += panel.Height + 8 + 18;
-            }
-        }
+			}
+		}
 
 		private void setPartsList() {
 			var files = Directory.GetFiles(ElementPath);
@@ -733,7 +730,7 @@ namespace UCBeditor {
 				tsb.Image = new Bitmap(filePath);
 				tsb.Name = Path.GetFileNameWithoutExtension(filePath);
 				tsb.Click += new EventHandler((object sender, EventArgs e) => {
-					for (var j=0; j < tsParts.Items.Count; ++j) {
+					for (var j = 0; j < tsParts.Items.Count; ++j) {
 						if ("ToolStripButton" == tsParts.Items[j].GetType().Name) {
 							var item = (ToolStripButton)tsParts.Items[j];
 							item.Checked = false;
@@ -800,44 +797,42 @@ namespace UCBeditor {
 			var fs = new FileStream(filePath, FileMode.Create);
 			var sw = new StreamWriter(fs);
 			foreach (var rec in mList.Values) {
-                rec.Write(sw);
-            }
+				rec.Write(sw);
+			}
 			sw.Close();
 			fs.Close();
 			sw.Dispose();
 			fs.Dispose();
 		}
 
-        private Point nearPointOnLine(Record record, Point point) {
-            var abX = record.End.X - record.Begin.X;
-            var abY = record.End.Y - record.Begin.Y;
-            var apX = point.X - record.Begin.X;
-            var apY = point.Y - record.Begin.Y;
+		private Point nearPointOnLine(Record record, Point point) {
+			var abX = record.End.X - record.Begin.X;
+			var abY = record.End.Y - record.Begin.Y;
+			var apX = point.X - record.Begin.X;
+			var apY = point.Y - record.Begin.Y;
 
-            var abL2 = abX * abX + abY * abY;
+			var abL2 = abX * abX + abY * abY;
 
-            if (0.0 == abL2) {
-                return record.Begin;
-            }
+			if (0.0 == abL2) {
+				return record.Begin;
+			}
 
-            var r = (double)(abX * apX + abY * apY) / abL2;
-            if (r <= 0.0) {
-                return record.Begin;
-            }
-            else if (1.0 <= r) {
-                return record.End;
-            }
-            else {
-                return new Point((int)(record.Begin.X + r * abX), (int)(record.Begin.Y + r * abY));
-            }
-        }
+			var r = (double)(abX * apX + abY * apY) / abL2;
+			if (r <= 0.0) {
+				return record.Begin;
+			} else if (1.0 <= r) {
+				return record.End;
+			} else {
+				return new Point((int)(record.Begin.X + r * abX), (int)(record.Begin.Y + r * abY));
+			}
+		}
 
-        private bool isOnLine(Record record, Point point) {
+		private bool isOnLine(Record record, Point point) {
 			var p = nearPointOnLine(record, point);
-            var sx = p.X - point.X;
-            var sy = p.Y - point.Y;
-            return (Math.Sqrt(sx * sx + sy * sy) < 6.0);
-        }
+			var sx = p.X - point.X;
+			var sy = p.Y - point.Y;
+			return (Math.Sqrt(sx * sx + sy * sy) < 6.0);
+		}
 
 		private bool isOnLine(Record record, Rect rect) {
 			var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
@@ -858,8 +853,7 @@ namespace UCBeditor {
 				if (RecordType.WIRE == d.Type) {
 					if (isOnLine(d, mEndPos) || isOnLine(d, mRect)) {
 						g.DrawLine(HoverColor, d.Begin, d.End);
-					}
-					else {
+					} else {
 						g.DrawLine(d.WireColor, d.Begin, d.End);
 					}
 				}
@@ -979,5 +973,5 @@ namespace UCBeditor {
 				break;
 			}
 		}
-    }
+	}
 }
