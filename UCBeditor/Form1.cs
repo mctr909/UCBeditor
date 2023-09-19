@@ -860,16 +860,22 @@ namespace UCBeditor {
 			}
 			foreach (var d in mList.Values) {
 				if (RecordType.LAND == d.Type) {
-					g.FillEllipse(
-						LandColor.Brush,
-						d.Begin.X - 4, d.Begin.Y - 4,
-						8, 8
-					);
-					g.FillEllipse(
-						Brushes.White,
-						d.Begin.X - 2, d.Begin.Y - 2,
-						4, 4
-					);
+					var x1 = d.Begin.X - 4;
+					var y1 = d.Begin.Y - 4;
+                    var x2 = d.Begin.X - 2;
+                    var y2 = d.Begin.Y - 2;
+                    if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+                        g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
+                        g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
+                    } else {
+						if (tsbReverse.Checked) {
+                            g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
+                            g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+                        } else {
+                            g.DrawArc(Pens.Gray, x1, y1, 8, 8, 0, 360);
+                            g.DrawArc(Pens.Gray, x2, y2, 4, 4, 0, 360);
+                        }
+                    }
 				}
 			}
 			foreach (var d in mList.Values) {
@@ -880,7 +886,6 @@ namespace UCBeditor {
 					} else {
 						filePath = ElementPath + "solid\\" + filePath;
 					}
-
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(d.Rotate);
 					g.DrawImage(temp, new Point(
