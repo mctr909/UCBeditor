@@ -238,7 +238,7 @@
             this.tsbWireTin.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbWireTin.Name = "tsbWireTin";
             this.tsbWireTin.Size = new System.Drawing.Size(23, 22);
-            this.tsbWireTin.Text = "亜鉛メッキ線";
+            this.tsbWireTin.Text = "すずメッキ線";
             this.tsbWireTin.Click += new System.EventHandler(this.tsbWireTin_Click);
             // 
             // toolStripSeparator4
@@ -276,7 +276,7 @@
 			// tscGridWidth
 			// 
 			this.tscGridWidth.Items.AddRange(new object[] {
-            "2.45mm",
+            "2.54mm",
             "1.27mm"});
 			this.tscGridWidth.Name = "tscGridWidth";
 			this.tscGridWidth.Size = new System.Drawing.Size(80, 25);

@@ -46,7 +46,7 @@ namespace UCBeditor {
 			static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 			static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 			static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-            static readonly Pen TIN_W = new Pen(Color.FromArgb(95, 95, 95), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            static readonly Pen TIN_W = new Pen(Color.FromArgb(111, 111, 111), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
             static readonly Pen TIN_N = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { DashPattern = new float[] { 1, 1 } };
 
             public RecordType Type;
@@ -72,8 +72,8 @@ namespace UCBeditor {
                 case WireColor.YELLOW:
                     g.DrawLine(YELLOW, Begin, End); break;
                 case WireColor.TIN:
-					g.FillPie(TIN_W.Brush, Begin.X - 3, Begin.Y - 3, 6, 6, 0, 360);
-                    g.FillPie(TIN_W.Brush, End.X - 3, End.Y - 3, 6, 6, 0, 360);
+					g.FillPie(TIN_W.Brush, Begin.X - 4, Begin.Y - 4, 8, 8, 0, 360);
+                    g.FillPie(TIN_W.Brush, End.X - 4, End.Y - 4, 8, 8, 0, 360);
                     g.DrawLine(TIN_W, Begin, End);
                     g.DrawLine(TIN_N, Begin, End);
                     break;
@@ -95,8 +95,8 @@ namespace UCBeditor {
                     g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
-                    g.DrawArc(Pens.Gray, x1, y1, 8, 8, 0, 360);
-                    g.DrawArc(Pens.Gray, x2, y2, 4, 4, 0, 360);
+                    g.FillEllipse(TIN_W.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
 
