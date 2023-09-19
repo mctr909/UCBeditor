@@ -36,7 +36,8 @@ namespace UCBeditor {
 			BLUE,
 			RED,
 			GREEN,
-			YELLOW
+			YELLOW,
+			TIN
 		}
 
 		struct Record {
@@ -50,26 +51,24 @@ namespace UCBeditor {
 
 			WireColor mWireColor;
 
-			public Pen WireColor {
-				get {
-					switch (mWireColor) {
-					case Form1.WireColor.BLACK:
-						return new Pen(Color.FromArgb(47, 47, 47), 2.0f);
-					case Form1.WireColor.WHITE:
-						return new Pen(Color.FromArgb(207, 207, 207), 2.0f);
-					case Form1.WireColor.BLUE:
-						return new Pen(Color.FromArgb(0, 0, 191), 2.0f);
-					case Form1.WireColor.RED:
-						return new Pen(Color.FromArgb(191, 0, 0), 2.0f);
-					case Form1.WireColor.GREEN:
-						return new Pen(Color.FromArgb(0, 127, 0), 2.0f);
-					case Form1.WireColor.YELLOW:
-						return new Pen(Color.FromArgb(191, 191, 0), 2.0f);
-					default:
-						return new Pen(Color.FromArgb(47, 47, 47), 2.0f);
-					}
-				}
-			}
+			public void DrawWire(Graphics g) {
+                switch (mWireColor) {
+                case WireColor.BLACK:
+                    g.DrawLine(new Pen(Color.FromArgb(71, 71, 71), 3.0f), Begin, End); break;
+                case WireColor.WHITE:
+                    g.DrawLine(new Pen(Color.FromArgb(207, 207, 207), 3.0f), Begin, End); break;
+                case WireColor.BLUE:
+                    g.DrawLine(new Pen(Color.FromArgb(63, 63, 221), 3.0f), Begin, End); break;
+                case WireColor.RED:
+                    g.DrawLine(new Pen(Color.FromArgb(211, 63, 63), 3.0f), Begin, End); break;
+                case WireColor.GREEN:
+                    g.DrawLine(new Pen(Color.FromArgb(47, 167, 47), 3.0f), Begin, End); break;
+                case WireColor.YELLOW:
+                    g.DrawLine(new Pen(Color.FromArgb(191, 191, 0), 3.0f), Begin, End); break;
+                default:
+                    g.DrawLine(new Pen(Color.FromArgb(255, 0, 255), 3.0f), Begin, End); break;
+                }
+            }
 
 			public void Load(string line) {
 				var cols = line.Split('\t');
@@ -173,6 +172,7 @@ namespace UCBeditor {
 		int mCurGridWidth = 12;
 
 		bool mIsDrag;
+		Point mMousePos = new Point();
 		Point mBeginPos = new Point();
 		Point mEndPos = new Point();
 		Rect mRect = new Rect();
@@ -293,7 +293,7 @@ namespace UCBeditor {
 				var temp = new Dictionary<int, Record>();
 				var idx = 0;
 				for (var d = 0; d < mList.Count; ++d) {
-					if (!isOnLine(mList[d], mEndPos)) {
+					if (!isOnLine(mList[d], mMousePos)) {
 						temp.Add(idx, mList[d]);
 						++idx;
 					}
@@ -765,15 +765,15 @@ namespace UCBeditor {
 		}
 
 		private void setBeginPos() {
-			var pos = picBoard.PointToClient(Cursor.Position);
-			mBeginPos.X = (int)((double)pos.X / mCurGridWidth + 0.5) * mCurGridWidth;
-			mBeginPos.Y = (int)((double)pos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
+            mMousePos = picBoard.PointToClient(Cursor.Position);
+			mBeginPos.X = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+			mBeginPos.Y = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
 		}
 
 		private void setEndPos() {
-			var pos = picBoard.PointToClient(Cursor.Position);
-			var gx = (int)((double)pos.X / mCurGridWidth + 0.5) * mCurGridWidth;
-			var gy = (int)((double)pos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
+            mMousePos = picBoard.PointToClient(Cursor.Position);
+			var gx = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+			var gy = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
 			if (0 < mSelectedPartsPos.X || 0 < mSelectedPartsPos.Y) {
                 switch (mCurRotate) {
 				case RotateFlipType.RotateNoneFlipXY:
@@ -851,10 +851,10 @@ namespace UCBeditor {
 		private void drawList(Graphics g) {
 			foreach (var d in mList.Values) {
 				if (RecordType.WIRE == d.Type) {
-					if (isOnLine(d, mEndPos) || isOnLine(d, mRect)) {
+					if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
 						g.DrawLine(HoverColor, d.Begin, d.End);
 					} else {
-						g.DrawLine(d.WireColor, d.Begin, d.End);
+						d.DrawWire(g);
 					}
 				}
 			}
