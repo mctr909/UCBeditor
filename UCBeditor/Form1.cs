@@ -766,16 +766,16 @@ namespace UCBeditor {
 
 		private void setBeginPos() {
 			var pos = picBoard.PointToClient(Cursor.Position);
-			mBeginPos.X = (int)((double)pos.X / mCurGridWidth - 0.5) * mCurGridWidth;
-			mBeginPos.Y = (int)((double)pos.Y / mCurGridWidth - 0.5) * mCurGridWidth;
+			mBeginPos.X = (int)((double)pos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+			mBeginPos.Y = (int)((double)pos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
 		}
 
 		private void setEndPos() {
 			var pos = picBoard.PointToClient(Cursor.Position);
-			var gx = (int)((double)pos.X / mCurGridWidth - 0.5) * mCurGridWidth;
-			var gy = (int)((double)pos.Y / mCurGridWidth - 0.5) * mCurGridWidth;
+			var gx = (int)((double)pos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+			var gy = (int)((double)pos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
 			if (0 < mSelectedPartsPos.X || 0 < mSelectedPartsPos.Y) {
-				switch (mCurRotate) {
+                switch (mCurRotate) {
 				case RotateFlipType.RotateNoneFlipXY:
 				case RotateFlipType.Rotate180FlipXY:
 					mEndPos.X = gx + mSelectedPartsPos.X;
