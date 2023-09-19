@@ -37,12 +37,12 @@
 			this.tsBoard = new System.Windows.Forms.ToolStrip();
 			this.tsbCursor = new System.Windows.Forms.ToolStripButton();
 			this.tsbLand = new System.Windows.Forms.ToolStripButton();
-			this.tsbLineBlack = new System.Windows.Forms.ToolStripButton();
-			this.tsbLineWhite = new System.Windows.Forms.ToolStripButton();
-			this.tsbLineRed = new System.Windows.Forms.ToolStripButton();
-			this.tsbLineBlue = new System.Windows.Forms.ToolStripButton();
-			this.tsbLineGreen = new System.Windows.Forms.ToolStripButton();
-			this.tsbLineYellow = new System.Windows.Forms.ToolStripButton();
+			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
+			this.tsbWireTin = new System.Windows.Forms.ToolStripButton();
+			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
+			this.tsbWireBlue = new System.Windows.Forms.ToolStripButton();
+			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
+			this.tsbWireYellow = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbFront = new System.Windows.Forms.ToolStripButton();
 			this.tsbReverse = new System.Windows.Forms.ToolStripButton();
@@ -133,12 +133,12 @@
 			this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbCursor,
             this.tsbLand,
-            this.tsbLineBlack,
-            this.tsbLineWhite,
-            this.tsbLineRed,
-            this.tsbLineBlue,
-            this.tsbLineGreen,
-            this.tsbLineYellow,
+            this.tsbWireBlack,
+            this.tsbWireRed,
+            this.tsbWireBlue,
+            this.tsbWireGreen,
+            this.tsbWireYellow,
+			this.tsbWireTin,
             this.toolStripSeparator8,
             this.toolStripSeparator4,
             this.tsbFront,
@@ -175,75 +175,75 @@
 			this.tsbLand.Text = "ランド";
 			this.tsbLand.Click += new System.EventHandler(this.tsbLand_Click);
 			// 
-			// tsbLineBlack
+			// tsbWireBlack
 			// 
-			this.tsbLineBlack.CheckOnClick = true;
-			this.tsbLineBlack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbLineBlack.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineBlack.Image")));
-			this.tsbLineBlack.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbLineBlack.Name = "tsbLineBlack";
-			this.tsbLineBlack.Size = new System.Drawing.Size(23, 22);
-			this.tsbLineBlack.Text = "黒線";
-			this.tsbLineBlack.Click += new System.EventHandler(this.tsbLineBlack_Click);
+			this.tsbWireBlack.CheckOnClick = true;
+			this.tsbWireBlack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireBlack.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineBlack.Image")));
+			this.tsbWireBlack.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireBlack.Name = "tsbWireBlack";
+			this.tsbWireBlack.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireBlack.Text = "導線(黒)";
+			this.tsbWireBlack.Click += new System.EventHandler(this.tsbWireBlack_Click);
 			// 
-			// tsbLineWhite
+			// tsbWireRed
 			// 
-			this.tsbLineWhite.CheckOnClick = true;
-			this.tsbLineWhite.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbLineWhite.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineWhite.Image")));
-			this.tsbLineWhite.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbLineWhite.Name = "tsbLineWhite";
-			this.tsbLineWhite.Size = new System.Drawing.Size(23, 22);
-			this.tsbLineWhite.Text = "白線";
-			this.tsbLineWhite.Click += new System.EventHandler(this.tsbLineWhite_Click);
+			this.tsbWireRed.CheckOnClick = true;
+			this.tsbWireRed.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireRed.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineRed.Image")));
+			this.tsbWireRed.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireRed.Name = "tsbWireRed";
+			this.tsbWireRed.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireRed.Text = "導線(赤)";
+			this.tsbWireRed.Click += new System.EventHandler(this.tsbWireRed_Click);
 			// 
-			// tsbLineRed
+			// tsbWireBlue
 			// 
-			this.tsbLineRed.CheckOnClick = true;
-			this.tsbLineRed.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbLineRed.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineRed.Image")));
-			this.tsbLineRed.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbLineRed.Name = "tsbLineRed";
-			this.tsbLineRed.Size = new System.Drawing.Size(23, 22);
-			this.tsbLineRed.Text = "赤線";
-			this.tsbLineRed.Click += new System.EventHandler(this.tsbLineRed_Click);
+			this.tsbWireBlue.CheckOnClick = true;
+			this.tsbWireBlue.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireBlue.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineBlue.Image")));
+			this.tsbWireBlue.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireBlue.Name = "tsbWireBlue";
+			this.tsbWireBlue.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireBlue.Text = "導線(青)";
+			this.tsbWireBlue.Click += new System.EventHandler(this.tsbWireBlue_Click);
 			// 
-			// tsbLineBlue
+			// tsbWireGreen
 			// 
-			this.tsbLineBlue.CheckOnClick = true;
-			this.tsbLineBlue.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbLineBlue.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineBlue.Image")));
-			this.tsbLineBlue.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbLineBlue.Name = "tsbLineBlue";
-			this.tsbLineBlue.Size = new System.Drawing.Size(23, 22);
-			this.tsbLineBlue.Text = "青線";
-			this.tsbLineBlue.Click += new System.EventHandler(this.tsbLineBlue_Click);
-			// 
-			// tsbLineGreen
-			// 
-			this.tsbLineGreen.CheckOnClick = true;
-			this.tsbLineGreen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbLineGreen.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineGreen.Image")));
-			this.tsbLineGreen.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbLineGreen.Name = "tsbLineGreen";
-			this.tsbLineGreen.Size = new System.Drawing.Size(23, 22);
-			this.tsbLineGreen.Text = "緑線";
-			this.tsbLineGreen.Click += new System.EventHandler(this.tsbLineGreen_Click);
-			// 
-			// tsbLineYellow
-			// 
-			this.tsbLineYellow.CheckOnClick = true;
-			this.tsbLineYellow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbLineYellow.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineYellow.Image")));
-			this.tsbLineYellow.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbLineYellow.Name = "tsbLineYellow";
-			this.tsbLineYellow.Size = new System.Drawing.Size(23, 22);
-			this.tsbLineYellow.Text = "黄線";
-			this.tsbLineYellow.Click += new System.EventHandler(this.tsbLineYellow_Click);
-			// 
-			// toolStripSeparator4
-			// 
-			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.tsbWireGreen.CheckOnClick = true;
+			this.tsbWireGreen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireGreen.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineGreen.Image")));
+			this.tsbWireGreen.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireGreen.Name = "tsbWireGreen";
+			this.tsbWireGreen.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireGreen.Text = "導線(緑)";
+			this.tsbWireGreen.Click += new System.EventHandler(this.tsbWireGreen_Click);
+            // 
+            // tsbWireYellow
+            // 
+            this.tsbWireYellow.CheckOnClick = true;
+			this.tsbWireYellow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireYellow.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineYellow.Image")));
+			this.tsbWireYellow.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireYellow.Name = "tsbWireYellow";
+			this.tsbWireYellow.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireYellow.Text = "導線(黄)";
+			this.tsbWireYellow.Click += new System.EventHandler(this.tsbWireYellow_Click);
+            // 
+            // tsbWireTin
+            // 
+            this.tsbWireTin.CheckOnClick = true;
+            this.tsbWireTin.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbWireTin.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineWhite.Image")));
+            this.tsbWireTin.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbWireTin.Name = "tsbWireTin";
+            this.tsbWireTin.Size = new System.Drawing.Size(23, 22);
+            this.tsbWireTin.Text = "亜鉛メッキ線";
+            this.tsbWireTin.Click += new System.EventHandler(this.tsbWireTin_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
 			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
 			// 
 			// tsbFront
@@ -498,12 +498,12 @@
         private System.Windows.Forms.ToolStrip tsBoard;
         private System.Windows.Forms.ToolStrip tsParts;
         private System.Windows.Forms.ToolStripButton tsbCursor;
-        private System.Windows.Forms.ToolStripButton tsbLineBlack;
-        private System.Windows.Forms.ToolStripButton tsbLineWhite;
-        private System.Windows.Forms.ToolStripButton tsbLineRed;
-        private System.Windows.Forms.ToolStripButton tsbLineBlue;
-        private System.Windows.Forms.ToolStripButton tsbLineGreen;
-        private System.Windows.Forms.ToolStripButton tsbLineYellow;
+        private System.Windows.Forms.ToolStripButton tsbWireBlack;
+        private System.Windows.Forms.ToolStripButton tsbWireTin;
+        private System.Windows.Forms.ToolStripButton tsbWireRed;
+        private System.Windows.Forms.ToolStripButton tsbWireBlue;
+        private System.Windows.Forms.ToolStripButton tsbWireGreen;
+        private System.Windows.Forms.ToolStripButton tsbWireYellow;
         private System.Windows.Forms.PictureBox picBoard;
         private System.Windows.Forms.Panel pnlBoard;
 		private System.Windows.Forms.Panel pnlParts;

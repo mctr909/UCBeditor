@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -10,10 +11,9 @@ using System.IO;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
-		readonly Pen GridColor = new Pen(Color.Black, 0.5f);
+        readonly Pen GridColor = new Pen(Color.Black, 0.5f);
 		readonly Pen DragColor = Pens.Blue;
 		readonly Pen HoverColor = Pens.Blue;
-		readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f);
 		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
 
 		enum EditMode {
@@ -32,7 +32,6 @@ namespace UCBeditor {
 
 		enum WireColor {
 			BLACK,
-			WHITE,
 			BLUE,
 			RED,
 			GREEN,
@@ -41,7 +40,16 @@ namespace UCBeditor {
 		}
 
 		struct Record {
-			public RecordType Type;
+			static readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+			static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+			static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+			static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+			static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+			static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            static readonly Pen TIN_W = new Pen(Color.FromArgb(95, 95, 95), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            static readonly Pen TIN_N = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { DashPattern = new float[] { 1, 1 } };
+
+            public RecordType Type;
 			public Point Begin;
 			public Point End;
 			public Point Offset;
@@ -54,23 +62,45 @@ namespace UCBeditor {
 			public void DrawWire(Graphics g) {
                 switch (mWireColor) {
                 case WireColor.BLACK:
-                    g.DrawLine(new Pen(Color.FromArgb(71, 71, 71), 3.0f), Begin, End); break;
-                case WireColor.WHITE:
-                    g.DrawLine(new Pen(Color.FromArgb(207, 207, 207), 3.0f), Begin, End); break;
+                    g.DrawLine(BLACK, Begin, End); break;
                 case WireColor.BLUE:
-                    g.DrawLine(new Pen(Color.FromArgb(63, 63, 221), 3.0f), Begin, End); break;
+                    g.DrawLine(BLUE, Begin, End); break;
                 case WireColor.RED:
-                    g.DrawLine(new Pen(Color.FromArgb(211, 63, 63), 3.0f), Begin, End); break;
+                    g.DrawLine(RED, Begin, End); break;
                 case WireColor.GREEN:
-                    g.DrawLine(new Pen(Color.FromArgb(47, 167, 47), 3.0f), Begin, End); break;
+                    g.DrawLine(GREEN, Begin, End); break;
                 case WireColor.YELLOW:
-                    g.DrawLine(new Pen(Color.FromArgb(191, 191, 0), 3.0f), Begin, End); break;
+                    g.DrawLine(YELLOW, Begin, End); break;
+                case WireColor.TIN:
+					g.FillPie(TIN_W.Brush, Begin.X - 3, Begin.Y - 3, 6, 6, 0, 360);
+                    g.FillPie(TIN_W.Brush, End.X - 3, End.Y - 3, 6, 6, 0, 360);
+                    g.DrawLine(TIN_W, Begin, End);
+                    g.DrawLine(TIN_N, Begin, End);
+                    break;
                 default:
-                    g.DrawLine(new Pen(Color.FromArgb(255, 0, 255), 3.0f), Begin, End); break;
+                    g.DrawLine(Pens.Purple, Begin, End); break;
                 }
             }
 
-			public void Load(string line) {
+			public void DrawLand(Graphics g, bool reverse) {
+                DrawLand(g, Begin, reverse);
+            }
+
+            public void DrawLand(Graphics g, Point pos, bool reverse) {
+                var x1 = pos.X - 4;
+                var y1 = pos.Y - 4;
+                var x2 = pos.X - 2;
+                var y2 = pos.Y - 2;
+                if (reverse) {
+                    g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+                } else {
+                    g.DrawArc(Pens.Gray, x1, y1, 8, 8, 0, 360);
+                    g.DrawArc(Pens.Gray, x2, y2, 4, 4, 0, 360);
+                }
+            }
+
+            public void Load(string line) {
 				var cols = line.Split('\t');
 				switch (cols[0]) {
 				case "WIRE":
@@ -226,31 +256,31 @@ namespace UCBeditor {
 			selectLine(tsbLand);
 		}
 
-		private void tsbLineBlack_Click(object sender, EventArgs e) {
-			selectLine(tsbLineBlack);
+		private void tsbWireBlack_Click(object sender, EventArgs e) {
+			selectLine(tsbWireBlack);
 		}
 
-		private void tsbLineWhite_Click(object sender, EventArgs e) {
-			selectLine(tsbLineWhite);
+		private void tsbWireRed_Click(object sender, EventArgs e) {
+			selectLine(tsbWireRed);
 		}
 
-		private void tsbLineRed_Click(object sender, EventArgs e) {
-			selectLine(tsbLineRed);
+		private void tsbWireBlue_Click(object sender, EventArgs e) {
+			selectLine(tsbWireBlue);
 		}
 
-		private void tsbLineBlue_Click(object sender, EventArgs e) {
-			selectLine(tsbLineBlue);
+		private void tsbWireGreen_Click(object sender, EventArgs e) {
+			selectLine(tsbWireGreen);
 		}
 
-		private void tsbLineGreen_Click(object sender, EventArgs e) {
-			selectLine(tsbLineGreen);
+		private void tsbWireYellow_Click(object sender, EventArgs e) {
+			selectLine(tsbWireYellow);
 		}
 
-		private void tsbLineYellow_Click(object sender, EventArgs e) {
-			selectLine(tsbLineYellow);
-		}
+        private void tsbWireTin_Click(object sender, EventArgs e) {
+            selectLine(tsbWireTin);
+        }
 
-		private void tsbFront_Click(object sender, EventArgs e) {
+        private void tsbFront_Click(object sender, EventArgs e) {
 			tsbReverse.Checked = false;
 			tsbFront.Checked = true;
 		}
@@ -602,46 +632,46 @@ namespace UCBeditor {
 		private void selectLine(ToolStripButton btn) {
 			tsbCursor.Checked = tsbCursor == btn;
 			tsbLand.Checked = tsbLand == btn;
-			tsbLineBlack.Checked = tsbLineBlack == btn;
-			tsbLineWhite.Checked = tsbLineWhite == btn;
-			tsbLineRed.Checked = tsbLineRed == btn;
-			tsbLineBlue.Checked = tsbLineBlue == btn;
-			tsbLineGreen.Checked = tsbLineGreen == btn;
-			tsbLineYellow.Checked = tsbLineYellow == btn;
+			tsbWireBlack.Checked = tsbWireBlack == btn;
+			tsbWireRed.Checked = tsbWireRed == btn;
+			tsbWireBlue.Checked = tsbWireBlue == btn;
+			tsbWireGreen.Checked = tsbWireGreen == btn;
+			tsbWireYellow.Checked = tsbWireYellow == btn;
+            tsbWireTin.Checked = tsbWireTin == btn;
 
-			if (tsbCursor.Checked) {
+            if (tsbCursor.Checked) {
 				mEditMode = EditMode.SELECT;
 			}
 			if (tsbLand.Checked) {
 				mEditMode = EditMode.LAND;
 				mWireColor = WireColor.BLACK;
 			}
-			if (tsbLineBlack.Checked) {
+			if (tsbWireBlack.Checked) {
 				mEditMode = EditMode.WIRE;
 				mWireColor = WireColor.BLACK;
 			}
-			if (tsbLineWhite.Checked) {
-				mEditMode = EditMode.WIRE;
-				mWireColor = WireColor.WHITE;
-			}
-			if (tsbLineRed.Checked) {
+			if (tsbWireRed.Checked) {
 				mEditMode = EditMode.WIRE;
 				mWireColor = WireColor.RED;
 			}
-			if (tsbLineBlue.Checked) {
+			if (tsbWireBlue.Checked) {
 				mEditMode = EditMode.WIRE;
 				mWireColor = WireColor.BLUE;
 			}
-			if (tsbLineGreen.Checked) {
+			if (tsbWireGreen.Checked) {
 				mEditMode = EditMode.WIRE;
 				mWireColor = WireColor.GREEN;
 			}
-			if (tsbLineYellow.Checked) {
+			if (tsbWireYellow.Checked) {
 				mEditMode = EditMode.WIRE;
 				mWireColor = WireColor.YELLOW;
 			}
+            if (tsbWireTin.Checked) {
+                mEditMode = EditMode.WIRE;
+                mWireColor = WireColor.TIN;
+            }
 
-			mSelectedPartsPath = "";
+            mSelectedPartsPath = "";
 			selectPartsList();
 		}
 
@@ -850,49 +880,46 @@ namespace UCBeditor {
 
 		private void drawList(Graphics g) {
 			foreach (var d in mList.Values) {
-				if (RecordType.WIRE == d.Type) {
-					if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-						g.DrawLine(HoverColor, d.Begin, d.End);
-					} else {
-						d.DrawWire(g);
-					}
+				if (RecordType.WIRE != d.Type) {
+					continue;
+				}
+				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+					g.DrawLine(HoverColor, d.Begin, d.End);
+				} else {
+					d.DrawWire(g);
 				}
 			}
 			foreach (var d in mList.Values) {
-				if (RecordType.LAND == d.Type) {
-					var x1 = d.Begin.X - 4;
-					var y1 = d.Begin.Y - 4;
+				if (RecordType.LAND != d.Type) {
+					continue;
+				}
+				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+                    var x1 = d.Begin.X - 4;
+                    var y1 = d.Begin.Y - 4;
                     var x2 = d.Begin.X - 2;
                     var y2 = d.Begin.Y - 2;
-                    if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-                        g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
-                        g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
-                    } else {
-						if (tsbReverse.Checked) {
-                            g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
-                            g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-                        } else {
-                            g.DrawArc(Pens.Gray, x1, y1, 8, 8, 0, 360);
-                            g.DrawArc(Pens.Gray, x2, y2, 4, 4, 0, 360);
-                        }
-                    }
+                    g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
+					g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
+				} else {
+					d.DrawLand(g, tsbReverse.Checked);
 				}
 			}
 			foreach (var d in mList.Values) {
-				if (RecordType.PARTS == d.Type) {
-					var filePath = d.Parts;
-					if (tsbReverse.Checked || isOnLine(d, mRect)) {
-						filePath = ElementPath + "alpha\\" + filePath;
-					} else {
-						filePath = ElementPath + "solid\\" + filePath;
-					}
-					var temp = new Bitmap(filePath);
-					temp.RotateFlip(d.Rotate);
-					g.DrawImage(temp, new Point(
-						d.Begin.X - d.Offset.X,
-						d.Begin.Y - d.Offset.Y
-					));
+				if (RecordType.PARTS != d.Type) {
+					continue;
 				}
+				var filePath = d.Parts;
+				if (tsbReverse.Checked || isOnLine(d, mRect)) {
+					filePath = ElementPath + "alpha\\" + filePath;
+				} else {
+					filePath = ElementPath + "solid\\" + filePath;
+				}
+				var temp = new Bitmap(filePath);
+				temp.RotateFlip(d.Rotate);
+				g.DrawImage(temp, new Point(
+					d.Begin.X - d.Offset.X,
+					d.Begin.Y - d.Offset.Y
+				));
 			}
 		}
 
@@ -907,17 +934,13 @@ namespace UCBeditor {
 			foreach (var d in mClipBoard.Values) {
 				if (RecordType.LAND == d.Type) {
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
-					g.FillEllipse(
-						LandColor.Brush,
-						b.X - 4, b.Y - 4,
-						8, 8
-					);
-					g.FillEllipse(
-						Brushes.White,
-						b.X - 2, b.Y - 2,
-						4, 4
-					);
-				}
+                    var x1 = b.X - 4;
+                    var y1 = b.Y - 4;
+                    var x2 = b.X - 2;
+                    var y2 = b.Y - 2;
+                    g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
+                    g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
+                }
 			}
 			foreach (var d in mClipBoard.Values) {
 				if (RecordType.PARTS == d.Type) {
@@ -955,10 +978,11 @@ namespace UCBeditor {
 				break;
 
 			case EditMode.LAND:
-				g.FillEllipse(
-					LandColor.Brush,
+				g.DrawArc(
+					Pens.Gray,
 					mEndPos.X - 4, mEndPos.Y - 4,
-					8, 8
+					8, 8,
+					0, 360
 				);
 				g.FillEllipse(
 					Brushes.White,
