@@ -11,7 +11,7 @@ using System.IO;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
-        readonly Pen GridColor = new Pen(Color.Black, 0.5f);
+        readonly Pen GridColor = new Pen(Color.Gray, 0.5f);
 		readonly Pen DragColor = Pens.Blue;
 		readonly Pen HoverColor = Pens.Blue;
 		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
@@ -377,13 +377,17 @@ namespace UCBeditor {
 				break;
 
 			case EditMode.WIRE:
-				rec.SetWire(mBeginPos, mEndPos, mWireColor);
-				mList.Add(mList.Count, rec);
+				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+                    rec.SetWire(mBeginPos, mEndPos, mWireColor);
+                    mList.Add(mList.Count, rec);
+                }
 				mIsDrag = false;
 				break;
             case EditMode.TIN:
-                rec.SetTin(mBeginPos, mEndPos);
-                mList.Add(mList.Count, rec);
+                if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+                    rec.SetTin(mBeginPos, mEndPos);
+                    mList.Add(mList.Count, rec);
+                }
                 mIsDrag = false;
                 break;
             case EditMode.LAND:
@@ -427,15 +431,10 @@ namespace UCBeditor {
 				return;
 			}
 
-			mFilePath = filePath;
-			mBeginPos = new Point();
-			mEndPos = new Point();
-			mRect = new Rect();
-
-			tsbCursor.Checked = true;
+            tsbCursor.Checked = true;
 			selectLine(tsbCursor);
 
-			var fs = new FileStream(filePath, FileMode.Open);
+            var fs = new FileStream(filePath, FileMode.Open);
 			var sr = new StreamReader(fs);
 
 			mList.Clear();
@@ -448,9 +447,15 @@ namespace UCBeditor {
 			fs.Close();
 			sr.Dispose();
 			fs.Dispose();
-		}
 
-		private void 上書き保存SToolStripMenuItem_Click(object sender, EventArgs e) {
+            mFilePath = filePath;
+            mBeginPos = new Point();
+            mEndPos = new Point();
+            mRect = new Rect();
+            mIsDrag = false;
+        }
+
+        private void 上書き保存SToolStripMenuItem_Click(object sender, EventArgs e) {
 			var filePath = "";
 
 			if (string.IsNullOrEmpty(mFilePath) || !File.Exists(mFilePath)) {
@@ -963,7 +968,7 @@ namespace UCBeditor {
 					continue;
 				}
 				var filePath = d.Parts;
-				if (tsbReverse.Checked || isOnLine(d, mRect)) {
+				if (tsbReverse.Checked || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
 					filePath = ElementPath + "alpha\\" + filePath;
 				} else {
 					filePath = ElementPath + "solid\\" + filePath;
