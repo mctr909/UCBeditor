@@ -20,12 +20,14 @@ namespace UCBeditor {
 			INVALID,
 			SELECT,
 			WIRE,
+			TIN,
 			PARTS,
 			LAND
 		}
 
 		enum RecordType {
 			WIRE,
+			TIN,
 			PARTS,
 			LAND
 		}
@@ -35,8 +37,7 @@ namespace UCBeditor {
 			BLUE,
 			RED,
 			GREEN,
-			YELLOW,
-			TIN
+			YELLOW
 		}
 
 		struct Record {
@@ -71,18 +72,19 @@ namespace UCBeditor {
                     g.DrawLine(GREEN, Begin, End); break;
                 case WireColor.YELLOW:
                     g.DrawLine(YELLOW, Begin, End); break;
-                case WireColor.TIN:
-					g.FillPie(TIN_W.Brush, Begin.X - 4, Begin.Y - 4, 8, 8, 0, 360);
-                    g.FillPie(TIN_W.Brush, End.X - 4, End.Y - 4, 8, 8, 0, 360);
-                    g.DrawLine(TIN_W, Begin, End);
-                    g.DrawLine(TIN_N, Begin, End);
-                    break;
                 default:
                     g.DrawLine(Pens.Purple, Begin, End); break;
                 }
             }
 
-			public void DrawLand(Graphics g, bool reverse) {
+			public void DrawTin(Graphics g) {
+				g.FillPie(TIN_W.Brush, Begin.X - 4, Begin.Y - 4, 8, 8, 0, 360);
+				g.FillPie(TIN_W.Brush, End.X - 4, End.Y - 4, 8, 8, 0, 360);
+				g.DrawLine(TIN_W, Begin, End);
+				g.DrawLine(TIN_N, Begin, End);
+			}
+
+            public void DrawLand(Graphics g, bool reverse) {
                 DrawLand(g, Begin, reverse);
             }
 
@@ -110,7 +112,13 @@ namespace UCBeditor {
 						(WireColor)Enum.Parse(typeof(WireColor), cols[5])
 					);
 					break;
-				case "LAND":
+                case "TIN":
+                    SetTin(
+                        new Point(int.Parse(cols[1]), int.Parse(cols[2])),
+                        new Point(int.Parse(cols[3]), int.Parse(cols[4]))
+                    );
+                    break;
+                case "LAND":
 					SetLand(new Point(int.Parse(cols[1]), int.Parse(cols[2])));
 					break;
 				case "PARTS":
@@ -137,7 +145,17 @@ namespace UCBeditor {
 						mWireColor
 					);
 					break;
-				case RecordType.LAND:
+                case RecordType.TIN:
+                    sw.WriteLine(
+                        "{0}\t{1}\t{2}\t{3}\t{4}",
+                        Type,
+                        Begin.X,
+                        Begin.Y,
+                        End.X,
+                        End.Y
+                    );
+                    break;
+                case RecordType.LAND:
 					sw.WriteLine(
 						"{0}\t{1}\t{2}",
 						Type,
@@ -167,7 +185,13 @@ namespace UCBeditor {
 				mWireColor = color;
 			}
 
-			public void SetLand(Point pos) {
+            public void SetTin(Point begin, Point end) {
+                Type = RecordType.TIN;
+                Begin = begin;
+                End = end;
+            }
+
+            public void SetLand(Point pos) {
 				Type = RecordType.LAND;
 				Begin = pos;
 				End = pos;
@@ -313,7 +337,8 @@ namespace UCBeditor {
 				switch (mEditMode) {
 				case EditMode.SELECT:
 				case EditMode.WIRE:
-					mRect = new Rect();
+				case EditMode.TIN:
+                    mRect = new Rect();
 					mIsDrag = true;
 					break;
 				}
@@ -356,7 +381,12 @@ namespace UCBeditor {
 				mList.Add(mList.Count, rec);
 				mIsDrag = false;
 				break;
-			case EditMode.LAND:
+            case EditMode.TIN:
+                rec.SetTin(mBeginPos, mEndPos);
+                mList.Add(mList.Count, rec);
+                mIsDrag = false;
+                break;
+            case EditMode.LAND:
 				rec.SetLand(mEndPos);
 				mList.Add(mList.Count, rec);
 				break;
@@ -667,8 +697,7 @@ namespace UCBeditor {
 				mWireColor = WireColor.YELLOW;
 			}
             if (tsbWireTin.Checked) {
-                mEditMode = EditMode.WIRE;
-                mWireColor = WireColor.TIN;
+                mEditMode = EditMode.TIN;
             }
 
             mSelectedPartsPath = "";
@@ -879,7 +908,19 @@ namespace UCBeditor {
 		}
 
 		private void drawList(Graphics g) {
-			foreach (var d in mList.Values) {
+            if (!tsbReverse.Checked) {
+                foreach (var d in mList.Values) {
+                    if (RecordType.TIN != d.Type) {
+                        continue;
+                    }
+                    if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+                        g.DrawLine(HoverColor, d.Begin, d.End);
+                    } else {
+                        d.DrawTin(g);
+                    }
+                }
+            }
+            foreach (var d in mList.Values) {
 				if (RecordType.WIRE != d.Type) {
 					continue;
 				}
@@ -889,7 +930,20 @@ namespace UCBeditor {
 					d.DrawWire(g);
 				}
 			}
-			foreach (var d in mList.Values) {
+			if (tsbReverse.Checked) {
+				foreach (var d in mList.Values) {
+					if (RecordType.TIN != d.Type) {
+						continue;
+					}
+                    if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+                        g.DrawLine(HoverColor, d.Begin, d.End);
+                    } else {
+                        d.DrawTin(g);
+                    }
+                }
+			}
+
+            foreach (var d in mList.Values) {
 				if (RecordType.LAND != d.Type) {
 					continue;
 				}
@@ -972,7 +1026,8 @@ namespace UCBeditor {
 				break;
 
 			case EditMode.WIRE:
-				if (mIsDrag) {
+            case EditMode.TIN:
+                if (mIsDrag) {
 					g.DrawLine(DragColor, mBeginPos, mEndPos);
 				}
 				break;
