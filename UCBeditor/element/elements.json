@@ -39,11 +39,11 @@
 	"items": [
 		{
 			"name" : "USC(SOD-323)",
-			"terminal" : [ [0,0], [1,1] ],
+			"terminal" : [ [8,0], [8,16] ],
 			"smd" : true
 		}, {
 			"name" : "LED(1608)",
-			"terminal" : [ [0,0], [1,1] ],
+			"terminal" : [ [8,0], [8,16] ],
 			"smd" : true
 		}
 	]
