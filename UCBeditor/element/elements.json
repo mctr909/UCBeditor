@@ -1,0 +1,110 @@
+[{
+	"group" : "R",
+	"items" : [
+		{
+			"name" : "1608",
+			"terminal" : [ [0,0], [1,1] ],
+			"smd" : true
+		}, {
+			"name" : "axial-carbon",
+			"terminal" : [ [0,0], [1,1] ]
+		}, {
+			"name" : "VR",
+			"terminal" : [ [0,0], [1,1] ]
+		}
+	]
+}, {
+	"group" : "C",
+	"items" : [
+		{
+			"name" : "1608",
+			"terminal" : [ [0,0], [1,1] ],
+			"smd" : true
+		}, {
+			"name" : "radial-ceramic1",
+			"terminal" : [ [0,0], [1,1] ]
+		}, {
+			"name" : "radial-ceramic2",
+			"terminal" : [ [0,0], [1,1] ]
+		}, {
+			"name" : "radial-film2",
+			"terminal" : [ [0,0], [1,1] ]
+		}, {
+			"name" : "radial-film2w",
+			"terminal" : [ [0,0], [1,1] ]
+		}
+	]
+}, {
+	"group": "D",
+	"items": [
+		{
+			"name" : "USC(SOD-323)",
+			"terminal" : [ [0,0], [1,1] ],
+			"smd" : true
+		}, {
+			"name" : "LED(1608)",
+			"terminal" : [ [0,0], [1,1] ],
+			"smd" : true
+		}
+	]
+}, {
+	"group" : "Tr",
+	"items" : [
+		{
+			"name" : "SOT-23",
+			"terminal" : [ [0,0], [1,1], [2,2] ],
+			"smd" : true
+		}, {
+			"name" : "DPAK(TO-252)",
+			"terminal" : [ [0,0], [1,1], [2,2] ],
+			"smd" : true
+		}, {
+			"name" : "TO-92",
+			"terminal" : [ [0,0], [1,1], [2,2] ]
+		}, {
+			"name" : "TO-220",
+			"terminal" : [ [0,0], [1,1], [2,2] ]
+		}
+	]
+}, {
+	"group" : "IC",
+	"items" : [
+		{
+			"name" : "SOT-23-3",
+			"terminal" : [
+				[0,0],
+				[1,1],
+				[2,2]
+			],
+			"smd" : true
+		}, {
+			"name" : "SOT-23-5",
+			"terminal" : [
+				[0,0],
+				[1,1],
+				[2,2],
+				[3,3],
+				[4,4]
+			],
+			"smd" : true
+		}, {
+			"name" : "SOT-23-6",
+			"terminal" : [
+				[0,0],
+				[1,1],
+				[2,2],
+				[3,3],
+				[4,4],
+				[5,5]
+			],
+			"smd" : true
+		}, {
+			"name" : "DIP8",
+			"terminal" : [
+				[0,0], [1,1], [2,2], [3,3],
+				[4,4], [5,5], [6,6], [7,7]
+			]
+		}
+	]
+}
+]
