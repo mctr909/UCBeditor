@@ -28,10 +28,19 @@
 			"terminal" : [ [0,0], [1,1] ]
 		}, {
 			"name" : "radial-film2",
-			"terminal" : [ [0,0], [1,1] ]
+			"terminal" : [ [21,5], [21,37] ]
 		}, {
 			"name" : "radial-film2w",
-			"terminal" : [ [0,0], [1,1] ]
+			"terminal" : [ [22,6], [22,38] ]
+		}, {
+			"name" : "radial-chemical-D5mm",
+			"terminal" : [ [1,1], [1,1] ]
+		}, {
+			"name" : "radial-chemical-D6.3mm",
+			"terminal" : [ [1,1], [1,1] ]
+		}, {
+			"name" : "radial-chemical-D8mm",
+			"terminal" : [ [1,1], [1,1] ]
 		}
 	]
 }, {
@@ -42,13 +51,23 @@
 			"terminal" : [ [8,0], [8,16] ],
 			"smd" : true
 		}, {
+			"name" : "DPAK(TO-252-2)",
+			"terminal" : [ [0,0], [1,1] ],
+			"smd" : true
+		}, {
 			"name" : "LED(1608)",
 			"terminal" : [ [8,0], [8,16] ],
 			"smd" : true
+		}, {
+			"name" : "DO-41",
+			"terminal" : [ [1,1], [1,1] ]
+		}, {
+			"name" : "TO-220-2",
+			"terminal" : [ [29,13], [29,45] ]
 		}
 	]
 }, {
-	"group" : "Tr",
+	"group" : "TR",
 	"items" : [
 		{
 			"name" : "SOT-23",
