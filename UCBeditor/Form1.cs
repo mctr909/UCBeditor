@@ -208,13 +208,14 @@ namespace UCBeditor {
 			}
 		}
 
-        class PartsInfo {
+		class PartsInfo {
 			public string Group;
-            public string Name;
-            public bool IsSMD;
+			public string Name;
+			public bool IsSMD;
 			public bool Enable;
+			public double Height;
 			public Point Offset;
-            public int Size;
+			public int Size;
 			public List<Point> Terminals = new List<Point>();
 		}
 
@@ -252,6 +253,7 @@ namespace UCBeditor {
 			picBoard.Width = mCurGridWidth * 80;
 			picBoard.Height = mCurGridWidth * 80;
 
+			loadPartsXML(ElementPath + "elements.xml");
 			setPartsList();
 			selectLine(tsbCursor);
 
@@ -507,15 +509,15 @@ namespace UCBeditor {
 				var rec = mList[d];
 				if (isOnLine(rec, mRect)) {
 					mClipBoard.Add(mClipBoard.Count, rec);
-					var item = mPartsList[rec.PartsGroup][rec.PartsName];
-					var begin = new Point(
-						rec.Begin.X - item.Size,
-						rec.Begin.Y - item.Size
-					);
-					var end = new Point(
-						rec.End.X - item.Size,
-						rec.End.Y - item.Size
-					);
+					int size;
+					if (rec.Type == RecordType.PARTS) {
+						var item = mPartsList[rec.PartsGroup][rec.PartsName];
+						size = item.Size;
+					} else {
+						size = 0;
+					}
+					var begin = new Point(rec.Begin.X - size, rec.Begin.Y - size);
+					var end = new Point(rec.End.X - size, rec.End.Y - size);
 					if (begin.X < min.X) {
 						min.X = begin.X;
 					}
@@ -719,13 +721,12 @@ namespace UCBeditor {
 
 		private void selectPartsList() {
 			mRect = new Rect();
-
 			foreach (var ctrl in pnlParts.Controls) {
 				if (ctrl.GetType().Name == "Panel") {
 					var panel = (Panel)ctrl;
 					if (panel.Name == mSelectedParts.Name) {
 						panel.BackColor = SystemColors.ButtonShadow;
-						panel.BorderStyle = BorderStyle.Fixed3D;
+						panel.BorderStyle = BorderStyle.FixedSingle;
 						mIsDrag = false;
 						mEditMode = EditMode.PARTS;
 					} else {
@@ -733,144 +734,6 @@ namespace UCBeditor {
 						panel.BorderStyle = BorderStyle.None;
 					}
 				}
-			}
-		}
-
-		private void drawToolPanel(Dictionary<string, PartsInfo> items) {
-			var curTop = 0;
-			pnlParts.Controls.Clear();
-
-			foreach (var item in items.Values) {
-				if (!item.Enable) {
-					continue;
-				}
-
-				var picture = new PictureBox();
-				var bmp = new Bitmap(ElementPath + "solid\\" + item.Group + "\\" + item.Name + ".png");
-
-				picture.Image = bmp;
-				picture.Top = 2;
-				picture.Left = 2;
-				picture.Width = bmp.Width;
-				picture.Height = bmp.Height;
-
-				var lbl = new Label();
-				lbl.Text = item.Name;
-				lbl.Height = 16;
-				lbl.Top = curTop;
-				lbl.Left = 8;
-
-				var panel = new Panel();
-				panel.Name = lbl.Text;
-				panel.Controls.Add(picture);
-				panel.BackColor = SystemColors.ButtonFace;
-				panel.Width = bmp.Width + 8;
-				panel.Height = bmp.Height + 8;
-				panel.Left = 8;
-				panel.Top = curTop + 12;
-
-				picture.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => {
-					mSelectedParts = item;
-					selectPartsList();
-				});
-
-				pnlParts.Controls.Add(panel);
-				pnlParts.Controls.Add(lbl);
-
-				curTop += panel.Height + 8 + 18;
-			}
-		}
-
-		private void setPartsList() {
-			var xml = XmlReader.Create(ElementPath + "elements.xml");
-			var currentGroup = ""; 
-			var currentParts = new PartsInfo();
-            while (xml.Read()) {
-				switch (xml.NodeType) {
-				case XmlNodeType.Element:
-					switch (xml.Name) {
-					case "group":
-                        currentGroup = xml.GetAttribute("name").ToUpper();
-						break;
-					case "item":
-                        currentParts = new PartsInfo();
-						currentParts.Group = currentGroup;
-                        currentParts.Name = xml.GetAttribute("name");
-                        currentParts.IsSMD = xml.GetAttribute("type") == "smd";
-						break;
-					case "offset":
-						currentParts.Offset = new Point(
-							int.Parse(xml.GetAttribute("x")),
-                            int.Parse(xml.GetAttribute("y"))
-						);
-                        break;
-					case "terminal":
-                        currentParts.Terminals.Add(new Point(
-							int.Parse(xml.GetAttribute("x")),
-							int.Parse(xml.GetAttribute("y")))
-						);
-						break;
-					default:
-						break;
-					}
-					break;
-				case XmlNodeType.EndElement:
-					switch (xml.Name) {
-					case "item":
-						if (!mPartsList.ContainsKey(currentGroup)) {
-                            mPartsList.Add(currentGroup, new Dictionary<string, PartsInfo>());
-                        }
-                        mPartsList[currentGroup].Add(currentParts.Name, currentParts);
-						break;
-					}
-					break;
-				default:
-					break;
-				}
-			}
-			foreach (var group in mPartsList) {
-				var groupIcon = ElementPath + "group\\" + group.Key + ".png";
-				if (!File.Exists(groupIcon)) {
-					continue;
-				}
-				var solidDir = ElementPath + "solid\\" + group.Key;
-				var alphaDir = ElementPath + "alpha\\" + group.Key;
-				foreach (var item in group.Value) {
-					var solidPath = solidDir + "\\" + item.Key + ".png";
-					if (!File.Exists(solidPath)) {
-						continue;
-					}
-					var alphaPath = alphaDir + "\\" + item.Key + ".png";
-					if (!File.Exists(alphaPath)) {
-						continue;
-					}
-					var solid = new Bitmap(solidPath);
-					var alpha = new Bitmap(alphaPath);
-					if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
-						continue;
-					}
-					if (solid.Width != solid.Height) {
-						continue;
-					}
-					item.Value.Enable = true;
-					item.Value.Size = solid.Width / 2;
-                }
-			}
-			foreach (var group in mPartsList) {
-				var tsb = new ToolStripButton();
-                tsb.Name = group.Key;
-                tsb.Image = new Bitmap(ElementPath + "group\\" + group.Key + ".png");
-				tsb.Click += new EventHandler((object sender, EventArgs e) => {
-					for (var j = 0; j < tsParts.Items.Count; ++j) {
-						if ("ToolStripButton" == tsParts.Items[j].GetType().Name) {
-							var item = (ToolStripButton)tsParts.Items[j];
-							item.Checked = false;
-						}
-					}
-					tsb.Checked = true;
-					drawToolPanel(group.Value);
-                });
-				tsParts.Items.Add(tsb);
 			}
 		}
 
@@ -898,15 +761,19 @@ namespace UCBeditor {
         }
 
 		private void saveFile(string filePath) {
-			var fs = new FileStream(filePath, FileMode.Create);
-			var sw = new StreamWriter(fs);
-			foreach (var rec in mList.Values) {
-				rec.Write(sw);
+			try {
+				var fs = new FileStream(filePath, FileMode.Create);
+				var sw = new StreamWriter(fs);
+				foreach (var rec in mList.Values) {
+					rec.Write(sw);
+				}
+				sw.Close();
+				fs.Close();
+				sw.Dispose();
+				fs.Dispose();
+			} catch (Exception ex) {
+				MessageBox.Show(ex.ToString());
 			}
-			sw.Close();
-			fs.Close();
-			sw.Dispose();
-			fs.Dispose();
 		}
 
 		private Point nearPointOnLine(Record record, Point point) {
@@ -974,16 +841,16 @@ namespace UCBeditor {
 				}
 			}
 
-            foreach (var d in mList.Values) {
+			foreach (var d in mList.Values) {
 				if (RecordType.LAND != d.Type) {
 					continue;
 				}
 				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-                    var x1 = d.Begin.X - 4;
-                    var y1 = d.Begin.Y - 4;
-                    var x2 = d.Begin.X - 2;
-                    var y2 = d.Begin.Y - 2;
-                    g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
+					var x1 = d.Begin.X - 4;
+					var y1 = d.Begin.Y - 4;
+					var x2 = d.Begin.X - 2;
+					var y2 = d.Begin.Y - 2;
+					g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
 					g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
 				} else {
 					d.DrawLand(g, false);
@@ -993,9 +860,12 @@ namespace UCBeditor {
 				if (RecordType.PARTS != d.Type) {
 					continue;
 				}
+				if (!mPartsList.ContainsKey(d.PartsGroup) || !mPartsList[d.PartsGroup].ContainsKey(d.PartsName)) {
+					continue;
+				}
 				var item = mPartsList[d.PartsGroup][d.PartsName];
-                string filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
-                if (tsbAlpha.Checked || item.IsSMD || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+				var filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
+				if (tsbAlpha.Checked || item.IsSMD || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
 					filePath = ElementPath + "alpha\\" + filePath;
 				} else {
 					filePath = ElementPath + "solid\\" + filePath;
@@ -1091,6 +961,145 @@ namespace UCBeditor {
 					mEndPos.Y - mSelectedParts.Size
                 ));
 				break;
+			}
+		}
+
+		void loadPartsXML(string xmlPath) {
+			mPartsList.Clear();
+			if (!File.Exists(xmlPath)) {
+				return;
+			}
+			var xml = XmlReader.Create(xmlPath);
+			var currentGroup = "";
+			var currentParts = new PartsInfo();
+			while (xml.Read()) {
+				switch (xml.NodeType) {
+				case XmlNodeType.Element:
+					switch (xml.Name) {
+					case "group":
+						currentGroup = xml.GetAttribute("name").ToUpper();
+						break;
+					case "item":
+						currentParts = new PartsInfo();
+						currentParts.Group = currentGroup;
+						currentParts.Name = xml.GetAttribute("name");
+						currentParts.IsSMD = xml.GetAttribute("type") == "smd";
+						currentParts.Height = double.Parse(xml.GetAttribute("height"));
+						break;
+					case "offset":
+						currentParts.Offset = new Point(
+							int.Parse(xml.GetAttribute("x")),
+							int.Parse(xml.GetAttribute("y"))
+						);
+						break;
+					case "terminal":
+						currentParts.Terminals.Add(new Point(
+							int.Parse(xml.GetAttribute("x")),
+							int.Parse(xml.GetAttribute("y")))
+						);
+						break;
+					default:
+						break;
+					}
+					break;
+				case XmlNodeType.EndElement:
+					switch (xml.Name) {
+					case "item":
+						if (!mPartsList.ContainsKey(currentGroup)) {
+							mPartsList.Add(currentGroup, new Dictionary<string, PartsInfo>());
+						}
+						mPartsList[currentGroup].Add(currentParts.Name, currentParts);
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		void setPartsList() {
+			foreach (var group in mPartsList) {
+				var groupIcon = ElementPath + "group\\" + group.Key + ".png";
+				if (!File.Exists(groupIcon)) {
+					continue;
+				}
+				var solidDir = ElementPath + "solid\\" + group.Key;
+				var alphaDir = ElementPath + "alpha\\" + group.Key;
+				foreach (var item in group.Value) {
+					var solidPath = solidDir + "\\" + item.Key + ".png";
+					if (!File.Exists(solidPath)) {
+						continue;
+					}
+					var alphaPath = alphaDir + "\\" + item.Key + ".png";
+					if (!File.Exists(alphaPath)) {
+						continue;
+					}
+					var solid = new Bitmap(solidPath);
+					var alpha = new Bitmap(alphaPath);
+					if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
+						continue;
+					}
+					if (solid.Width != solid.Height) {
+						continue;
+					}
+					item.Value.Enable = true;
+					item.Value.Size = solid.Width / 2;
+				}
+			}
+			foreach (var group in mPartsList) {
+				var tsb = new ToolStripButton();
+				tsb.Name = group.Key;
+				tsb.Image = new Bitmap(ElementPath + "group\\" + group.Key + ".png");
+				tsb.Click += new EventHandler((object sender, EventArgs e) => {
+					for (var j = 0; j < tsParts.Items.Count; ++j) {
+						if (tsParts.Items[j] is ToolStripButton) {
+							var item = (ToolStripButton)tsParts.Items[j];
+							item.Checked = false;
+						}
+					}
+					tsb.Checked = true;
+					var currentY = 0;
+					pnlParts.Controls.Clear();
+					foreach (var parts in group.Value.Values) {
+						if (!parts.Enable) {
+							continue;
+						}
+
+						var label = new Label();
+						label.Text = parts.Name;
+						label.TextAlign = ContentAlignment.BottomLeft;
+						label.Height = 16;
+						label.Top = currentY;
+						label.Left = 8;
+						pnlParts.Controls.Add(label);
+
+						var bmp = new Bitmap(ElementPath + "solid\\" + parts.Group + "\\" + parts.Name + ".png");
+						var picture = new PictureBox();
+						picture.Image = bmp;
+						picture.Top = 2;
+						picture.Left = 2;
+						picture.Width = bmp.Width;
+						picture.Height = bmp.Height;
+						picture.MouseDown += new MouseEventHandler((s, ev) => {
+							mSelectedParts = parts;
+							selectPartsList();
+						});
+
+						var panel = new Panel();
+						panel.Name = parts.Name;
+						panel.Controls.Add(picture);
+						panel.BackColor = SystemColors.ButtonFace;
+						panel.Width = picture.Width + 6;
+						panel.Height = picture.Height + 6;
+						panel.Left = 8;
+						panel.Top = currentY + label.Height;
+						pnlParts.Controls.Add(panel);
+
+						currentY += panel.Height + label.Height + 6;
+					}
+				});
+				tsParts.Items.Add(tsb);
 			}
 		}
 	}

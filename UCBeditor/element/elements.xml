@@ -1,110 +1,110 @@
 <elements>
 	<group name="R">
-		<item name="1608" type="smd">
+		<item name="1608" height="1" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
-		<item name="axial-carbon">
+		<item name="axial-carbon" height="3">
 			<terminal x="32" y="0"/>
 			<terminal x="32" y="64"/>
 		</item>
-		<item name="VR">
+		<item name="VR" height="5">
 			<terminal x="5" y="5"/>
 			<terminal x="5" y="37"/>
 			<terminal x="37" y="21"/>
 		</item>
 	</group>
 	<group name="C">
-		<item name="1608" type="smd">
+		<item name="1608" height="1" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
-		<item name="radial-ceramic1">
+		<item name="radial-ceramic1" height="10" >
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
-		<item name="radial-ceramic2">
+		<item name="radial-ceramic2" height="10">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
-		<item name="radial-film2">
+		<item name="radial-film2" height="10">
 			<terminal x="21" y="5"/>
 			<terminal x="21" y="37"/>
 		</item>
-		<item name="radial-film2w">
-			<terminal x="22" y="6"/>
-			<terminal x="22" y="38"/>
+		<item name="radial-film2w" height="10">
+			<terminal x="24" y="8"/>
+			<terminal x="24" y="40"/>
 		</item>
-		<item name="radial-chemical-D5mm">
+		<item name="radial-chemical-D5mm" height="15">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
-		<item name="radial-chemical-D6.3mm">
+		<item name="radial-chemical-D6.3mm" height="15">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
-		<item name="radial-chemical-D8mm">
+		<item name="radial-chemical-D8mm" height="15">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
 	</group>
 	<group name="D">
-		<item name="USC(SOD-323)" type="smd">
+		<item name="USC(SOD-323)" height="2" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
-		<item name="DPAK(TO-252-2)" type="smd">
+		<item name="DPAK(TO-252-2)" height="5" type="smd">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
-		<item name="LED(1608)" type="smd">
+		<item name="LED(1608)" height="1" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
-		<item name="DO-41">
+		<item name="DO-41" height="5">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
-		<item name="TO-220-2">
+		<item name="TO-220-2" height="15" >
 			<terminal x="29" y="13"/>
 			<terminal x="29" y="45"/>
 		</item>
 	</group>
 	<group name="TR">
-		<item name="SOT-23" type="smd">
+		<item name="SOT-23" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="3" y="3"/>
 			<terminal x="19" y="19"/>
 			<terminal x="19" y="3"/>
 		</item>
-		<item name="DPAK(TO-252)" type="smd">
+		<item name="DPAK(TO-252)" height="5" type="smd">
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 			<terminal x="3" y="3"/>
 		</item>
-		<item name="TO-92">
+		<item name="TO-92" height="15">
 			<terminal x="17" y="33"/>
 			<terminal x="17" y="17"/>
 			<terminal x="17" y="1"/>
 		</item>
-		<item name="TO-220">
+		<item name="TO-220" height="15">
 			<terminal x="29" y="13"/>
 			<terminal x="29" y="29"/>
 			<terminal x="29" y="45"/>
 		</item>
 	</group>
 	<group name="IC">
-		<item name="SOT-23-3" type="smd">
+		<item name="SOT-23-3" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="3" y="3"/>
 			<terminal x="19" y="19"/>
 			<terminal x="19" y="3"/>
 		</item>
-		<item name="SOT-23-5" type="smd">
+		<item name="SOT-23-5" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="1" y="1"/>
 			<terminal x="1" y="9"/>
@@ -112,7 +112,7 @@
 			<terminal x="17" y="17"/>
 			<terminal x="17" y="1"/>
 		</item>
-		<item name="SOT-23-6" type="smd">
+		<item name="SOT-23-6" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="1" y="1"/>
 			<terminal x="1" y="9"/>
@@ -121,7 +121,7 @@
 			<terminal x="17" y="9"/>
 			<terminal x="17" y="1"/>
 		</item>
-		<item name="DIP8">
+		<item name="DIP8" height="5">
 			<offset x="8" y="8"/>
 			<terminal x="4" y="4"/>
 			<terminal x="4" y="20"/>
