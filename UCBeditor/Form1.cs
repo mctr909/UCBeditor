@@ -56,8 +56,6 @@ namespace UCBeditor {
 			public Point Begin;
 			public Point End;
 
-            public Point Offset;
-            public int Size;
             public RotateFlipType Rotate;
 			public string PartsGroup;
             public string PartsName;
@@ -135,10 +133,8 @@ namespace UCBeditor {
 				case "PARTS":
 					SetParts(
 						new Point(int.Parse(cols[1]), int.Parse(cols[2])),
-                        new Point(int.Parse(cols[3]), int.Parse(cols[4])),
-                        int.Parse(cols[5]),
-                        (RotateFlipType)int.Parse(cols[6]),
-						cols[7], cols[8]
+                        (RotateFlipType)int.Parse(cols[3]),
+						cols[4], cols[5]
                     );
 					break;
 				}
@@ -172,11 +168,9 @@ namespace UCBeditor {
 					break;
 				case RecordType.PARTS:
 					sw.WriteLine(
-                        "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}",
+                        "{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
 						Type,
 						Begin.X, Begin.Y,
-                        Offset.X, Offset.Y,
-                        Size,
 						(int)Rotate,
 						PartsGroup,
                         PartsName
@@ -204,12 +198,10 @@ namespace UCBeditor {
 				End = pos;
 			}
 
-			public void SetParts(Point pos, Point ofs, int size, RotateFlipType rot, string group, string name) {
+			public void SetParts(Point pos, RotateFlipType rot, string group, string name) {
 				Type = RecordType.PARTS;
 				Begin = pos;
 				End = pos;
-				Offset = ofs;
-				Size = size;
 				Rotate = rot;
 				PartsGroup = group;
                 PartsName = name;
@@ -409,8 +401,7 @@ namespace UCBeditor {
 				break;
 			case EditMode.PARTS:
 				rec.SetParts(
-					mEndPos, mSelectedParts.Offset,
-					mSelectedParts.Size, mCurRotate,
+					mEndPos, mCurRotate,
 					mSelectedParts.Group, mSelectedParts.Name
 				);
 				mList.Add(mList.Count, rec);
@@ -513,16 +504,17 @@ namespace UCBeditor {
 			var temp = new Dictionary<int, Record>();
 			var min = new Point(int.MaxValue, int.MaxValue);
 			for (var d = 0; d < mList.Count; ++d) {
-				if (isOnLine(mList[d], mRect)) {
-					mClipBoard.Add(mClipBoard.Count, mList[d]);
-
+				var rec = mList[d];
+				if (isOnLine(rec, mRect)) {
+					mClipBoard.Add(mClipBoard.Count, rec);
+					var item = mPartsList[rec.PartsGroup][rec.PartsName];
 					var begin = new Point(
-						mList[d].Begin.X - mList[d].Size,
-						mList[d].Begin.Y - mList[d].Size
+						rec.Begin.X - item.Size,
+						rec.Begin.Y - item.Size
 					);
 					var end = new Point(
-						mList[d].End.X - mList[d].Size,
-						mList[d].End.Y - mList[d].Size
+						rec.End.X - item.Size,
+						rec.End.Y - item.Size
 					);
 					if (begin.X < min.X) {
 						min.X = begin.X;
@@ -537,7 +529,7 @@ namespace UCBeditor {
 						min.Y = end.Y;
 					}
 				} else {
-					temp.Add(temp.Count, mList[d]);
+					temp.Add(temp.Count, rec);
 				}
 			}
 
@@ -558,16 +550,17 @@ namespace UCBeditor {
 			var min = new Point(int.MaxValue, int.MaxValue);
 
 			for (var d = 0; d < mList.Count; ++d) {
-				if (isOnLine(mList[d], mRect)) {
-					mClipBoard.Add(mClipBoard.Count, mList[d]);
-
-					var begin = new Point(
-						mList[d].Begin.X - mList[d].Size,
-						mList[d].Begin.Y - mList[d].Size
+                var rec = mList[d];
+                if (isOnLine(rec, mRect)) {
+					mClipBoard.Add(mClipBoard.Count, rec);
+                    var item = mPartsList[rec.PartsGroup][rec.PartsName];
+                    var begin = new Point(
+                        rec.Begin.X - item.Size,
+                        rec.Begin.Y - item.Size
 					);
 					var end = new Point(
-						mList[d].End.X - mList[d].Size,
-						mList[d].End.Y - mList[d].Size
+                        rec.End.X - item.Size,
+                        rec.End.Y - item.Size
 					);
 					if (begin.X < min.X) {
 						min.X = begin.X;
@@ -1023,7 +1016,7 @@ namespace UCBeditor {
 				}
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(d.Rotate);
-				g.DrawImage(temp, new Point(d.Begin.X - d.Size, d.Begin.Y - d.Size));
+				g.DrawImage(temp, new Point(d.Begin.X - item.Size, d.Begin.Y - item.Size));
 			}
 		}
 
@@ -1059,7 +1052,8 @@ namespace UCBeditor {
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(d.Rotate);
-					g.DrawImage(temp, new Point(b.X - d.Size, b.Y - d.Size));
+                    var item = mPartsList[d.PartsGroup][d.PartsName];
+                    g.DrawImage(temp, new Point(b.X - item.Size, b.Y - item.Size));
 				}
 			}
 		}
