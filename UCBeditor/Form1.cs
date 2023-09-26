@@ -49,15 +49,18 @@ namespace UCBeditor {
 			static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 			static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
             static readonly Pen TIN_W = new Pen(Color.FromArgb(111, 111, 111), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-            static readonly Pen TIN_N = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { DashPattern = new float[] { 1, 1 } };
+            static readonly Pen TIN_H = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            static readonly Pen TIN_N = new Pen(Color.FromArgb(211, 211, 211), 1.0f) { DashPattern = new float[] { 1, 1 } };
 
             public RecordType Type;
 			public Point Begin;
 			public Point End;
-			public int Offset;
 
-			public RotateFlipType Rotate;
-			public string Parts;
+            public Point Offset;
+            public int Size;
+            public RotateFlipType Rotate;
+			public string PartsGroup;
+            public string PartsName;
 
 			WireColor mWireColor;
 
@@ -78,11 +81,18 @@ namespace UCBeditor {
                 }
             }
 
-			public void DrawTin(Graphics g) {
-				g.FillPie(TIN_W.Brush, Begin.X - 4, Begin.Y - 4, 8, 8, 0, 360);
-				g.FillPie(TIN_W.Brush, End.X - 4, End.Y - 4, 8, 8, 0, 360);
-				g.DrawLine(TIN_W, Begin, End);
-				g.DrawLine(TIN_N, Begin, End);
+			public void DrawTin(Graphics g, bool reverse) {
+				if (reverse) {
+					g.FillPie(TIN_W.Brush, Begin.X - 4, Begin.Y - 4, 8, 8, 0, 360);
+					g.FillPie(TIN_W.Brush, End.X - 4, End.Y - 4, 8, 8, 0, 360);
+					g.DrawLine(TIN_W, Begin, End);
+					g.DrawLine(TIN_N, Begin, End);
+				} else {
+                    g.FillPie(TIN_H.Brush, Begin.X - 4, Begin.Y - 4, 8, 8, 0, 360);
+                    g.FillPie(TIN_H.Brush, End.X - 4, End.Y - 4, 8, 8, 0, 360);
+                    g.DrawLine(TIN_H, Begin, End);
+                    g.DrawLine(TIN_N, Begin, End);
+                }
 			}
 
             public void DrawLand(Graphics g, bool reverse) {
@@ -125,10 +135,11 @@ namespace UCBeditor {
 				case "PARTS":
 					SetParts(
 						new Point(int.Parse(cols[1]), int.Parse(cols[2])),
-						int.Parse(cols[3]),
-						(RotateFlipType)int.Parse(cols[4]),
-						cols[6]
-					);
+                        new Point(int.Parse(cols[3]), int.Parse(cols[4])),
+                        int.Parse(cols[5]),
+                        (RotateFlipType)int.Parse(cols[6]),
+						cols[7], cols[8]
+                    );
 					break;
 				}
 			}
@@ -139,10 +150,8 @@ namespace UCBeditor {
 					sw.WriteLine(
 						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
 						Type,
-						Begin.X,
-						Begin.Y,
-						End.X,
-						End.Y,
+						Begin.X, Begin.Y,
+						End.X, End.Y,
 						mWireColor
 					);
 					break;
@@ -150,30 +159,28 @@ namespace UCBeditor {
                     sw.WriteLine(
                         "{0}\t{1}\t{2}\t{3}\t{4}",
                         Type,
-                        Begin.X,
-                        Begin.Y,
-                        End.X,
-                        End.Y
+                        Begin.X, Begin.Y,
+                        End.X, End.Y
                     );
                     break;
                 case RecordType.LAND:
 					sw.WriteLine(
 						"{0}\t{1}\t{2}",
 						Type,
-						Begin.X,
-						Begin.Y
+						Begin.X, Begin.Y
 					);
 					break;
 				case RecordType.PARTS:
 					sw.WriteLine(
-						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+                        "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}",
 						Type,
-						Begin.X,
-						Begin.Y,
-						Offset,
+						Begin.X, Begin.Y,
+                        Offset.X, Offset.Y,
+                        Size,
 						(int)Rotate,
-						Parts
-					);
+						PartsGroup,
+                        PartsName
+                    );
 					break;
 				}
 			}
@@ -197,13 +204,15 @@ namespace UCBeditor {
 				End = pos;
 			}
 
-			public void SetParts(Point pos, int ofs, RotateFlipType rot, string path) {
+			public void SetParts(Point pos, Point ofs, int size, RotateFlipType rot, string group, string name) {
 				Type = RecordType.PARTS;
 				Begin = pos;
 				End = pos;
 				Offset = ofs;
+				Size = size;
 				Rotate = rot;
-				Parts = path;
+				PartsGroup = group;
+                PartsName = name;
 			}
 		}
 
@@ -212,7 +221,8 @@ namespace UCBeditor {
             public string Name;
             public bool IsSMD;
 			public bool Enable;
-			public int Offset;
+			public Point Offset;
+            public int Size;
 			public List<Point> Terminals = new List<Point>();
 		}
 
@@ -232,7 +242,7 @@ namespace UCBeditor {
 		Dictionary<int, Record> mClipBoard = new Dictionary<int, Record>();
 		EditMode mEditMode = EditMode.WIRE;
 		WireColor mWireColor = WireColor.BLACK;
-		RotateFlipType mCurRotate = RotateFlipType.Rotate270FlipXY;
+		RotateFlipType mCurRotate = RotateFlipType.RotateNoneFlipNone;
 		int mCurGridWidth = 16;
 
 		bool mIsDrag;
@@ -399,8 +409,9 @@ namespace UCBeditor {
 				break;
 			case EditMode.PARTS:
 				rec.SetParts(
-					mEndPos, mSelectedParts.Offset, mCurRotate,
-					mSelectedParts.Group + "\\" + mSelectedParts.Name
+					mEndPos, mSelectedParts.Offset,
+					mSelectedParts.Size, mCurRotate,
+					mSelectedParts.Group, mSelectedParts.Name
 				);
 				mList.Add(mList.Count, rec);
 				break;
@@ -506,12 +517,12 @@ namespace UCBeditor {
 					mClipBoard.Add(mClipBoard.Count, mList[d]);
 
 					var begin = new Point(
-						mList[d].Begin.X - mList[d].Offset,
-						mList[d].Begin.Y - mList[d].Offset
+						mList[d].Begin.X - mList[d].Size,
+						mList[d].Begin.Y - mList[d].Size
 					);
 					var end = new Point(
-						mList[d].End.X - mList[d].Offset,
-						mList[d].End.Y - mList[d].Offset
+						mList[d].End.X - mList[d].Size,
+						mList[d].End.Y - mList[d].Size
 					);
 					if (begin.X < min.X) {
 						min.X = begin.X;
@@ -551,12 +562,12 @@ namespace UCBeditor {
 					mClipBoard.Add(mClipBoard.Count, mList[d]);
 
 					var begin = new Point(
-						mList[d].Begin.X - mList[d].Offset,
-						mList[d].Begin.Y - mList[d].Offset
+						mList[d].Begin.X - mList[d].Size,
+						mList[d].Begin.Y - mList[d].Size
 					);
 					var end = new Point(
-						mList[d].End.X - mList[d].Offset,
-						mList[d].End.Y - mList[d].Offset
+						mList[d].End.X - mList[d].Size,
+						mList[d].End.Y - mList[d].Size
 					);
 					if (begin.X < min.X) {
 						min.X = begin.X;
@@ -794,6 +805,12 @@ namespace UCBeditor {
                         currentParts.Name = xml.GetAttribute("name");
                         currentParts.IsSMD = xml.GetAttribute("type") == "smd";
 						break;
+					case "offset":
+						currentParts.Offset = new Point(
+							int.Parse(xml.GetAttribute("x")),
+                            int.Parse(xml.GetAttribute("y"))
+						);
+                        break;
 					case "terminal":
                         currentParts.Terminals.Add(new Point(
 							int.Parse(xml.GetAttribute("x")),
@@ -843,7 +860,7 @@ namespace UCBeditor {
 						continue;
 					}
 					item.Value.Enable = true;
-					item.Value.Offset = solid.Width / 2;
+					item.Value.Size = solid.Width / 2;
                 }
 			}
 			foreach (var group in mPartsList) {
@@ -872,8 +889,19 @@ namespace UCBeditor {
 
 		private void setEndPos() {
             mMousePos = picBoard.PointToClient(Cursor.Position);
-            mEndPos.X = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
-            mEndPos.Y = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
+            switch (mCurRotate) {
+            case RotateFlipType.Rotate90FlipNone:
+            case RotateFlipType.Rotate270FlipNone:
+                mEndPos.X = mSelectedParts.Offset.X;
+                mEndPos.Y = mSelectedParts.Offset.Y;
+                break;
+            default:
+                mEndPos.X = mSelectedParts.Offset.Y;
+                mEndPos.Y = mSelectedParts.Offset.X;
+                break;
+            }
+            mEndPos.X += (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+            mEndPos.Y += (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
         }
 
 		private void saveFile(string filePath) {
@@ -940,7 +968,7 @@ namespace UCBeditor {
                     if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
                         g.DrawLine(HoverColor, d.Begin, d.End);
                     } else {
-                        d.DrawTin(g);
+                        d.DrawTin(g, false);
                     }
                 }
             }
@@ -962,7 +990,7 @@ namespace UCBeditor {
                     if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
                         g.DrawLine(HoverColor, d.Begin, d.End);
                     } else {
-                        d.DrawTin(g);
+                        d.DrawTin(g, true);
                     }
                 }
 			}
@@ -986,20 +1014,28 @@ namespace UCBeditor {
 				if (RecordType.PARTS != d.Type) {
 					continue;
 				}
-				var filePath = d.Parts;
-				if (tsbReverse.Checked || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-					filePath = ElementPath + "alpha\\" + filePath + ".png";
+				var item = mPartsList[d.PartsGroup][d.PartsName];
+                string filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
+                if ((item.IsSMD ^ tsbReverse.Checked) || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+					filePath = ElementPath + "alpha\\" + filePath;
 				} else {
-					filePath = ElementPath + "solid\\" + filePath + ".png";
+					filePath = ElementPath + "solid\\" + filePath;
 				}
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(d.Rotate);
-				g.DrawImage(temp, new Point(d.Begin.X - d.Offset, d.Begin.Y - d.Offset));
+				g.DrawImage(temp, new Point(d.Begin.X - d.Size, d.Begin.Y - d.Size));
 			}
 		}
 
 		private void drawClipBoard(Graphics g) {
-			foreach (var d in mClipBoard.Values) {
+            foreach (var d in mClipBoard.Values) {
+                if (RecordType.TIN == d.Type) {
+                    var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
+                    var e = new Point(d.End.X + mEndPos.X, d.End.Y + mEndPos.Y);
+                    g.DrawLine(HoverColor, b, e);
+                }
+            }
+            foreach (var d in mClipBoard.Values) {
 				if (RecordType.WIRE == d.Type) {
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 					var e = new Point(d.End.X + mEndPos.X, d.End.Y + mEndPos.Y);
@@ -1019,11 +1055,11 @@ namespace UCBeditor {
 			}
 			foreach (var d in mClipBoard.Values) {
 				if (RecordType.PARTS == d.Type) {
-					var filePath = ElementPath + "alpha\\" + d.Parts;
+					var filePath = ElementPath + "alpha\\" + d.PartsGroup + "\\" + d.PartsName + ".png";
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(d.Rotate);
-					g.DrawImage(temp, new Point(b.X - d.Offset, b.Y - d.Offset));
+					g.DrawImage(temp, new Point(b.X - d.Size, b.Y - d.Size));
 				}
 			}
 		}
@@ -1071,8 +1107,8 @@ namespace UCBeditor {
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(mCurRotate);
 				g.DrawImage(temp, new Point(
-					mEndPos.X - mSelectedParts.Offset,
-					mEndPos.Y - mSelectedParts.Offset
+					mEndPos.X - mSelectedParts.Size,
+					mEndPos.Y - mSelectedParts.Size
                 ));
 				break;
 			}

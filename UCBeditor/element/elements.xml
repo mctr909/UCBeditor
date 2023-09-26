@@ -1,6 +1,7 @@
 <elements>
 	<group name="R">
 		<item name="1608" type="smd">
+			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
@@ -16,6 +17,7 @@
 	</group>
 	<group name="C">
 		<item name="1608" type="smd">
+			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
@@ -50,6 +52,7 @@
 	</group>
 	<group name="D">
 		<item name="USC(SOD-323)" type="smd">
+			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
@@ -58,6 +61,7 @@
 			<terminal x="2" y="2"/>
 		</item>
 		<item name="LED(1608)" type="smd">
+			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
@@ -72,6 +76,7 @@
 	</group>
 	<group name="TR">
 		<item name="SOT-23" type="smd">
+			<offset x="8" y="8"/>
 			<terminal x="3" y="3"/>
 			<terminal x="19" y="19"/>
 			<terminal x="19" y="3"/>
@@ -94,11 +99,13 @@
 	</group>
 	<group name="IC">
 		<item name="SOT-23-3" type="smd">
+			<offset x="8" y="8"/>
 			<terminal x="3" y="3"/>
 			<terminal x="19" y="19"/>
 			<terminal x="19" y="3"/>
 		</item>
 		<item name="SOT-23-5" type="smd">
+			<offset x="8" y="8"/>
 			<terminal x="1" y="1"/>
 			<terminal x="1" y="9"/>
 			<terminal x="1" y="17"/>
@@ -106,6 +113,7 @@
 			<terminal x="17" y="1"/>
 		</item>
 		<item name="SOT-23-6" type="smd">
+			<offset x="8" y="8"/>
 			<terminal x="1" y="1"/>
 			<terminal x="1" y="9"/>
 			<terminal x="1" y="17"/>
@@ -114,6 +122,7 @@
 			<terminal x="17" y="1"/>
 		</item>
 		<item name="DIP8">
+			<offset x="8" y="8"/>
 			<terminal x="4" y="4"/>
 			<terminal x="4" y="20"/>
 			<terminal x="4" y="36"/>
