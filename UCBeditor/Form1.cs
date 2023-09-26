@@ -106,7 +106,7 @@ namespace UCBeditor {
                     g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
-                    g.FillEllipse(TIN_W.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(TIN_H.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
@@ -312,14 +312,14 @@ namespace UCBeditor {
             selectLine(tsbWireTin);
         }
 
-        private void tsbFront_Click(object sender, EventArgs e) {
-			tsbReverse.Checked = false;
-			tsbFront.Checked = true;
+        private void tsbSolid_Click(object sender, EventArgs e) {
+			tsbAlpha.Checked = false;
+			tsbSolid.Checked = true;
 		}
 
-		private void tsbReverse_Click(object sender, EventArgs e) {
-			tsbFront.Checked = false;
-			tsbReverse.Checked = true;
+		private void tsbAlpha_Click(object sender, EventArgs e) {
+			tsbSolid.Checked = false;
+			tsbAlpha.Checked = true;
 		}
 
 		private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
@@ -953,19 +953,17 @@ namespace UCBeditor {
 		}
 
 		private void drawList(Graphics g) {
-            if (!tsbReverse.Checked) {
-                foreach (var d in mList.Values) {
-                    if (RecordType.TIN != d.Type) {
-                        continue;
-                    }
-                    if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-                        g.DrawLine(HoverColor, d.Begin, d.End);
-                    } else {
-                        d.DrawTin(g, false);
-                    }
-                }
-            }
-            foreach (var d in mList.Values) {
+			foreach (var d in mList.Values) {
+				if (RecordType.TIN != d.Type) {
+					continue;
+				}
+				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+					g.DrawLine(HoverColor, d.Begin, d.End);
+				} else {
+					d.DrawTin(g, false);
+				}
+			}
+			foreach (var d in mList.Values) {
 				if (RecordType.WIRE != d.Type) {
 					continue;
 				}
@@ -974,18 +972,6 @@ namespace UCBeditor {
 				} else {
 					d.DrawWire(g);
 				}
-			}
-			if (tsbReverse.Checked) {
-				foreach (var d in mList.Values) {
-					if (RecordType.TIN != d.Type) {
-						continue;
-					}
-                    if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-                        g.DrawLine(HoverColor, d.Begin, d.End);
-                    } else {
-                        d.DrawTin(g, true);
-                    }
-                }
 			}
 
             foreach (var d in mList.Values) {
@@ -1000,7 +986,7 @@ namespace UCBeditor {
                     g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
 					g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
 				} else {
-					d.DrawLand(g, tsbReverse.Checked);
+					d.DrawLand(g, false);
 				}
 			}
 			foreach (var d in mList.Values) {
@@ -1009,7 +995,7 @@ namespace UCBeditor {
 				}
 				var item = mPartsList[d.PartsGroup][d.PartsName];
                 string filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
-                if ((item.IsSMD ^ tsbReverse.Checked) || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+                if (tsbAlpha.Checked || item.IsSMD || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
 					filePath = ElementPath + "alpha\\" + filePath;
 				} else {
 					filePath = ElementPath + "solid\\" + filePath;

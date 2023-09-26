@@ -44,8 +44,8 @@
 			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireYellow = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-			this.tsbFront = new System.Windows.Forms.ToolStripButton();
-			this.tsbReverse = new System.Windows.Forms.ToolStripButton();
+			this.tsbSolid = new System.Windows.Forms.ToolStripButton();
+			this.tsbAlpha = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.tscGridWidth = new System.Windows.Forms.ToolStripComboBox();
 			this.pnlParts = new System.Windows.Forms.Panel();
@@ -141,8 +141,8 @@
 			this.tsbWireTin,
             this.toolStripSeparator8,
             this.toolStripSeparator4,
-            this.tsbFront,
-            this.tsbReverse,
+            this.tsbSolid,
+            this.tsbAlpha,
             this.toolStripSeparator9,
             this.toolStripSeparator5,
             this.tscGridWidth});
@@ -245,28 +245,28 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
 			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-			// 
-			// tsbFront
-			// 
-			this.tsbFront.Checked = true;
-			this.tsbFront.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.tsbFront.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbFront.Image = ((System.Drawing.Image)(resources.GetObject("tsbFront.Image")));
-			this.tsbFront.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbFront.Name = "tsbFront";
-			this.tsbFront.Size = new System.Drawing.Size(23, 22);
-			this.tsbFront.Text = "部品不透過";
-			this.tsbFront.Click += new System.EventHandler(this.tsbFront_Click);
-			// 
-			// tsbReverse
-			// 
-			this.tsbReverse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbReverse.Image = ((System.Drawing.Image)(resources.GetObject("tsbReverse.Image")));
-			this.tsbReverse.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbReverse.Name = "tsbReverse";
-			this.tsbReverse.Size = new System.Drawing.Size(23, 22);
-			this.tsbReverse.Text = "部品透過";
-			this.tsbReverse.Click += new System.EventHandler(this.tsbReverse_Click);
+            // 
+            // tsbSolid
+            // 
+            this.tsbSolid.Checked = true;
+			this.tsbSolid.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.tsbSolid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbSolid.Image = ((System.Drawing.Image)(resources.GetObject("tsbFront.Image")));
+			this.tsbSolid.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbSolid.Name = "tsbSolid";
+			this.tsbSolid.Size = new System.Drawing.Size(23, 22);
+			this.tsbSolid.Text = "部品不透過";
+			this.tsbSolid.Click += new System.EventHandler(this.tsbSolid_Click);
+            // 
+            // tsbAlpha
+            // 
+            this.tsbAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbAlpha.Image = ((System.Drawing.Image)(resources.GetObject("tsbReverse.Image")));
+			this.tsbAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbAlpha.Name = "tsbAlpha";
+			this.tsbAlpha.Size = new System.Drawing.Size(23, 22);
+			this.tsbAlpha.Text = "部品透過";
+			this.tsbAlpha.Click += new System.EventHandler(this.tsbAlpha_Click);
 			// 
 			// toolStripSeparator5
 			// 
@@ -527,8 +527,8 @@
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-		private System.Windows.Forms.ToolStripButton tsbFront;
-		private System.Windows.Forms.ToolStripButton tsbReverse;
+		private System.Windows.Forms.ToolStripButton tsbSolid;
+		private System.Windows.Forms.ToolStripButton tsbAlpha;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem 新規作成NToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
