@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Xml;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
@@ -53,7 +54,7 @@ namespace UCBeditor {
             public RecordType Type;
 			public Point Begin;
 			public Point End;
-			public Point Offset;
+			public int Offset;
 
 			public RotateFlipType Rotate;
 			public string Parts;
@@ -124,8 +125,8 @@ namespace UCBeditor {
 				case "PARTS":
 					SetParts(
 						new Point(int.Parse(cols[1]), int.Parse(cols[2])),
-						new Point(int.Parse(cols[3]), int.Parse(cols[4])),
-						(RotateFlipType)int.Parse(cols[5]),
+						int.Parse(cols[3]),
+						(RotateFlipType)int.Parse(cols[4]),
 						cols[6]
 					);
 					break;
@@ -165,12 +166,11 @@ namespace UCBeditor {
 					break;
 				case RecordType.PARTS:
 					sw.WriteLine(
-						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
+						"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
 						Type,
 						Begin.X,
 						Begin.Y,
-						Offset.X,
-						Offset.Y,
+						Offset,
 						(int)Rotate,
 						Parts
 					);
@@ -197,7 +197,7 @@ namespace UCBeditor {
 				End = pos;
 			}
 
-			public void SetParts(Point pos, Point ofs, RotateFlipType rot, string path) {
+			public void SetParts(Point pos, int ofs, RotateFlipType rot, string path) {
 				Type = RecordType.PARTS;
 				Begin = pos;
 				End = pos;
@@ -205,6 +205,15 @@ namespace UCBeditor {
 				Rotate = rot;
 				Parts = path;
 			}
+		}
+
+        class PartsInfo {
+			public string Group;
+            public string Name;
+            public bool IsSMD;
+			public bool Enable;
+			public int Offset;
+			public List<Point> Terminals = new List<Point>();
 		}
 
 		struct Rect {
@@ -218,12 +227,13 @@ namespace UCBeditor {
 
 		string mFilePath = "";
 
-		Dictionary<int, Record> mList = new Dictionary<int, Record>();
+		Dictionary<string, Dictionary<string, PartsInfo>> mPartsList = new Dictionary<string, Dictionary<string, PartsInfo>>();
+        Dictionary<int, Record> mList = new Dictionary<int, Record>();
 		Dictionary<int, Record> mClipBoard = new Dictionary<int, Record>();
 		EditMode mEditMode = EditMode.WIRE;
 		WireColor mWireColor = WireColor.BLACK;
 		RotateFlipType mCurRotate = RotateFlipType.Rotate270FlipXY;
-		int mCurGridWidth = 12;
+		int mCurGridWidth = 16;
 
 		bool mIsDrag;
 		Point mMousePos = new Point();
@@ -231,18 +241,14 @@ namespace UCBeditor {
 		Point mEndPos = new Point();
 		Rect mRect = new Rect();
 
-		string mSelectedPartsPath;
-		Point mSelectedPartsOfs;
-		Point mSelectedPartsPos;
-		Point mSelectedPartsSize;
-		Point mCurOfs;
+        PartsInfo mSelectedParts;
 
 		public Form1() {
 			InitializeComponent();
 
 			panelResize();
-			picBoard.Width = 12 * 80;
-			picBoard.Height = 12 * 80;
+			picBoard.Width = mCurGridWidth * 80;
+			picBoard.Height = mCurGridWidth * 80;
 
 			setPartsList();
 			selectLine(tsbCursor);
@@ -317,13 +323,10 @@ namespace UCBeditor {
 		private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
 			switch (tscGridWidth.SelectedIndex) {
 			case 0:
-				mCurGridWidth = 12;
+				mCurGridWidth = 16;
 				break;
 			case 1:
-				mCurGridWidth = 6;
-				break;
-			case 2:
-				mCurGridWidth = 3;
+				mCurGridWidth = 8;
 				break;
 			}
 		}
@@ -395,7 +398,10 @@ namespace UCBeditor {
 				mList.Add(mList.Count, rec);
 				break;
 			case EditMode.PARTS:
-				rec.SetParts(mEndPos, mCurOfs, mCurRotate, mSelectedPartsPath);
+				rec.SetParts(
+					mEndPos, mSelectedParts.Offset, mCurRotate,
+					mSelectedParts.Group + "\\" + mSelectedParts.Name
+				);
 				mList.Add(mList.Count, rec);
 				break;
 			}
@@ -500,12 +506,12 @@ namespace UCBeditor {
 					mClipBoard.Add(mClipBoard.Count, mList[d]);
 
 					var begin = new Point(
-						mList[d].Begin.X - mList[d].Offset.X,
-						mList[d].Begin.Y - mList[d].Offset.Y
+						mList[d].Begin.X - mList[d].Offset,
+						mList[d].Begin.Y - mList[d].Offset
 					);
 					var end = new Point(
-						mList[d].End.X - mList[d].Offset.X,
-						mList[d].End.Y - mList[d].Offset.Y
+						mList[d].End.X - mList[d].Offset,
+						mList[d].End.Y - mList[d].Offset
 					);
 					if (begin.X < min.X) {
 						min.X = begin.X;
@@ -526,10 +532,10 @@ namespace UCBeditor {
 
 			for (var i = 0; i < mClipBoard.Count; ++i) {
 				var p = mClipBoard[i];
-				p.Begin.X -= (min.X / 12) * 12;
-				p.Begin.Y -= (min.Y / 12) * 12;
-				p.End.X -= (min.X / 12) * 12;
-				p.End.Y -= (min.Y / 12) * 12;
+				p.Begin.X -= (min.X / mCurGridWidth) * mCurGridWidth;
+				p.Begin.Y -= (min.Y / mCurGridWidth) * mCurGridWidth;
+				p.End.X -= (min.X / mCurGridWidth) * mCurGridWidth;
+				p.End.Y -= (min.Y / mCurGridWidth) * mCurGridWidth;
 				mClipBoard[i] = p;
 			}
 
@@ -545,12 +551,12 @@ namespace UCBeditor {
 					mClipBoard.Add(mClipBoard.Count, mList[d]);
 
 					var begin = new Point(
-						mList[d].Begin.X - mList[d].Offset.X,
-						mList[d].Begin.Y - mList[d].Offset.Y
+						mList[d].Begin.X - mList[d].Offset,
+						mList[d].Begin.Y - mList[d].Offset
 					);
 					var end = new Point(
-						mList[d].End.X - mList[d].Offset.X,
-						mList[d].End.Y - mList[d].Offset.Y
+						mList[d].End.X - mList[d].Offset,
+						mList[d].End.Y - mList[d].Offset
 					);
 					if (begin.X < min.X) {
 						min.X = begin.X;
@@ -569,10 +575,10 @@ namespace UCBeditor {
 
 			for (var i = 0; i < mClipBoard.Count; ++i) {
 				var p = mClipBoard[i];
-				p.Begin.X -= (min.X / 12) * 12;
-				p.Begin.Y -= (min.Y / 12) * 12;
-				p.End.X -= (min.X / 12) * 12;
-				p.End.Y -= (min.Y / 12) * 12;
+				p.Begin.X -= (min.X / mCurGridWidth) * mCurGridWidth;
+				p.Begin.Y -= (min.Y / mCurGridWidth) * mCurGridWidth;
+				p.End.X -= (min.X / mCurGridWidth) * mCurGridWidth;
+				p.End.Y -= (min.Y / mCurGridWidth) * mCurGridWidth;
 				mClipBoard[i] = p;
 			}
 
@@ -617,7 +623,6 @@ namespace UCBeditor {
 				break;
 			}
 
-			setPartsOfs();
 			setEndPos();
 		}
 
@@ -637,7 +642,6 @@ namespace UCBeditor {
 				break;
 			}
 
-			setPartsOfs();
 			setEndPos();
 		}
 
@@ -705,30 +709,19 @@ namespace UCBeditor {
                 mEditMode = EditMode.TIN;
             }
 
-            mSelectedPartsPath = "";
+			mSelectedParts = new PartsInfo();
 			selectPartsList();
 		}
 
 		private void selectPartsList() {
-			mSelectedPartsOfs = new Point();
-			mSelectedPartsPos = new Point();
-			mSelectedPartsSize = new Point();
-			mCurOfs = new Point();
 			mRect = new Rect();
 
 			foreach (var ctrl in pnlParts.Controls) {
 				if (ctrl.GetType().Name == "Panel") {
 					var panel = (Panel)ctrl;
-					if (panel.Name == mSelectedPartsPath) {
+					if (panel.Name == mSelectedParts.Name) {
 						panel.BackColor = SystemColors.ButtonShadow;
 						panel.BorderStyle = BorderStyle.Fixed3D;
-						var fname = Path.GetFileNameWithoutExtension(mSelectedPartsPath).Split('_');
-						mSelectedPartsOfs = new Point(int.Parse(fname[1]), int.Parse(fname[2]));
-						mSelectedPartsPos = new Point(int.Parse(fname[3]), int.Parse(fname[4]));
-						var image = (PictureBox)panel.Controls[0];
-						mSelectedPartsSize = new Point(image.Width, image.Height);
-						setPartsOfs();
-
 						mIsDrag = false;
 						mEditMode = EditMode.PARTS;
 					} else {
@@ -739,20 +732,17 @@ namespace UCBeditor {
 			}
 		}
 
-		private void drawToolPanel(string type) {
+		private void drawToolPanel(Dictionary<string, PartsInfo> items) {
 			var curTop = 0;
 			pnlParts.Controls.Clear();
 
-			var dir = ElementPath + "solid\\" + type;
-			if (!Directory.Exists(dir)) {
-				return;
-			}
-			var paths = Directory.GetFiles(dir);
+			foreach (var item in items.Values) {
+				if (!item.Enable) {
+					continue;
+				}
 
-			for (var i = 0; i < paths.Length; ++i) {
 				var picture = new PictureBox();
-				var bmp = new Bitmap(paths[i]);
-				var path = paths[i].Replace(ElementPath, "").Replace("solid\\", "");
+				var bmp = new Bitmap(ElementPath + "solid\\" + item.Group + "\\" + item.Name + ".png");
 
 				picture.Image = bmp;
 				picture.Top = 2;
@@ -761,22 +751,22 @@ namespace UCBeditor {
 				picture.Height = bmp.Height;
 
 				var lbl = new Label();
-				lbl.Text = Path.GetFileNameWithoutExtension(path).Split('_')[0];
+				lbl.Text = item.Name;
 				lbl.Height = 16;
-				lbl.Top = curTop + picture.Height + lbl.Height;
+				lbl.Top = curTop;
 				lbl.Left = 8;
 
 				var panel = new Panel();
-				panel.Name = path;
+				panel.Name = lbl.Text;
 				panel.Controls.Add(picture);
 				panel.BackColor = SystemColors.ButtonFace;
 				panel.Width = bmp.Width + 8;
 				panel.Height = bmp.Height + 8;
 				panel.Left = 8;
-				panel.Top = curTop + 8;
+				panel.Top = curTop + 12;
 
 				picture.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => {
-					mSelectedPartsPath = panel.Name;
+					mSelectedParts = item;
 					selectPartsList();
 				});
 
@@ -788,11 +778,78 @@ namespace UCBeditor {
 		}
 
 		private void setPartsList() {
-			var files = Directory.GetFiles(ElementPath);
-			foreach (var filePath in files) {
+			var xml = XmlReader.Create(ElementPath + "elements.xml");
+			var currentGroup = ""; 
+			var currentParts = new PartsInfo();
+            while (xml.Read()) {
+				switch (xml.NodeType) {
+				case XmlNodeType.Element:
+					switch (xml.Name) {
+					case "group":
+                        currentGroup = xml.GetAttribute("name").ToUpper();
+						break;
+					case "item":
+                        currentParts = new PartsInfo();
+						currentParts.Group = currentGroup;
+                        currentParts.Name = xml.GetAttribute("name");
+                        currentParts.IsSMD = xml.GetAttribute("type") == "smd";
+						break;
+					case "terminal":
+                        currentParts.Terminals.Add(new Point(
+							int.Parse(xml.GetAttribute("x")),
+							int.Parse(xml.GetAttribute("y")))
+						);
+						break;
+					default:
+						break;
+					}
+					break;
+				case XmlNodeType.EndElement:
+					switch (xml.Name) {
+					case "item":
+						if (!mPartsList.ContainsKey(currentGroup)) {
+                            mPartsList.Add(currentGroup, new Dictionary<string, PartsInfo>());
+                        }
+                        mPartsList[currentGroup].Add(currentParts.Name, currentParts);
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+			foreach (var group in mPartsList) {
+				var groupIcon = ElementPath + "group\\" + group.Key + ".png";
+				if (!File.Exists(groupIcon)) {
+					continue;
+				}
+				var solidDir = ElementPath + "solid\\" + group.Key;
+				var alphaDir = ElementPath + "alpha\\" + group.Key;
+				foreach (var item in group.Value) {
+					var solidPath = solidDir + "\\" + item.Key + ".png";
+					if (!File.Exists(solidPath)) {
+						continue;
+					}
+					var alphaPath = alphaDir + "\\" + item.Key + ".png";
+					if (!File.Exists(alphaPath)) {
+						continue;
+					}
+					var solid = new Bitmap(solidPath);
+					var alpha = new Bitmap(alphaPath);
+					if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
+						continue;
+					}
+					if (solid.Width != solid.Height) {
+						continue;
+					}
+					item.Value.Enable = true;
+					item.Value.Offset = solid.Width / 2;
+                }
+			}
+			foreach (var group in mPartsList) {
 				var tsb = new ToolStripButton();
-				tsb.Image = new Bitmap(filePath);
-				tsb.Name = Path.GetFileNameWithoutExtension(filePath);
+                tsb.Name = group.Key;
+                tsb.Image = new Bitmap(ElementPath + "group\\" + group.Key + ".png");
 				tsb.Click += new EventHandler((object sender, EventArgs e) => {
 					for (var j = 0; j < tsParts.Items.Count; ++j) {
 						if ("ToolStripButton" == tsParts.Items[j].GetType().Name) {
@@ -801,30 +858,9 @@ namespace UCBeditor {
 						}
 					}
 					tsb.Checked = true;
-					drawToolPanel(tsb.Name);
-				});
+					drawToolPanel(group.Value);
+                });
 				tsParts.Items.Add(tsb);
-			}
-		}
-
-		private void setPartsOfs() {
-			switch (mCurRotate) {
-			case RotateFlipType.RotateNoneFlipXY:
-				mCurOfs.X = mSelectedPartsSize.X - mSelectedPartsOfs.X;
-				mCurOfs.Y = mSelectedPartsSize.Y - mSelectedPartsOfs.Y;
-				break;
-			case RotateFlipType.Rotate90FlipXY:
-				mCurOfs.X = mSelectedPartsSize.Y - mSelectedPartsOfs.Y;
-				mCurOfs.Y = mSelectedPartsSize.X - mSelectedPartsOfs.X;
-				break;
-			case RotateFlipType.Rotate180FlipXY:
-				mCurOfs.X = mSelectedPartsOfs.X;
-				mCurOfs.Y = mSelectedPartsSize.Y - mSelectedPartsOfs.Y;
-				break;
-			case RotateFlipType.Rotate270FlipXY:
-				mCurOfs.X = mSelectedPartsSize.Y - mSelectedPartsOfs.Y;
-				mCurOfs.Y = mSelectedPartsOfs.X;
-				break;
 			}
 		}
 
@@ -836,26 +872,9 @@ namespace UCBeditor {
 
 		private void setEndPos() {
             mMousePos = picBoard.PointToClient(Cursor.Position);
-			var gx = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
-			var gy = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
-			if (0 < mSelectedPartsPos.X || 0 < mSelectedPartsPos.Y) {
-                switch (mCurRotate) {
-				case RotateFlipType.RotateNoneFlipXY:
-				case RotateFlipType.Rotate180FlipXY:
-					mEndPos.X = gx + mSelectedPartsPos.X;
-					mEndPos.Y = gy + mSelectedPartsPos.Y;
-					break;
-				case RotateFlipType.Rotate90FlipXY:
-				case RotateFlipType.Rotate270FlipXY:
-					mEndPos.X = gx + mSelectedPartsPos.Y;
-					mEndPos.Y = gy + mSelectedPartsPos.X;
-					break;
-				}
-			} else {
-				mEndPos.X = gx;
-				mEndPos.Y = gy;
-			}
-		}
+            mEndPos.X = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+            mEndPos.Y = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
+        }
 
 		private void saveFile(string filePath) {
 			var fs = new FileStream(filePath, FileMode.Create);
@@ -969,16 +988,13 @@ namespace UCBeditor {
 				}
 				var filePath = d.Parts;
 				if (tsbReverse.Checked || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-					filePath = ElementPath + "alpha\\" + filePath;
+					filePath = ElementPath + "alpha\\" + filePath + ".png";
 				} else {
-					filePath = ElementPath + "solid\\" + filePath;
+					filePath = ElementPath + "solid\\" + filePath + ".png";
 				}
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(d.Rotate);
-				g.DrawImage(temp, new Point(
-					d.Begin.X - d.Offset.X,
-					d.Begin.Y - d.Offset.Y
-				));
+				g.DrawImage(temp, new Point(d.Begin.X - d.Offset, d.Begin.Y - d.Offset));
 			}
 		}
 
@@ -1007,10 +1023,7 @@ namespace UCBeditor {
 					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(d.Rotate);
-					g.DrawImage(temp, new Point(
-						b.X - d.Offset.X,
-						b.Y - d.Offset.Y
-					));
+					g.DrawImage(temp, new Point(b.X - d.Offset, b.Y - d.Offset));
 				}
 			}
 		}
@@ -1052,13 +1065,15 @@ namespace UCBeditor {
 				break;
 
 			case EditMode.PARTS:
-				var filePath = ElementPath + "alpha\\" + mSelectedPartsPath;
+				var filePath = ElementPath + "alpha\\"
+					+ mSelectedParts.Group + "\\"
+					+ mSelectedParts.Name + ".png";
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(mCurRotate);
 				g.DrawImage(temp, new Point(
-					mEndPos.X - mCurOfs.X,
-					mEndPos.Y - mCurOfs.Y
-				));
+					mEndPos.X - mSelectedParts.Offset,
+					mEndPos.Y - mSelectedParts.Offset
+                ));
 				break;
 			}
 		}
