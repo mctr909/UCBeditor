@@ -296,7 +296,7 @@
             this.tsbFront.Checked = true;
             this.tsbFront.CheckState = System.Windows.Forms.CheckState.Checked;
             this.tsbFront.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbFront.Image = ((System.Drawing.Image)(resources.GetObject("tsbForward.Image")));
+            this.tsbFront.Image = ((System.Drawing.Image)(resources.GetObject("tsbFront.Image")));
             this.tsbFront.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbFront.Name = "tsbFront";
             this.tsbFront.Size = new System.Drawing.Size(23, 22);
@@ -306,7 +306,7 @@
             // tsbBack
             // 
             this.tsbBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbBack.Image = ((System.Drawing.Image)(resources.GetObject("tsbReverse.Image")));
+            this.tsbBack.Image = ((System.Drawing.Image)(resources.GetObject("tsbBack.Image")));
             this.tsbBack.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbBack.Name = "tsbBack";
             this.tsbBack.Size = new System.Drawing.Size(23, 22);
