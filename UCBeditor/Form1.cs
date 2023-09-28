@@ -143,7 +143,17 @@ namespace UCBeditor {
 			tsbAlpha.Checked = true;
 		}
 
-		private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
+		private void tsbForward_Click(object sender, EventArgs e) {
+            tsbForward.Checked = true;
+            tsbReverse.Checked = false;
+        }
+
+        private void tsbReverse_Click(object sender, EventArgs e) {
+            tsbReverse.Checked = true;
+            tsbForward.Checked = false;
+        }
+
+        private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
 			switch (tscGridWidth.SelectedIndex) {
 			case 0:
 				mCurGridWidth = 16;

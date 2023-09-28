@@ -46,7 +46,9 @@
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbSolid = new System.Windows.Forms.ToolStripButton();
 			this.tsbAlpha = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbForward = new System.Windows.Forms.ToolStripButton();
+            this.tsbReverse = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.tscGridWidth = new System.Windows.Forms.ToolStripComboBox();
 			this.pnlParts = new System.Windows.Forms.Panel();
 			this.tsParts = new System.Windows.Forms.ToolStrip();
@@ -73,7 +75,9 @@
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-			this.splitContainer1.Panel1.SuspendLayout();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.pnlBoard.SuspendLayout();
@@ -143,6 +147,10 @@
             this.toolStripSeparator4,
             this.tsbSolid,
             this.tsbAlpha,
+            this.toolStripSeparator10,
+            this.toolStripSeparator11,
+            this.tsbForward,
+			this.tsbReverse,
             this.toolStripSeparator9,
             this.toolStripSeparator5,
             this.tscGridWidth});
@@ -267,10 +275,32 @@
 			this.tsbAlpha.Size = new System.Drawing.Size(23, 22);
 			this.tsbAlpha.Text = "部品透過";
 			this.tsbAlpha.Click += new System.EventHandler(this.tsbAlpha_Click);
-			// 
-			// toolStripSeparator5
-			// 
-			this.toolStripSeparator5.Name = "toolStripSeparator5";
+            // 
+            // tsbForward
+            // 
+            this.tsbForward.Checked = true;
+            this.tsbForward.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsbForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbForward.Image = ((System.Drawing.Image)(resources.GetObject("tsbFront.Image")));
+            this.tsbForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbForward.Name = "tsbForward";
+            this.tsbForward.Size = new System.Drawing.Size(23, 22);
+            this.tsbForward.Text = "正面";
+            this.tsbForward.Click += new System.EventHandler(this.tsbForward_Click);
+            // 
+            // tsbReverse
+            // 
+            this.tsbReverse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbReverse.Image = ((System.Drawing.Image)(resources.GetObject("tsbReverse.Image")));
+            this.tsbReverse.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbReverse.Name = "tsbReverse";
+            this.tsbReverse.Size = new System.Drawing.Size(23, 22);
+            this.tsbReverse.Text = "裏面";
+            this.tsbReverse.Click += new System.EventHandler(this.tsbReverse_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
 			this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
 			// 
 			// tscGridWidth
@@ -464,10 +494,20 @@
 			// 
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
 			this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
-			// 
-			// Form1
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1008, 729);
 			this.Controls.Add(this.splitContainer1);
@@ -529,13 +569,17 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripButton tsbSolid;
 		private System.Windows.Forms.ToolStripButton tsbAlpha;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripButton tsbForward;
+		private System.Windows.Forms.ToolStripButton tsbReverse;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem 新規作成NToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripMenuItem 選択SToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
     }
 }
 
