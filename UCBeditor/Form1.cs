@@ -138,14 +138,14 @@ namespace UCBeditor {
 			tsbAlpha.Checked = true;
 		}
 
-		private void tsbForward_Click(object sender, EventArgs e) {
-            tsbForward.Checked = true;
-            tsbReverse.Checked = false;
+		private void tsbFront_Click(object sender, EventArgs e) {
+            tsbFront.Checked = true;
+            tsbBack.Checked = false;
         }
 
-        private void tsbReverse_Click(object sender, EventArgs e) {
-            tsbReverse.Checked = true;
-            tsbForward.Checked = false;
+        private void tsbBack_Click(object sender, EventArgs e) {
+            tsbBack.Checked = true;
+            tsbFront.Checked = false;
         }
 
         private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
@@ -678,7 +678,7 @@ namespace UCBeditor {
 				if (Item.EType.PARTS == d.Type) {
 					continue;
 				}
-                d.Draw(g, tsbReverse.Checked, isOnLine(d, mMousePos) || isOnLine(d, mRect));
+                d.Draw(g, tsbBack.Checked, isOnLine(d, mMousePos) || isOnLine(d, mRect));
             }
 			foreach (var d in mList) {
 				if (Item.EType.PARTS != d.Type) {
@@ -689,7 +689,7 @@ namespace UCBeditor {
 				}
 				var item = mPartsList[d.PartsGroup][d.PartsName];
 				var filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
-				if (tsbAlpha.Checked || (tsbReverse.Checked ^ item.IsSMD) || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+				if (tsbAlpha.Checked || (tsbBack.Checked ^ item.IsSMD) || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
 					filePath = ElementPath + "alpha\\" + filePath;
 				} else {
 					filePath = ElementPath + "solid\\" + filePath;

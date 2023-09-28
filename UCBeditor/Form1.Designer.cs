@@ -49,8 +49,8 @@
             this.tsbAlpha = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsbForward = new System.Windows.Forms.ToolStripButton();
-            this.tsbReverse = new System.Windows.Forms.ToolStripButton();
+            this.tsbFront = new System.Windows.Forms.ToolStripButton();
+            this.tsbBack = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.tscGridWidth = new System.Windows.Forms.ToolStripComboBox();
@@ -149,8 +149,8 @@
             this.tsbAlpha,
             this.toolStripSeparator10,
             this.toolStripSeparator11,
-            this.tsbForward,
-            this.tsbReverse,
+            this.tsbFront,
+            this.tsbBack,
             this.toolStripSeparator9,
             this.toolStripSeparator5,
             this.tscGridWidth});
@@ -291,27 +291,27 @@
             this.toolStripSeparator11.Name = "toolStripSeparator11";
             this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
             // 
-            // tsbForward
+            // tsbFront
             // 
-            this.tsbForward.Checked = true;
-            this.tsbForward.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tsbForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbForward.Image = ((System.Drawing.Image)(resources.GetObject("tsbForward.Image")));
-            this.tsbForward.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbForward.Name = "tsbForward";
-            this.tsbForward.Size = new System.Drawing.Size(23, 22);
-            this.tsbForward.Text = "正面";
-            this.tsbForward.Click += new System.EventHandler(this.tsbForward_Click);
+            this.tsbFront.Checked = true;
+            this.tsbFront.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsbFront.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbFront.Image = ((System.Drawing.Image)(resources.GetObject("tsbForward.Image")));
+            this.tsbFront.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbFront.Name = "tsbFront";
+            this.tsbFront.Size = new System.Drawing.Size(23, 22);
+            this.tsbFront.Text = "正面";
+            this.tsbFront.Click += new System.EventHandler(this.tsbFront_Click);
             // 
-            // tsbReverse
+            // tsbBack
             // 
-            this.tsbReverse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbReverse.Image = ((System.Drawing.Image)(resources.GetObject("tsbReverse.Image")));
-            this.tsbReverse.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbReverse.Name = "tsbReverse";
-            this.tsbReverse.Size = new System.Drawing.Size(23, 22);
-            this.tsbReverse.Text = "裏面";
-            this.tsbReverse.Click += new System.EventHandler(this.tsbReverse_Click);
+            this.tsbBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBack.Image = ((System.Drawing.Image)(resources.GetObject("tsbReverse.Image")));
+            this.tsbBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbBack.Name = "tsbBack";
+            this.tsbBack.Size = new System.Drawing.Size(23, 22);
+            this.tsbBack.Text = "裏面";
+            this.tsbBack.Click += new System.EventHandler(this.tsbBack_Click);
             // 
             // toolStripSeparator9
             // 
@@ -570,8 +570,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripButton tsbSolid;
 		private System.Windows.Forms.ToolStripButton tsbAlpha;
-		private System.Windows.Forms.ToolStripButton tsbForward;
-		private System.Windows.Forms.ToolStripButton tsbReverse;
+		private System.Windows.Forms.ToolStripButton tsbFront;
+		private System.Windows.Forms.ToolStripButton tsbBack;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem 新規作成NToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
