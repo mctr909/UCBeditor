@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
-using System.Collections;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
-        readonly Pen GridColor = new Pen(Color.Gray, 0.5f);
-		readonly Pen DragColor = Pens.Blue;
-		readonly Pen HoverColor = Pens.Blue;
+        readonly Pen GridMajorColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
+        readonly Pen GridMinorColor = new Pen(Color.FromArgb(211, 211, 211), 0.5f);
+        readonly Pen DragColor = Pens.Blue;
 		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
 
 		enum EditMode {
@@ -55,7 +49,8 @@ namespace UCBeditor {
 		EditMode mEditMode = EditMode.WIRE;
         Item.EWire mWireColor = Item.EWire.BLACK;
 		RotateFlipType mCurRotate = RotateFlipType.RotateNoneFlipNone;
-		int mCurGridWidth = 16;
+		const int BaseGridWidth = 16;
+        int mCurGridWidth = BaseGridWidth;
 
 		bool mIsDrag;
 		Point mMousePos = new Point();
@@ -156,10 +151,10 @@ namespace UCBeditor {
         private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
 			switch (tscGridWidth.SelectedIndex) {
 			case 0:
-				mCurGridWidth = 16;
+				mCurGridWidth = BaseGridWidth;
 				break;
 			case 1:
-				mCurGridWidth = 8;
+				mCurGridWidth = BaseGridWidth / 2;
 				break;
 			}
 		}
@@ -521,7 +516,11 @@ namespace UCBeditor {
 
 			for (var y = 0; y < bmp.Height; y += mCurGridWidth) {
 				for (var x = 0; x < bmp.Width; x += mCurGridWidth) {
-					g.DrawRectangle(GridColor, x, y, 0.5f, 0.5f);
+					if (0 != x % BaseGridWidth || 0 != y % BaseGridWidth) {
+						g.DrawRectangle(GridMinorColor, x, y, 0.5f, 0.5f);
+					} else {
+						g.DrawRectangle(GridMajorColor, x, y, 0.5f, 0.5f);
+					}
 				}
 			}
 
@@ -676,41 +675,11 @@ namespace UCBeditor {
 
 		private void drawList(Graphics g) {
 			foreach (var d in mList) {
-				if (Item.EType.TIN != d.Type) {
+				if (Item.EType.PARTS == d.Type) {
 					continue;
 				}
-				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-					g.DrawLine(HoverColor, d.Begin, d.End);
-				} else {
-					d.Draw(g, false);
-				}
-			}
-			foreach (var d in mList) {
-				if (Item.EType.WIRE != d.Type) {
-					continue;
-				}
-				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-					g.DrawLine(HoverColor, d.Begin, d.End);
-				} else {
-					d.Draw(g, false);
-				}
-			}
-
-			foreach (var d in mList) {
-				if (Item.EType.LAND != d.Type) {
-					continue;
-				}
-				if (isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-					var x1 = d.Begin.X - 4;
-					var y1 = d.Begin.Y - 4;
-					var x2 = d.Begin.X - 2;
-					var y2 = d.Begin.Y - 2;
-					g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
-					g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
-				} else {
-					d.Draw(g, false);
-				}
-			}
+                d.Draw(g, tsbReverse.Checked, isOnLine(d, mMousePos) || isOnLine(d, mRect));
+            }
 			foreach (var d in mList) {
 				if (Item.EType.PARTS != d.Type) {
 					continue;
@@ -720,7 +689,7 @@ namespace UCBeditor {
 				}
 				var item = mPartsList[d.PartsGroup][d.PartsName];
 				var filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
-				if (tsbAlpha.Checked || item.IsSMD || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
+				if (tsbAlpha.Checked || (tsbReverse.Checked ^ item.IsSMD) || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
 					filePath = ElementPath + "alpha\\" + filePath;
 				} else {
 					filePath = ElementPath + "solid\\" + filePath;
@@ -733,39 +702,21 @@ namespace UCBeditor {
 
 		private void drawClipBoard(Graphics g) {
             foreach (var d in mClipBoard) {
-                if (Item.EType.TIN == d.Type) {
-                    var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
-                    var e = new Point(d.End.X + mEndPos.X, d.End.Y + mEndPos.Y);
-                    g.DrawLine(HoverColor, b, e);
+                if (Item.EType.PARTS == d.Type) {
+                    continue;
                 }
+				d.Draw(g, mEndPos.X, mEndPos.Y, false, true);
             }
-            foreach (var d in mClipBoard) {
-				if (Item.EType.WIRE == d.Type) {
-					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
-					var e = new Point(d.End.X + mEndPos.X, d.End.Y + mEndPos.Y);
-					g.DrawLine(HoverColor, b, e);
-				}
-			}
 			foreach (var d in mClipBoard) {
-				if (Item.EType.LAND == d.Type) {
-					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
-                    var x1 = b.X - 4;
-                    var y1 = b.Y - 4;
-                    var x2 = b.X - 2;
-                    var y2 = b.Y - 2;
-                    g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
-                    g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
-                }
-			}
-			foreach (var d in mClipBoard) {
-				if (Item.EType.PARTS == d.Type) {
-					var filePath = ElementPath + "alpha\\" + d.PartsGroup + "\\" + d.PartsName + ".png";
-					var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
-					var temp = new Bitmap(filePath);
-					temp.RotateFlip(d.Rotate);
-                    var item = mPartsList[d.PartsGroup][d.PartsName];
-                    g.DrawImage(temp, new Point(b.X - item.Size, b.Y - item.Size));
+				if (Item.EType.PARTS != d.Type) {
+					continue;
 				}
+				var filePath = ElementPath + "alpha\\" + d.PartsGroup + "\\" + d.PartsName + ".png";
+				var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
+				var temp = new Bitmap(filePath);
+				temp.RotateFlip(d.Rotate);
+				var item = mPartsList[d.PartsGroup][d.PartsName];
+				g.DrawImage(temp, new Point(b.X - item.Size, b.Y - item.Size));
 			}
 		}
 
@@ -776,7 +727,7 @@ namespace UCBeditor {
 					var x = mBeginPos.X < mEndPos.X ? mBeginPos.X : mEndPos.X;
 					var y = mBeginPos.Y < mEndPos.Y ? mBeginPos.Y : mEndPos.Y;
 					g.DrawRectangle(
-						HoverColor,
+						Pens.Cyan,
 						x, y,
 						Math.Abs(mEndPos.X - mBeginPos.X),
 						Math.Abs(mEndPos.Y - mBeginPos.Y)
