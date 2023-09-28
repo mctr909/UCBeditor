@@ -38,7 +38,7 @@
 			this.tsbCursor = new System.Windows.Forms.ToolStripButton();
 			this.tsbLand = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
-			this.tsbWireTin = new System.Windows.Forms.ToolStripButton();
+			this.tsbTin = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireBlue = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
@@ -138,7 +138,7 @@
             this.tsbWireBlue,
             this.tsbWireGreen,
             this.tsbWireYellow,
-			this.tsbWireTin,
+			this.tsbTin,
             this.toolStripSeparator8,
             this.toolStripSeparator4,
             this.tsbSolid,
@@ -229,17 +229,17 @@
 			this.tsbWireYellow.Size = new System.Drawing.Size(23, 22);
 			this.tsbWireYellow.Text = "導線(黄)";
 			this.tsbWireYellow.Click += new System.EventHandler(this.tsbWireYellow_Click);
-            // 
-            // tsbWireTin
-            // 
-            this.tsbWireTin.CheckOnClick = true;
-            this.tsbWireTin.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbWireTin.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineWhite.Image")));
-            this.tsbWireTin.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbWireTin.Name = "tsbWireTin";
-            this.tsbWireTin.Size = new System.Drawing.Size(23, 22);
-            this.tsbWireTin.Text = "すずメッキ線";
-            this.tsbWireTin.Click += new System.EventHandler(this.tsbWireTin_Click);
+            //
+            // tsbTin
+            //
+            this.tsbTin.CheckOnClick = true;
+            this.tsbTin.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbTin.Image = ((System.Drawing.Image)(resources.GetObject("tsbLineWhite.Image")));
+            this.tsbTin.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbTin.Name = "tsbTin";
+            this.tsbTin.Size = new System.Drawing.Size(23, 22);
+            this.tsbTin.Text = "すずメッキ線";
+            this.tsbTin.Click += new System.EventHandler(this.tsbTin_Click);
             // 
             // toolStripSeparator4
             // 
@@ -499,7 +499,7 @@
         private System.Windows.Forms.ToolStrip tsParts;
         private System.Windows.Forms.ToolStripButton tsbCursor;
         private System.Windows.Forms.ToolStripButton tsbWireBlack;
-        private System.Windows.Forms.ToolStripButton tsbWireTin;
+        private System.Windows.Forms.ToolStripButton tsbTin;
         private System.Windows.Forms.ToolStripButton tsbWireRed;
         private System.Windows.Forms.ToolStripButton tsbWireBlue;
         private System.Windows.Forms.ToolStripButton tsbWireGreen;
