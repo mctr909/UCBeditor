@@ -166,7 +166,7 @@ namespace UCBeditor {
         public void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
             switch (Type) {
             case EType.LAND:
-                DrawLand(g, Begin, dx, dy, reverse, selected);
+                DrawLand(g, dx, dy, reverse, selected);
                 break;
             case EType.TIN:
                 DrawTin(g, dx, dy, reverse, selected);
@@ -177,11 +177,11 @@ namespace UCBeditor {
             }
         }
 
-        void DrawLand(Graphics g, Point pos, int dx, int dy, bool reverse, bool selected) {
-            var x1 = pos.X + dx - 4;
-            var y1 = pos.Y + dy - 4;
-            var x2 = pos.X + dx - 2;
-            var y2 = pos.Y + dy - 2;
+        void DrawLand(Graphics g, int dx, int dy, bool reverse, bool selected) {
+            var x1 = Begin.X + dx - 4;
+            var y1 = Begin.Y + dy - 4;
+            var x2 = Begin.X + dx - 2;
+            var y2 = Begin.Y + dy - 2;
             if (selected) {
                 g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
                 g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
