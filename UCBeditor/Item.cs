@@ -7,6 +7,7 @@ namespace UCBeditor {
     struct Item {
         public enum EType {
             LAND,
+            FOOT,
             TIN,
             WIRE,
             PARTS
@@ -21,9 +22,8 @@ namespace UCBeditor {
 
         static readonly Pen HoverColor = Pens.Blue;
         static readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen TIN_W = new Pen(Color.FromArgb(111, 111, 111), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen TIN_H = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen TIN_N = new Pen(Color.FromArgb(211, 211, 211), 1.0f) { DashPattern = new float[] { 1, 1 } };
+        static readonly Pen TIN_W = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        static readonly Pen TIN_N = new Pen(Color.FromArgb(231, 231, 231), 1.0f) { DashPattern = new float[] { 1, 1 } };
 
         static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -42,6 +42,7 @@ namespace UCBeditor {
         public RotateFlipType Rotate;
         public string PartsGroup;
         public string PartsName;
+        public double Height;
 
         EWire mWireColor;
 
@@ -49,6 +50,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             PartsGroup = "";
             PartsName = "";
+            Height = 0;
             mWireColor = EWire.BLACK;
             var cols = line.Split('\t');
             switch (cols[0]) {
@@ -62,6 +64,7 @@ namespace UCBeditor {
                 Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
                 End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
                 mWireColor = (EWire)Enum.Parse(typeof(EWire), cols[5]);
+                Height = 100;
                 break;
             case "PARTS":
                 Type = EType.PARTS;
@@ -76,6 +79,7 @@ namespace UCBeditor {
                 Type = EType.LAND;
                 Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
                 End = Begin;
+                Height = 0.1;
                 break;
             }
         }
@@ -87,6 +91,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             PartsGroup = "";
             PartsName = "";
+            Height = 0.1;
             mWireColor = EWire.BLACK;
         }
 
@@ -97,6 +102,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             PartsGroup = "";
             PartsName = "";
+            Height = 0;
             mWireColor = EWire.BLACK;
         }
 
@@ -107,6 +113,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             PartsGroup = "";
             PartsName = "";
+            Height = 100;
             mWireColor = color;
         }
 
@@ -117,6 +124,7 @@ namespace UCBeditor {
             Rotate = rot;
             PartsGroup = group;
             PartsName = name;
+            Height = 0;
             mWireColor = EWire.BLACK;
         }
 
@@ -190,7 +198,7 @@ namespace UCBeditor {
                     g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
-                    g.FillEllipse(TIN_H.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(TIN_W.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
@@ -204,17 +212,10 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                if (reverse) {
-                    g.FillPie(TIN_W.Brush, x1 - 4, y1 - 4, 8, 8, 0, 360);
-                    g.FillPie(TIN_W.Brush, x2 - 4, y2 - 4, 8, 8, 0, 360);
-                    g.DrawLine(TIN_W, x1, y1, x2, y2);
-                    g.DrawLine(TIN_N, x1, y1, x2, y2);
-                } else {
-                    g.FillPie(TIN_H.Brush, x1 - 4, y1 - 4, 8, 8, 0, 360);
-                    g.FillPie(TIN_H.Brush, x2 - 4, y2 - 4, 8, 8, 0, 360);
-                    g.DrawLine(TIN_H, x1, y1, x2, y2);
-                    g.DrawLine(TIN_N, x1, y1, x2, y2);
-                }
+                g.FillPie(TIN_W.Brush, x1 - 4, y1 - 4, 8, 8, 0, 360);
+                g.FillPie(TIN_W.Brush, x2 - 4, y2 - 4, 8, 8, 0, 360);
+                g.DrawLine(TIN_W, x1, y1, x2, y2);
+                g.DrawLine(TIN_N, x1, y1, x2, y2);
             }
         }
 

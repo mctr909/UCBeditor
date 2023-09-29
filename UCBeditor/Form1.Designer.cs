@@ -47,6 +47,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbSolid = new System.Windows.Forms.ToolStripButton();
             this.tsbAlpha = new System.Windows.Forms.ToolStripButton();
+            this.tsbNothing = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbFront = new System.Windows.Forms.ToolStripButton();
@@ -147,6 +148,7 @@
             this.toolStripSeparator4,
             this.tsbSolid,
             this.tsbAlpha,
+            this.tsbNothing,
             this.toolStripSeparator10,
             this.toolStripSeparator11,
             this.tsbFront,
@@ -280,6 +282,16 @@
             this.tsbAlpha.Size = new System.Drawing.Size(23, 22);
             this.tsbAlpha.Text = "部品透過";
             this.tsbAlpha.Click += new System.EventHandler(this.tsbAlpha_Click);
+            // 
+            // tsbNothing
+            // 
+            this.tsbNothing.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbNothing.Image = ((System.Drawing.Image)(resources.GetObject("tsbNothing.Image")));
+            this.tsbNothing.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbNothing.Name = "tsbNothing";
+            this.tsbNothing.Size = new System.Drawing.Size(23, 22);
+            this.tsbNothing.Text = "部品を表示しない";
+            this.tsbNothing.Click += new System.EventHandler(this.tsbNothing_Click);
             // 
             // toolStripSeparator10
             // 
@@ -570,7 +582,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripButton tsbSolid;
 		private System.Windows.Forms.ToolStripButton tsbAlpha;
-		private System.Windows.Forms.ToolStripButton tsbFront;
+        private System.Windows.Forms.ToolStripButton tsbNothing;
+        private System.Windows.Forms.ToolStripButton tsbFront;
 		private System.Windows.Forms.ToolStripButton tsbBack;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem 新規作成NToolStripMenuItem;

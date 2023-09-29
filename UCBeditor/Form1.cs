@@ -129,16 +129,24 @@ namespace UCBeditor {
         }
 
         private void tsbSolid_Click(object sender, EventArgs e) {
-			tsbAlpha.Checked = false;
-			tsbSolid.Checked = true;
-		}
+            tsbSolid.Checked = true;
+            tsbAlpha.Checked = false;
+            tsbNothing.Checked = false;
+        }
 
 		private void tsbAlpha_Click(object sender, EventArgs e) {
-			tsbSolid.Checked = false;
-			tsbAlpha.Checked = true;
-		}
+            tsbSolid.Checked = false;
+            tsbAlpha.Checked = true;
+            tsbNothing.Checked = false;
+        }
 
-		private void tsbFront_Click(object sender, EventArgs e) {
+		private void tsbNothing_Click(object sender, EventArgs e) {
+            tsbSolid.Checked = false;
+            tsbAlpha.Checked = false;
+            tsbNothing.Checked = true;
+        }
+
+        private void tsbFront_Click(object sender, EventArgs e) {
             tsbFront.Checked = true;
             tsbBack.Checked = false;
         }
@@ -197,8 +205,6 @@ namespace UCBeditor {
 				return;
 			}
 
-            Item rec;
-
 			switch (mEditMode) {
 			case EditMode.SELECT:
 				mRect = new Rect();
@@ -206,76 +212,44 @@ namespace UCBeditor {
 				mRect.B = mEndPos;
 				mIsDrag = false;
 				break;
-
 			case EditMode.WIRE:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-                    rec = new Item(mBeginPos, mEndPos, mWireColor);
-                    mList.Add(rec);
-                }
+					addParts(new Item(mBeginPos, mEndPos, mWireColor));
+				}
 				mIsDrag = false;
 				break;
-            case EditMode.TIN:
-                if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-                    rec = new Item(mBeginPos, mEndPos);
-                    mList.Add(rec);
-                }
-                mIsDrag = false;
-                break;
-            case EditMode.LAND:
-				rec = new Item(mEndPos);
-				mList.Add(rec);
+			case EditMode.TIN:
+				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+					addParts(new Item(mBeginPos, mEndPos));
+				}
+				mIsDrag = false;
 				break;
-			case EditMode.PARTS:
-                rec = new Item(
+			case EditMode.LAND:
+				addParts(new Item(mEndPos));
+				break;
+			case EditMode.PARTS: {
+				var rec = new Item(
 					mEndPos, mCurRotate,
 					mSelectedParts.Group,
 					mSelectedParts.Name
 				);
-				{
-					double recHeight;
-					if (mPartsList.ContainsKey(mSelectedParts.Group) &&
-						mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
-                        var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
-                        recHeight = item.IsSMD ? -item.Height : item.Height;
-                    } else {
-						recHeight = 0;
-					}
-					var tmp = new List<Item>();
-					var idx = 0;
-					for(; idx < mList.Count; idx++) {
-						var p = mList[idx];
-                        double listHeight;
-                        if (p.Type == Item.EType.PARTS &&
-							mPartsList.ContainsKey(p.PartsGroup) &&
-                            mPartsList[p.PartsGroup].ContainsKey(p.PartsName)) {
-							var item = mPartsList[p.PartsGroup][p.PartsName];
-							listHeight = item.IsSMD ? -item.Height : item.Height;
-                        } else {
-                            listHeight = 0;
-                        }
-						if (recHeight < listHeight) {
-							break;
-                        }
-                        tmp.Add(p);
-                    }
-					tmp.Add(rec);
-					for (; idx < mList.Count; idx++) {
-                        var p = mList[idx];
-                        tmp.Add(p);
-                    }
-					mList.Clear();
-                    mList.AddRange(tmp);
+				if (mPartsList.ContainsKey(mSelectedParts.Group) &&
+					mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
+					var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
+					rec.Height = item.IsSMD ? -item.Height : item.Height;
 				}
+				addParts(rec);
 				break;
 			}
+			}
 
-			foreach (var p in mClipBoard) {
-				rec = p;
+            foreach (var p in mClipBoard) {
+				var rec = p;
 				rec.Begin.X += mEndPos.X;
 				rec.Begin.Y += mEndPos.Y;
 				rec.End.X += mEndPos.X;
 				rec.End.Y += mEndPos.Y;
-				mList.Add(rec);
+                addParts(rec);
 			}
 			mClipBoard.Clear();
 		}
@@ -533,7 +507,7 @@ namespace UCBeditor {
 			picBoard.Image = bmp;
 		}
 
-		private void selectLine(ToolStripButton btn) {
+		void selectLine(ToolStripButton btn) {
 			tsbCursor.Checked = tsbCursor == btn;
 			tsbLand.Checked = tsbLand == btn;
             tsbTin.Checked = tsbTin == btn;
@@ -576,7 +550,7 @@ namespace UCBeditor {
 			selectParts(new PartsInfo());
 		}
 
-		private void selectParts(PartsInfo parts) {
+		void selectParts(PartsInfo parts) {
 			mSelectedParts = parts;
             mRect = new Rect();
 			foreach (var ctrl in pnlParts.Controls) {
@@ -596,7 +570,7 @@ namespace UCBeditor {
 			}
 		}
 
-		private void setEndPos() {
+		void setEndPos() {
             mMousePos = picBoard.PointToClient(Cursor.Position);
 			int ox, oy;
             switch (mCurRotate) {
@@ -614,7 +588,7 @@ namespace UCBeditor {
             mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / mCurGridWidth + 0.5) * mCurGridWidth;
         }
 
-		private void saveFile(string filePath) {
+		void saveFile(string filePath) {
 			try {
 				var fs = new FileStream(filePath, FileMode.Create);
 				var sw = new StreamWriter(fs);
@@ -630,7 +604,7 @@ namespace UCBeditor {
 			}
 		}
 
-		private Point nearPointOnLine(Item record, Point point) {
+		Point nearPointOnLine(Item record, Point point) {
 			var abX = record.End.X - record.Begin.X;
 			var abY = record.End.Y - record.Begin.Y;
 			var apX = point.X - record.Begin.X;
@@ -652,14 +626,14 @@ namespace UCBeditor {
 			}
 		}
 
-		private bool isOnLine(Item record, Point point) {
+		bool isOnLine(Item record, Point point) {
 			var p = nearPointOnLine(record, point);
 			var sx = p.X - point.X;
 			var sy = p.Y - point.Y;
 			return (Math.Sqrt(sx * sx + sy * sy) < 6.0);
 		}
 
-		private bool isOnLine(Item record, Rect rect) {
+		bool isOnLine(Item record, Rect rect) {
 			var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
 			var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
 			var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
@@ -673,13 +647,43 @@ namespace UCBeditor {
 				rectX1 <= rx2 && rx2 <= rectX2 && rectY1 <= ry2 && ry2 <= rectY2);
 		}
 
-		private void drawList(Graphics g) {
+		void addParts(Item newItem) {
+            var tmp = new List<Item>();
+            var idx = 0;
+            for (; idx < mList.Count; idx++) {
+                var p = mList[idx];
+                double listHeight;
+                if (p.Type == Item.EType.PARTS &&
+                    mPartsList.ContainsKey(p.PartsGroup) &&
+                    mPartsList[p.PartsGroup].ContainsKey(p.PartsName)) {
+                    var item = mPartsList[p.PartsGroup][p.PartsName];
+                    listHeight = item.IsSMD ? -p.Height : p.Height;
+                } else {
+                    listHeight = p.Height;
+                }
+                if (newItem.Height < listHeight) {
+                    break;
+                }
+                tmp.Add(p);
+            }
+            tmp.Add(newItem);
+            for (; idx < mList.Count; idx++) {
+                tmp.Add(mList[idx]);
+            }
+            mList.Clear();
+            mList.AddRange(tmp);
+        }
+
+		void drawList(Graphics g) {
 			foreach (var d in mList) {
 				if (Item.EType.PARTS == d.Type) {
 					continue;
 				}
                 d.Draw(g, tsbBack.Checked, isOnLine(d, mMousePos) || isOnLine(d, mRect));
             }
+			if (tsbNothing.Checked) {
+				return;
+			}
 			foreach (var d in mList) {
 				if (Item.EType.PARTS != d.Type) {
 					continue;
@@ -700,7 +704,7 @@ namespace UCBeditor {
 			}
 		}
 
-		private void drawClipBoard(Graphics g) {
+		void drawClipBoard(Graphics g) {
             foreach (var d in mClipBoard) {
                 if (Item.EType.PARTS == d.Type) {
                     continue;
@@ -720,7 +724,7 @@ namespace UCBeditor {
 			}
 		}
 
-		private void drawCur(Graphics g) {
+		void drawCur(Graphics g) {
 			switch (mEditMode) {
 			case EditMode.SELECT:
 				if (mIsDrag) {
