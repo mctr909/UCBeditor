@@ -66,6 +66,7 @@
 			<terminal x="8" y="16"/>
 		</item>
 		<item name="DO-41" height="5">
+			<offset x="8" y="0"/>
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
