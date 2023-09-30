@@ -164,6 +164,9 @@ namespace UCBeditor {
 			case 1:
 				mCurGridWidth = BaseGridWidth / 2;
 				break;
+			case 2:
+				mCurGridWidth = BaseGridWidth / 4;
+				break;
 			}
 		}
 		#endregion
@@ -571,22 +574,33 @@ namespace UCBeditor {
 		}
 
 		void setEndPos() {
-            mMousePos = picBoard.PointToClient(Cursor.Position);
+			mMousePos = picBoard.PointToClient(Cursor.Position);
 			int ox, oy;
-            switch (mCurRotate) {
-            case RotateFlipType.Rotate90FlipNone:
-            case RotateFlipType.Rotate270FlipNone:
-                ox = mSelectedParts.Offset.X;
-                oy = mSelectedParts.Offset.Y;
-                break;
-            default:
-                ox = mSelectedParts.Offset.Y;
-                oy = mSelectedParts.Offset.X;
-                break;
-            }
-            mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / mCurGridWidth + 0.5) * mCurGridWidth;
-            mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / mCurGridWidth + 0.5) * mCurGridWidth;
-        }
+			switch (mCurRotate) {
+			case RotateFlipType.Rotate90FlipNone:
+			case RotateFlipType.Rotate270FlipNone:
+				ox = mSelectedParts.Offset.X;
+				oy = mSelectedParts.Offset.Y;
+				break;
+			default:
+				ox = mSelectedParts.Offset.Y;
+				oy = mSelectedParts.Offset.X;
+				break;
+			}
+			int snap;
+			switch (mEditMode) {
+			case EditMode.LAND:
+			case EditMode.TIN:
+			case EditMode.PARTS:
+				snap = 16;
+				break;
+			default:
+				snap = mCurGridWidth;
+				break;
+			}
+			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / snap + 0.5) * snap;
+			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / snap + 0.5) * snap;
+		}
 
 		void saveFile(string filePath) {
 			try {
