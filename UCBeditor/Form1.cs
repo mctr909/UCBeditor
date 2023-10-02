@@ -450,19 +450,19 @@ namespace UCBeditor {
                 addItem(new Item(mEndPos));
                 break;
             case EditMode.PARTS: {
-                var rec = new Item(
-                    mEndPos, mCurRotate,
-                    mSelectedParts.Group,
-                    mSelectedParts.Name
-                );
-                if (mPartsList.ContainsKey(mSelectedParts.Group) &&
-                    mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
-                    var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
-                    rec.Height = item.Height;
-                }
-                addItem(rec);
-                break;
-            }
+				var rec = new Item(
+					mEndPos, mCurRotate,
+					mSelectedParts.Group,
+					mSelectedParts.Name
+				);
+				if (mPartsList.ContainsKey(mSelectedParts.Group) &&
+					mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
+					var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
+					rec.Height = item.IsSMD ? -item.Height : item.Height;
+				}
+				addItem(rec);
+				break;
+			}
             }
 
             foreach (var p in mClipBoard) {
@@ -611,30 +611,11 @@ namespace UCBeditor {
 		}
 
 		void addItem(Item newItem) {
-            var tmp = new List<Item>();
-            var idx = 0;
-            for (; idx < mList.Count; idx++) {
-                var p = mList[idx];
-                double listHeight;
-                if (p.Type == Item.EType.PARTS &&
-                    mPartsList.ContainsKey(p.Group) &&
-                    mPartsList[p.Group].ContainsKey(p.Name)) {
-                    var item = mPartsList[p.Group][p.Name];
-                    listHeight = item.IsSMD ? -p.Height : p.Height;
-                } else {
-                    listHeight = p.Height;
-                }
-                if (newItem.Height < listHeight) {
-                    break;
-                }
-                tmp.Add(p);
-            }
-            tmp.Add(newItem);
-            for (; idx < mList.Count; idx++) {
-                tmp.Add(mList[idx]);
-            }
-            mList.Clear();
-            mList.AddRange(tmp);
+            mList.Add(newItem);
+			mList.Sort((a, b) => {
+				var diff = b.Height - a.Height;
+				return 0 == diff ? 0 : diff < 0 ? -1 : 1;
+			});
         }
 
 		void drawList(Graphics g) {

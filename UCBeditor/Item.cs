@@ -100,7 +100,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             Group = "";
             Name = "";
-            Height = 0.1;
+            Height = -0.1;
             mWireColor = EWire.BLACK;
         }
 
