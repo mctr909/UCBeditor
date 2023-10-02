@@ -173,7 +173,7 @@ namespace UCBeditor {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec.Type == Item.EType.PARTS) {
-						var item = mPartsList[rec.PartsGroup][rec.PartsName];
+						var item = mPartsList[rec.Group][rec.Name];
 						size = item.Size;
 					} else {
 						size = 0;
@@ -219,7 +219,7 @@ namespace UCBeditor {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec.Type == Item.EType.PARTS) {
-                        var item = mPartsList[rec.PartsGroup][rec.PartsName];
+                        var item = mPartsList[rec.Group][rec.Name];
 						size = item.Size;
                     } else {
 						size = 0;
@@ -617,9 +617,9 @@ namespace UCBeditor {
                 var p = mList[idx];
                 double listHeight;
                 if (p.Type == Item.EType.PARTS &&
-                    mPartsList.ContainsKey(p.PartsGroup) &&
-                    mPartsList[p.PartsGroup].ContainsKey(p.PartsName)) {
-                    var item = mPartsList[p.PartsGroup][p.PartsName];
+                    mPartsList.ContainsKey(p.Group) &&
+                    mPartsList[p.Group].ContainsKey(p.Name)) {
+                    var item = mPartsList[p.Group][p.Name];
                     listHeight = item.IsSMD ? -p.Height : p.Height;
                 } else {
                     listHeight = p.Height;
@@ -638,31 +638,34 @@ namespace UCBeditor {
         }
 
 		void drawList(Graphics g) {
-			foreach (var d in mList) {
-				if (Item.EType.PARTS == d.Type) {
+			var count = mList.Count;
+			var inc = tsbBack.Checked ? 1 : -1;
+			for (int i = tsbBack.Checked ? 0 : (count - 1); 0 <= i && i < count; i += inc) {
+				var item = mList[i];
+				if (Item.EType.PARTS == item.Type) {
 					if (tsbNothing.Checked) {
 						continue;
 					}
-					if (!mPartsList.ContainsKey(d.PartsGroup) || !mPartsList[d.PartsGroup].ContainsKey(d.PartsName)) {
+					if (!mPartsList.ContainsKey(item.Group) || !mPartsList[item.Group].ContainsKey(item.Name)) {
 						continue;
 					}
-					var item = mPartsList[d.PartsGroup][d.PartsName];
-					var filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
-					var selected = d.isSelected(mMousePos) || d.isSelected(mRect);
-                    if (tsbTransparent.Checked || (tsbBack.Checked ^ item.IsSMD) || selected) {
+					var p = mPartsList[item.Group][item.Name];
+					var filePath = item.Group + "\\" + item.Name + ".png";
+					var selected = item.isSelected(mMousePos) || item.isSelected(mRect);
+					if (tsbTransparent.Checked || (tsbBack.Checked ^ p.IsSMD) || selected) {
 						filePath = ElementPath + "alpha\\" + filePath;
 					} else {
 						filePath = ElementPath + "solid\\" + filePath;
 					}
 					var temp = new Bitmap(filePath);
-					temp.RotateFlip(d.Rotate);
-					g.DrawImage(temp, new Point(d.Begin.X - item.Size, d.Begin.Y - item.Size));
+					temp.RotateFlip(item.Rotate);
+					g.DrawImage(temp, new Point(item.Begin.X - p.Size, item.Begin.Y - p.Size));
 					if (selected) {
-						g.DrawArc(Pens.Red, d.Begin.X - 3, d.Begin.Y - 3, 6, 6, 0, 360);
+						g.DrawArc(Pens.Red, item.Begin.X - 3, item.Begin.Y - 3, 6, 6, 0, 360);
 					}
 				} else {
-                    d.Draw(g, tsbBack.Checked, d.isSelected(mMousePos) || d.isSelected(mRect));
-                }
+					item.Draw(g, tsbBack.Checked, item.isSelected(mMousePos) || item.isSelected(mRect));
+				}
 			}
 		}
 
@@ -677,11 +680,11 @@ namespace UCBeditor {
 				if (Item.EType.PARTS != d.Type) {
 					continue;
 				}
-				var filePath = ElementPath + "alpha\\" + d.PartsGroup + "\\" + d.PartsName + ".png";
+				var filePath = ElementPath + "alpha\\" + d.Group + "\\" + d.Name + ".png";
 				var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(d.Rotate);
-				var item = mPartsList[d.PartsGroup][d.PartsName];
+				var item = mPartsList[d.Group][d.Name];
 				g.DrawImage(temp, new Point(b.X - item.Size, b.Y - item.Size));
 			}
 		}

@@ -49,16 +49,16 @@ namespace UCBeditor {
         public Point Begin;
         public Point End;
         public RotateFlipType Rotate;
-        public string PartsGroup;
-        public string PartsName;
+        public string Group;
+        public string Name;
         public double Height;
 
         EWire mWireColor;
 
         public Item(string line) {
             Rotate = RotateFlipType.RotateNoneFlipNone;
-            PartsGroup = "";
-            PartsName = "";
+            Group = "";
+            Name = "";
             Height = 0;
             mWireColor = EWire.BLACK;
             var cols = line.Split('\t');
@@ -80,8 +80,8 @@ namespace UCBeditor {
                 Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
                 End = Begin;
                 Rotate = (RotateFlipType)int.Parse(cols[3]);
-                PartsGroup = cols[4];
-                PartsName = cols[5];
+                Group = cols[4];
+                Name = cols[5];
                 break;
             case "LAND":
             default:
@@ -98,8 +98,8 @@ namespace UCBeditor {
             Begin = pos;
             End = pos;
             Rotate = RotateFlipType.RotateNoneFlipNone;
-            PartsGroup = "";
-            PartsName = "";
+            Group = "";
+            Name = "";
             Height = 0.1;
             mWireColor = EWire.BLACK;
         }
@@ -109,8 +109,8 @@ namespace UCBeditor {
             Begin = begin;
             End = end;
             Rotate = RotateFlipType.RotateNoneFlipNone;
-            PartsGroup = "";
-            PartsName = "";
+            Group = "";
+            Name = "";
             Height = 0;
             mWireColor = EWire.BLACK;
         }
@@ -120,8 +120,8 @@ namespace UCBeditor {
             Begin = begin;
             End = end;
             Rotate = RotateFlipType.RotateNoneFlipNone;
-            PartsGroup = "";
-            PartsName = "";
+            Group = "";
+            Name = "";
             Height = 100;
             mWireColor = color;
         }
@@ -131,8 +131,8 @@ namespace UCBeditor {
             Begin = pos;
             End = pos;
             Rotate = rot;
-            PartsGroup = group;
-            PartsName = name;
+            Group = group;
+            Name = name;
             Height = 0;
             mWireColor = EWire.BLACK;
         }
@@ -198,8 +198,8 @@ namespace UCBeditor {
                     Type,
                     Begin.X, Begin.Y,
                     (int)Rotate,
-                    PartsGroup,
-                    PartsName
+                    Group,
+                    Name
                 );
                 break;
             }
