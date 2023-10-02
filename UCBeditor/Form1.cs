@@ -620,8 +620,8 @@ namespace UCBeditor {
 
 		void drawList(Graphics g) {
 			var count = mList.Count;
-			var inc = tsbBack.Checked ? 1 : -1;
-			for (int i = tsbBack.Checked ? 0 : (count - 1); 0 <= i && i < count; i += inc) {
+			var inc = tsbBack.Checked ? -1 : 1;
+			for (int i = tsbBack.Checked ? (count - 1) : 0; 0 <= i && i < count; i += inc) {
 				var item = mList[i];
 				if (Item.EType.PARTS == item.Type) {
 					if (tsbNothing.Checked) {
