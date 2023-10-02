@@ -1,4 +1,4 @@
-<elements>
+<packages>
 	<group name="R">
 		<item name="1608" height="1" type="smd">
 			<offset x="8" y="0"/>
@@ -134,4 +134,4 @@
 			<terminal x="52" y="4"/>
 		</item>
 	</group>
-</elements>
+</packages>

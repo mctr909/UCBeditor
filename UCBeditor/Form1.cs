@@ -21,7 +21,7 @@ namespace UCBeditor {
 			LAND
 		}
 
-		class PartsInfo {
+		class PackageInfo {
 			public string Group;
 			public string Name;
 			public bool IsSMD;
@@ -32,7 +32,7 @@ namespace UCBeditor {
 			public List<Point> Terminals = new List<Point>();
 		}
 
-		Dictionary<string, Dictionary<string, PartsInfo>> mPartsList = new Dictionary<string, Dictionary<string, PartsInfo>>();
+		Dictionary<string, Dictionary<string, PackageInfo>> mPackageList = new Dictionary<string, Dictionary<string, PackageInfo>>();
         List<Item> mList = new List<Item>();
         List<Item> mClipBoard = new List<Item>();
 		EditMode mEditMode = EditMode.WIRE;
@@ -47,7 +47,7 @@ namespace UCBeditor {
 		Point mEndPos = new Point();
 		Rect mRect = new Rect();
 
-        PartsInfo mSelectedParts;
+        PackageInfo mSelectedParts;
 
 		public Form1() {
 			InitializeComponent();
@@ -56,8 +56,8 @@ namespace UCBeditor {
 			picBoard.Width = mCurGridWidth * 80;
 			picBoard.Height = mCurGridWidth * 80;
 
-			loadPartsXML(ElementPath + "elements.xml");
-			setPartsList();
+			loadPackageXML(ElementPath + "packages.xml");
+			setPackageList();
 			selectLine(tsbCursor);
 
 			tscGridWidth.SelectedIndex = 0;
@@ -173,7 +173,7 @@ namespace UCBeditor {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec.Type == Item.EType.PARTS) {
-						var item = mPartsList[rec.Group][rec.Name];
+						var item = mPackageList[rec.Group][rec.Name];
 						size = item.Size;
 					} else {
 						size = 0;
@@ -219,7 +219,7 @@ namespace UCBeditor {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec.Type == Item.EType.PARTS) {
-                        var item = mPartsList[rec.Group][rec.Name];
+                        var item = mPackageList[rec.Group][rec.Name];
 						size = item.Size;
                     } else {
 						size = 0;
@@ -455,9 +455,9 @@ namespace UCBeditor {
 					mSelectedParts.Group,
 					mSelectedParts.Name
 				);
-				if (mPartsList.ContainsKey(mSelectedParts.Group) &&
-					mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
-					var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
+				if (mPackageList.ContainsKey(mSelectedParts.Group) &&
+					mPackageList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
+					var item = mPackageList[mSelectedParts.Group][mSelectedParts.Name];
 					rec.Height = item.IsSMD ? -item.Height : item.Height;
 				}
 				addItem(rec);
@@ -542,10 +542,10 @@ namespace UCBeditor {
 				mWireColor = Item.EWire.YELLOW;
 			}
 
-			selectParts(new PartsInfo());
+			selectParts(new PackageInfo());
 		}
 
-		void selectParts(PartsInfo parts) {
+		void selectParts(PackageInfo parts) {
 			mSelectedParts = parts;
             mRect = new Rect();
 			foreach (var ctrl in pnlParts.Controls) {
@@ -627,10 +627,10 @@ namespace UCBeditor {
 					if (tsbNothing.Checked) {
 						continue;
 					}
-					if (!mPartsList.ContainsKey(item.Group) || !mPartsList[item.Group].ContainsKey(item.Name)) {
+					if (!mPackageList.ContainsKey(item.Group) || !mPackageList[item.Group].ContainsKey(item.Name)) {
 						continue;
 					}
-					var p = mPartsList[item.Group][item.Name];
+					var p = mPackageList[item.Group][item.Name];
 					var filePath = item.Group + "\\" + item.Name + ".png";
 					var selected = item.isSelected(mMousePos) || item.isSelected(mRect);
 					if (tsbTransparent.Checked || (tsbBack.Checked ^ p.IsSMD) || selected) {
@@ -665,7 +665,7 @@ namespace UCBeditor {
 				var b = new Point(d.Begin.X + mEndPos.X, d.Begin.Y + mEndPos.Y);
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(d.Rotate);
-				var item = mPartsList[d.Group][d.Name];
+				var item = mPackageList[d.Group][d.Name];
 				g.DrawImage(temp, new Point(b.X - item.Size, b.Y - item.Size));
 			}
 		}
@@ -720,14 +720,14 @@ namespace UCBeditor {
 			}
 		}
 
-		void loadPartsXML(string xmlPath) {
-			mPartsList.Clear();
+		void loadPackageXML(string xmlPath) {
+			mPackageList.Clear();
 			if (!File.Exists(xmlPath)) {
 				return;
 			}
 			var xml = XmlReader.Create(xmlPath);
 			var currentGroup = "";
-			var currentParts = new PartsInfo();
+			var currentParts = new PackageInfo();
 			while (xml.Read()) {
 				switch (xml.NodeType) {
 				case XmlNodeType.Element:
@@ -736,7 +736,7 @@ namespace UCBeditor {
 						currentGroup = xml.GetAttribute("name").ToUpper();
 						break;
 					case "item":
-						currentParts = new PartsInfo();
+						currentParts = new PackageInfo();
 						currentParts.Group = currentGroup;
 						currentParts.Name = xml.GetAttribute("name");
 						currentParts.IsSMD = xml.GetAttribute("type") == "smd";
@@ -761,10 +761,10 @@ namespace UCBeditor {
 				case XmlNodeType.EndElement:
 					switch (xml.Name) {
 					case "item":
-						if (!mPartsList.ContainsKey(currentGroup)) {
-							mPartsList.Add(currentGroup, new Dictionary<string, PartsInfo>());
+						if (!mPackageList.ContainsKey(currentGroup)) {
+							mPackageList.Add(currentGroup, new Dictionary<string, PackageInfo>());
 						}
-						mPartsList[currentGroup].Add(currentParts.Name, currentParts);
+						mPackageList[currentGroup].Add(currentParts.Name, currentParts);
 						break;
 					}
 					break;
@@ -774,8 +774,8 @@ namespace UCBeditor {
 			}
 		}
 
-		void setPartsList() {
-			foreach (var group in mPartsList) {
+		void setPackageList() {
+			foreach (var group in mPackageList) {
 				var groupIcon = ElementPath + "group\\" + group.Key + ".png";
 				if (!File.Exists(groupIcon)) {
 					continue;
@@ -803,7 +803,7 @@ namespace UCBeditor {
 					item.Value.Size = solid.Width / 2;
 				}
 			}
-			foreach (var group in mPartsList) {
+			foreach (var group in mPackageList) {
 				var tsb = new ToolStripButton();
 				tsb.Name = group.Key;
 				tsb.Image = new Bitmap(ElementPath + "group\\" + group.Key + ".png");

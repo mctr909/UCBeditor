@@ -1,0 +1,113 @@
+<parts>
+	<group name="R">
+		<element name="RESISTOR">
+		</element>
+		<element name="POT">
+		</element>
+	</group>
+	<group name="C">
+		<element name="CAPCITOR">
+		</element>
+	</group>
+	<group name="L">
+		<element name="INDUCTOR">
+		</element>
+		<element name="TRANSFORMER">
+		</element>
+	</group>
+	<group name="D">
+		<element name="DIODE">
+		</element>
+		<element name="LED">
+		</element>
+		<element name="ZENNER">
+		</element>
+		<element name="VARICAP">
+		</element>
+	</group>
+	<group name="TR">
+		<element name="BJT(NPN)">
+			<item package="TR/TO-92" id="2SC1815 GR">
+				<terminal index="1" name="C" />
+				<terminal index="0" name="E" />
+				<terminal index="2" name="B" />
+				<attribute hfe="300" />
+				<rating ic="150m" vceo="50" vebo="5" pc="400m" />
+			</item>
+			<item package="TR/TO-220" id="2SD880">
+				<terminal index="1" name="C" />
+				<terminal index="2" name="E" />
+				<terminal index="0" name="B" />
+				<attribute hfe="200" />
+				<rating ic="3" vceo="60" vebo="7" pc="1.5" />
+			</item>
+		</element>
+		<element name="BJT(PNP)">
+			<item package="TR/TO-92" id="2SA1015 GR">
+				<terminal index="1" name="C" />
+				<terminal index="0" name="E" />
+				<terminal index="2" name="B" />
+				<attribute hfe="300" />
+				<rating ic="150m" vceo="50" vebo="5" pc="400m" />
+			</item>
+			<item package="TR/TO-220" id="2SB834">
+				<terminal index="1" name="C" />
+				<terminal index="2" name="E" />
+				<terminal index="0" name="B" />
+				<attribute hfe="200" />
+				<rating ic="3" vceo="60" vebo="7" pc="1.5" />
+			</item>
+		</element>
+		<element name="MOSFET(Nch)">
+			<item package="TR/TO-220" id="EKI04036">
+				<terminal index="1" name="D" />
+				<terminal index="2" name="S" />
+				<terminal index="0" name="G" />
+				<attribute vth="4.5" rds="3.1m" vgs="10" />
+				<rating id="80" vdss="40" vgss="20" rthc="1.1" rtha="62.5" />
+			</item>
+		</element>
+		<element name="MOSFET(Pch)">
+		</element>
+	</group>
+	<group name="IC">
+		<element name="OPAMP">
+			<item package="IC/DIP8" id="LM358">
+				<inner element="OPAMP">
+					<terminal index="0" name="In1+" />
+					<terminal index="1" name="In1-" />
+					<terminal index="2" name="Out1" />
+					<terminal index="3" name="Vcc" />
+					<terminal index="7" name="Vee" />
+				</inner>
+				<inner element="OPAMP">
+					<terminal index="6" name="In2+" />
+					<terminal index="5" name="In2-" />
+					<terminal index="4" name="Out2" />
+					<terminal index="3" name="Vcc" />
+					<terminal index="7" name="Vee" />
+				</inner>
+				<attribute/>
+				<rating/>
+			</item>
+		</element>
+		<element name="COMPOSITE">
+			<item package="IC/SOT-23-6" id="XXXX">
+				<inner element="BJT(NPN)">
+					<terminal index="1" name="E1" />
+					<terminal index="2" name="C1" />
+					<terminal index="0" name="B1" />
+					<attribute hfe="300" />
+					<rating ic="150m" vceo="50" vebo="5" pc="400m" />
+				</inner>
+				<inner element="BJT(NPN)">
+					<terminal index="4" name="E2" />
+					<terminal index="5" name="C2" />
+					<terminal index="3" name="B2" />
+					<attribute hfe="300" />
+					<rating ic="150m" vceo="50" vebo="5" pc="400m" />
+				</inner>
+			</item>
+		</element>
+	</group>
+</parts>
