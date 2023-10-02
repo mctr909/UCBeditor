@@ -7,6 +7,8 @@ using System.Xml;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
+        readonly Pen BoardColor = new Pen(Color.FromArgb(239, 255, 239), 0.5f);
+        readonly Pen BoardLineColor = new Pen(Color.FromArgb(255, 255, 255), 4);
         readonly Pen GridMajorColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
         readonly Pen GridMinorColor = new Pen(Color.FromArgb(211, 211, 211), 0.5f);
         readonly Pen DragColor = Pens.Blue;
@@ -480,12 +482,13 @@ namespace UCBeditor {
         private void timer1_Tick(object sender, EventArgs e) {
 			var bmp = new Bitmap(picBoard.Width, picBoard.Height);
 			var g = Graphics.FromImage(bmp);
+			var lineOfs = mCurGridWidth / 2;
 
-			g.FillRectangle(Pens.White.Brush, 0, 0, bmp.Width, bmp.Height);
+            g.FillRectangle(BoardColor.Brush, 0, 0, bmp.Width, bmp.Height);
 
-			for (var y = 0; y < bmp.Height; y += mCurGridWidth) {
-				for (var x = 0; x < bmp.Width; x += mCurGridWidth) {
-					if (0 != x % BaseGridWidth || 0 != y % BaseGridWidth) {
+			for (int y = 0; y < bmp.Height; y += mCurGridWidth) {
+				for (int x = 0; x < bmp.Width; x += mCurGridWidth) {
+                    if (0 != x % BaseGridWidth || 0 != y % BaseGridWidth) {
 						g.DrawRectangle(GridMinorColor, x, y, 0.5f, 0.5f);
 					} else {
 						g.DrawRectangle(GridMajorColor, x, y, 0.5f, 0.5f);
