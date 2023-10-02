@@ -32,17 +32,6 @@ namespace UCBeditor {
 			public List<Point> Terminals = new List<Point>();
 		}
 
-		struct Rect {
-			public Point A;
-			public Point B;
-			public Rect(Point a, Point b) {
-				A = a;
-				B = b;
-			}
-		}
-
-		string mFilePath = "";
-
 		Dictionary<string, Dictionary<string, PartsInfo>> mPartsList = new Dictionary<string, Dictionary<string, PartsInfo>>();
         List<Item> mList = new List<Item>();
         List<Item> mClipBoard = new List<Item>();
@@ -95,174 +84,11 @@ namespace UCBeditor {
 		}
 		#endregion
 
-		#region ToolStripButton
-		private void tsbCursor_Click(object sender, EventArgs e) {
-			selectLine(tsbCursor);
-		}
-
-		private void tsbLand_Click(object sender, EventArgs e) {
-			selectLine(tsbLand);
-		}
-
-		private void tsbWireBlack_Click(object sender, EventArgs e) {
-			selectLine(tsbWireBlack);
-		}
-
-		private void tsbWireRed_Click(object sender, EventArgs e) {
-			selectLine(tsbWireRed);
-		}
-
-		private void tsbWireBlue_Click(object sender, EventArgs e) {
-			selectLine(tsbWireBlue);
-		}
-
-		private void tsbWireGreen_Click(object sender, EventArgs e) {
-			selectLine(tsbWireGreen);
-		}
-
-		private void tsbWireYellow_Click(object sender, EventArgs e) {
-			selectLine(tsbWireYellow);
-		}
-
-        private void tsbTin_Click(object sender, EventArgs e) {
-            selectLine(tsbTin);
-        }
-
-        private void tsbSolid_Click(object sender, EventArgs e) {
-            tsbSolid.Checked = true;
-            tsbAlpha.Checked = false;
-            tsbNothing.Checked = false;
-        }
-
-		private void tsbAlpha_Click(object sender, EventArgs e) {
-            tsbSolid.Checked = false;
-            tsbAlpha.Checked = true;
-            tsbNothing.Checked = false;
-        }
-
-		private void tsbNothing_Click(object sender, EventArgs e) {
-            tsbSolid.Checked = false;
-            tsbAlpha.Checked = false;
-            tsbNothing.Checked = true;
-        }
-
-        private void tsbFront_Click(object sender, EventArgs e) {
-            tsbFront.Checked = true;
-            tsbBack.Checked = false;
-        }
-
-        private void tsbBack_Click(object sender, EventArgs e) {
-            tsbBack.Checked = true;
-            tsbFront.Checked = false;
-        }
-
-        private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
-			switch (tscGridWidth.SelectedIndex) {
-			case 0:
-				mCurGridWidth = BaseGridWidth;
-				break;
-			case 1:
-				mCurGridWidth = BaseGridWidth / 2;
-				break;
-			case 2:
-				mCurGridWidth = BaseGridWidth / 4;
-				break;
-			}
-		}
-		#endregion
-
-		#region MouseEvent
-		private void picBoard_MouseDown(object sender, MouseEventArgs e) {
-			if (e.Button == MouseButtons.Left) {
-                mMousePos = picBoard.PointToClient(Cursor.Position);
-                mBeginPos.X = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
-                mBeginPos.Y = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
-
-                switch (mEditMode) {
-				case EditMode.SELECT:
-				case EditMode.WIRE:
-				case EditMode.TIN:
-                    mRect = new Rect();
-					mIsDrag = true;
-					break;
-				}
-			}
-
-			if (e.Button == MouseButtons.Right) {
-				var temp = new List<Item>();
-				for (var d = 0; d < mList.Count; ++d) {
-					if (!isOnLine(mList[d], mMousePos)) {
-						temp.Add(mList[d]);
-					}
-				}
-				mList = temp;
-			}
-		}
-
-		private void picBoard_MouseMove(object sender, MouseEventArgs e) {
-			setEndPos();
-		}
-
-		private void picBoard_MouseUp(object sender, MouseEventArgs e) {
-			if (e.Button != MouseButtons.Left) {
-				return;
-			}
-
-			switch (mEditMode) {
-			case EditMode.SELECT:
-				mRect = new Rect();
-				mRect.A = mBeginPos;
-				mRect.B = mEndPos;
-				mIsDrag = false;
-				break;
-			case EditMode.WIRE:
-				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					addParts(new Item(mBeginPos, mEndPos, mWireColor));
-				}
-				mIsDrag = false;
-				break;
-			case EditMode.TIN:
-				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					addParts(new Item(mBeginPos, mEndPos));
-				}
-				mIsDrag = false;
-				break;
-			case EditMode.LAND:
-				addParts(new Item(mEndPos));
-				break;
-			case EditMode.PARTS: {
-				var rec = new Item(
-					mEndPos, mCurRotate,
-					mSelectedParts.Group,
-					mSelectedParts.Name
-				);
-				if (mPartsList.ContainsKey(mSelectedParts.Group) &&
-					mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
-					var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
-					rec.Height = item.IsSMD ? -item.Height : item.Height;
-				}
-				addParts(rec);
-				break;
-			}
-			}
-
-            foreach (var p in mClipBoard) {
-				var rec = p;
-				rec.Begin.X += mEndPos.X;
-				rec.Begin.Y += mEndPos.Y;
-				rec.End.X += mEndPos.X;
-				rec.End.Y += mEndPos.Y;
-                addParts(rec);
-			}
-			mClipBoard.Clear();
-		}
-		#endregion
-
-		#region MenuberEvent
+		#region MenuberEvent [File]
 		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e) {
 			mList.Clear();
 			mClipBoard.Clear();
-			mFilePath = "";
+			Text = "";
 
 			tsbCursor.Checked = true;
 			selectLine(tsbCursor);
@@ -286,14 +112,14 @@ namespace UCBeditor {
 			mList.Clear();
 			while (!sr.EndOfStream) {
 				var rec = new Item(sr.ReadLine());
-				mList.Add(rec);
+				addItem(rec);
 			}
 			sr.Close();
 			fs.Close();
 			sr.Dispose();
 			fs.Dispose();
 
-            mFilePath = filePath;
+            Text = filePath;
             mBeginPos = new Point();
             mEndPos = new Point();
             mRect = new Rect();
@@ -302,8 +128,7 @@ namespace UCBeditor {
 
         private void 上書き保存SToolStripMenuItem_Click(object sender, EventArgs e) {
 			var filePath = "";
-
-			if (string.IsNullOrEmpty(mFilePath) || !File.Exists(mFilePath)) {
+			if (string.IsNullOrEmpty(Text) || !File.Exists(Text)) {
 				saveFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
 				saveFileDialog1.FileName = "";
 				saveFileDialog1.ShowDialog();
@@ -311,9 +136,9 @@ namespace UCBeditor {
 				if (string.IsNullOrEmpty(filePath) || !Directory.Exists(Path.GetDirectoryName(filePath))) {
 					return;
 				}
-				mFilePath = filePath;
+                Text = filePath;
 			} else {
-				filePath = mFilePath;
+				filePath = Text;
 			}
 
 			saveFile(filePath);
@@ -327,11 +152,13 @@ namespace UCBeditor {
 			if (string.IsNullOrEmpty(filePath) || !Directory.Exists(Path.GetDirectoryName(filePath))) {
 				return;
 			}
+            saveFile(filePath);
+            Text = filePath;
+        }
+        #endregion
 
-			saveFile(filePath);
-		}
-
-		private void 選択SToolStripMenuItem_Click(object sender, EventArgs e) {
+        #region MenuberEvent [Edit]
+        private void 選択SToolStripMenuItem_Click(object sender, EventArgs e) {
 			tsbCursor.Checked = true;
 			selectLine(tsbCursor);
 			mClipBoard.Clear();
@@ -342,7 +169,7 @@ namespace UCBeditor {
 			var min = new Point(int.MaxValue, int.MaxValue);
 			for (var d = 0; d < mList.Count; ++d) {
 				var rec = mList[d];
-				if (isOnLine(rec, mRect)) {
+				if (rec.isSelected(mRect)) {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec.Type == Item.EType.PARTS) {
@@ -388,7 +215,7 @@ namespace UCBeditor {
 
 			for (var d = 0; d < mList.Count; ++d) {
                 var rec = mList[d];
-                if (isOnLine(rec, mRect)) {
+                if (rec.isSelected(mRect)) {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec.Type == Item.EType.PARTS) {
@@ -433,14 +260,14 @@ namespace UCBeditor {
 				rec.Begin.Y += mEndPos.Y;
 				rec.End.X += mEndPos.X;
 				rec.End.Y += mEndPos.Y;
-				mList.Add(rec);
+				addItem(rec);
 			}
 		}
 
 		private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) {
 			var temp = new List<Item>();
-			for (var d = 0; d < mList.Count; ++d) {
-				if (!isOnLine(mList[d], mRect)) {
+			for (var d = mList.Count - 1; 0 <= d; --d) {
+				if (!mList[d].isSelected(mRect)) {
 					temp.Add(mList[d]);
 				}
 			}
@@ -483,9 +310,174 @@ namespace UCBeditor {
 			}
 			setEndPos();
 		}
-		#endregion
+        #endregion
 
-		private void timer1_Tick(object sender, EventArgs e) {
+        #region ToolStripButton [Mode]
+        private void tsbCursor_Click(object sender, EventArgs e) {
+            selectLine(tsbCursor);
+        }
+
+        private void tsbLand_Click(object sender, EventArgs e) {
+            selectLine(tsbLand);
+        }
+
+        private void tsbWireBlack_Click(object sender, EventArgs e) {
+            selectLine(tsbWireBlack);
+        }
+
+        private void tsbWireRed_Click(object sender, EventArgs e) {
+            selectLine(tsbWireRed);
+        }
+
+        private void tsbWireBlue_Click(object sender, EventArgs e) {
+            selectLine(tsbWireBlue);
+        }
+
+        private void tsbWireGreen_Click(object sender, EventArgs e) {
+            selectLine(tsbWireGreen);
+        }
+
+        private void tsbWireYellow_Click(object sender, EventArgs e) {
+            selectLine(tsbWireYellow);
+        }
+
+        private void tsbTin_Click(object sender, EventArgs e) {
+            selectLine(tsbTin);
+        }
+        #endregion
+
+        #region ToolStripButton [Display]
+        private void tsbSolid_Click(object sender, EventArgs e) {
+            tsbSolid.Checked = true;
+            tsbTransparent.Checked = false;
+            tsbNothing.Checked = false;
+        }
+
+        private void tsbTransparent_Click(object sender, EventArgs e) {
+            tsbSolid.Checked = false;
+            tsbTransparent.Checked = true;
+            tsbNothing.Checked = false;
+        }
+
+        private void tsbNothing_Click(object sender, EventArgs e) {
+            tsbSolid.Checked = false;
+            tsbTransparent.Checked = false;
+            tsbNothing.Checked = true;
+        }
+
+        private void tsbFront_Click(object sender, EventArgs e) {
+            tsbFront.Checked = true;
+            tsbBack.Checked = false;
+        }
+
+        private void tsbBack_Click(object sender, EventArgs e) {
+            tsbBack.Checked = true;
+            tsbFront.Checked = false;
+        }
+
+        private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
+            switch (tscGridWidth.SelectedIndex) {
+            case 0:
+                mCurGridWidth = BaseGridWidth;
+                break;
+            case 1:
+                mCurGridWidth = BaseGridWidth / 2;
+                break;
+            case 2:
+                mCurGridWidth = BaseGridWidth / 4;
+                break;
+            }
+        }
+        #endregion
+
+        #region MouseEvent
+        private void picBoard_MouseDown(object sender, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Left) {
+                mMousePos = picBoard.PointToClient(Cursor.Position);
+                mBeginPos.X = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
+                mBeginPos.Y = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
+
+                switch (mEditMode) {
+                case EditMode.SELECT:
+                case EditMode.WIRE:
+                case EditMode.TIN:
+                    mRect = new Rect();
+                    mIsDrag = true;
+                    break;
+                }
+            }
+
+            if (e.Button == MouseButtons.Right) {
+                var temp = new List<Item>();
+                for (var d = 0; d < mList.Count; ++d) {
+                    if (!mList[d].isSelected(mMousePos)) {
+                        temp.Add(mList[d]);
+                    }
+                }
+                mList = temp;
+            }
+        }
+
+        private void picBoard_MouseMove(object sender, MouseEventArgs e) {
+            setEndPos();
+        }
+
+        private void picBoard_MouseUp(object sender, MouseEventArgs e) {
+            if (e.Button != MouseButtons.Left) {
+                return;
+            }
+
+            switch (mEditMode) {
+            case EditMode.SELECT:
+                mRect = new Rect();
+                mRect.A = mBeginPos;
+                mRect.B = mEndPos;
+                mIsDrag = false;
+                break;
+            case EditMode.WIRE:
+                if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+                    addItem(new Item(mBeginPos, mEndPos, mWireColor));
+                }
+                mIsDrag = false;
+                break;
+            case EditMode.TIN:
+                if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+                    addItem(new Item(mBeginPos, mEndPos));
+                }
+                mIsDrag = false;
+                break;
+            case EditMode.LAND:
+                addItem(new Item(mEndPos));
+                break;
+            case EditMode.PARTS: {
+                var rec = new Item(
+                    mEndPos, mCurRotate,
+                    mSelectedParts.Group,
+                    mSelectedParts.Name
+                );
+                if (mPartsList.ContainsKey(mSelectedParts.Group) &&
+                    mPartsList[mSelectedParts.Group].ContainsKey(mSelectedParts.Name)) {
+                    var item = mPartsList[mSelectedParts.Group][mSelectedParts.Name];
+                    rec.Height = item.Height;
+                }
+                addItem(rec);
+                break;
+            }
+            }
+
+            foreach (var p in mClipBoard) {
+                var rec = p;
+                rec.Begin.X += mEndPos.X;
+                rec.Begin.Y += mEndPos.Y;
+                rec.End.X += mEndPos.X;
+                rec.End.Y += mEndPos.Y;
+                addItem(rec);
+            }
+            mClipBoard.Clear();
+        }
+        #endregion
+
+        private void timer1_Tick(object sender, EventArgs e) {
 			var bmp = new Bitmap(picBoard.Width, picBoard.Height);
 			var g = Graphics.FromImage(bmp);
 
@@ -618,50 +610,7 @@ namespace UCBeditor {
 			}
 		}
 
-		Point nearPointOnLine(Item record, Point point) {
-			var abX = record.End.X - record.Begin.X;
-			var abY = record.End.Y - record.Begin.Y;
-			var apX = point.X - record.Begin.X;
-			var apY = point.Y - record.Begin.Y;
-
-			var abL2 = abX * abX + abY * abY;
-
-			if (0.0 == abL2) {
-				return record.Begin;
-			}
-
-			var r = (double)(abX * apX + abY * apY) / abL2;
-			if (r <= 0.0) {
-				return record.Begin;
-			} else if (1.0 <= r) {
-				return record.End;
-			} else {
-				return new Point((int)(record.Begin.X + r * abX), (int)(record.Begin.Y + r * abY));
-			}
-		}
-
-		bool isOnLine(Item record, Point point) {
-			var p = nearPointOnLine(record, point);
-			var sx = p.X - point.X;
-			var sy = p.Y - point.Y;
-			return (Math.Sqrt(sx * sx + sy * sy) < 6.0);
-		}
-
-		bool isOnLine(Item record, Rect rect) {
-			var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
-			var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
-			var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
-			var rectY2 = rect.B.Y < rect.A.Y ? rect.A.Y : rect.B.Y;
-			var rx1 = record.End.X < record.Begin.X ? record.End.X : record.Begin.X;
-			var rx2 = record.End.X < record.Begin.X ? record.Begin.X : record.End.X;
-			var ry1 = record.End.Y < record.Begin.Y ? record.End.Y : record.Begin.Y;
-			var ry2 = record.End.Y < record.Begin.Y ? record.Begin.Y : record.End.Y;
-
-			return (rectX1 <= rx1 && rx1 <= rectX2 && rectY1 <= ry1 && ry1 <= rectY2 &&
-				rectX1 <= rx2 && rx2 <= rectX2 && rectY1 <= ry2 && ry2 <= rectY2);
-		}
-
-		void addParts(Item newItem) {
+		void addItem(Item newItem) {
             var tmp = new List<Item>();
             var idx = 0;
             for (; idx < mList.Count; idx++) {
@@ -691,30 +640,29 @@ namespace UCBeditor {
 		void drawList(Graphics g) {
 			foreach (var d in mList) {
 				if (Item.EType.PARTS == d.Type) {
-					continue;
-				}
-                d.Draw(g, tsbBack.Checked, isOnLine(d, mMousePos) || isOnLine(d, mRect));
-            }
-			if (tsbNothing.Checked) {
-				return;
-			}
-			foreach (var d in mList) {
-				if (Item.EType.PARTS != d.Type) {
-					continue;
-				}
-				if (!mPartsList.ContainsKey(d.PartsGroup) || !mPartsList[d.PartsGroup].ContainsKey(d.PartsName)) {
-					continue;
-				}
-				var item = mPartsList[d.PartsGroup][d.PartsName];
-				var filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
-				if (tsbAlpha.Checked || (tsbBack.Checked ^ item.IsSMD) || isOnLine(d, mMousePos) || isOnLine(d, mRect)) {
-					filePath = ElementPath + "alpha\\" + filePath;
+					if (tsbNothing.Checked) {
+						continue;
+					}
+					if (!mPartsList.ContainsKey(d.PartsGroup) || !mPartsList[d.PartsGroup].ContainsKey(d.PartsName)) {
+						continue;
+					}
+					var item = mPartsList[d.PartsGroup][d.PartsName];
+					var filePath = d.PartsGroup + "\\" + d.PartsName + ".png";
+					var selected = d.isSelected(mMousePos) || d.isSelected(mRect);
+                    if (tsbTransparent.Checked || (tsbBack.Checked ^ item.IsSMD) || selected) {
+						filePath = ElementPath + "alpha\\" + filePath;
+					} else {
+						filePath = ElementPath + "solid\\" + filePath;
+					}
+					var temp = new Bitmap(filePath);
+					temp.RotateFlip(d.Rotate);
+					g.DrawImage(temp, new Point(d.Begin.X - item.Size, d.Begin.Y - item.Size));
+					if (selected) {
+						g.DrawArc(Pens.Red, d.Begin.X - 3, d.Begin.Y - 3, 6, 6, 0, 360);
+					}
 				} else {
-					filePath = ElementPath + "solid\\" + filePath;
-				}
-				var temp = new Bitmap(filePath);
-				temp.RotateFlip(d.Rotate);
-				g.DrawImage(temp, new Point(d.Begin.X - item.Size, d.Begin.Y - item.Size));
+                    d.Draw(g, tsbBack.Checked, d.isSelected(mMousePos) || d.isSelected(mRect));
+                }
 			}
 		}
 

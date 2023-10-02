@@ -4,6 +4,15 @@ using System.Drawing;
 using System.IO;
 
 namespace UCBeditor {
+    struct Rect {
+        public Point A;
+        public Point B;
+        public Rect(Point a, Point b) {
+            A = a;
+            B = b;
+        }
+    }
+
     struct Item {
         public enum EType {
             LAND,
@@ -21,7 +30,7 @@ namespace UCBeditor {
         }
 
         static readonly Pen HoverColor = Pens.Blue;
-        static readonly Pen LandColor = new Pen(Color.FromArgb(192, 192, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        static readonly Pen LandColor = new Pen(Color.FromArgb(211, 211, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen TIN_W = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen TIN_N = new Pen(Color.FromArgb(231, 231, 231), 1.0f) { DashPattern = new float[] { 1, 1 } };
 
@@ -128,6 +137,35 @@ namespace UCBeditor {
             mWireColor = EWire.BLACK;
         }
 
+        public bool isSelected(Point point) {
+            Point p;
+            switch (Type) {
+            case EType.WIRE:
+            case EType.TIN:
+                p = nearPointOnLine(point);
+                break;
+            default:
+                p = Begin;
+                break;
+            }
+            var sx = p.X - point.X;
+            var sy = p.Y - point.Y;
+            return Math.Sqrt(sx * sx + sy * sy) < 6.0;
+        }
+
+        public bool isSelected(Rect rect) {
+            var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
+            var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
+            var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
+            var rectY2 = rect.B.Y < rect.A.Y ? rect.A.Y : rect.B.Y;
+            var rx1 = End.X < Begin.X ? End.X : Begin.X;
+            var rx2 = End.X < Begin.X ? Begin.X : End.X;
+            var ry1 = End.Y < Begin.Y ? End.Y : Begin.Y;
+            var ry2 = End.Y < Begin.Y ? Begin.Y : End.Y;
+            return (rectX1 <= rx1 && rx1 <= rectX2 && rectY1 <= ry1 && ry1 <= rectY2 &&
+                rectX1 <= rx2 && rx2 <= rectX2 && rectY1 <= ry2 && ry2 <= rectY2);
+        }
+
         public void Write(StreamWriter sw) {
             switch (Type) {
             case EType.LAND:
@@ -212,8 +250,6 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                g.FillPie(TIN_W.Brush, x1 - 4, y1 - 4, 8, 8, 0, 360);
-                g.FillPie(TIN_W.Brush, x2 - 4, y2 - 4, 8, 8, 0, 360);
                 g.DrawLine(TIN_W, x1, y1, x2, y2);
                 g.DrawLine(TIN_N, x1, y1, x2, y2);
             }
@@ -224,6 +260,17 @@ namespace UCBeditor {
             var y1 = Begin.Y + dy;
             var x2 = End.X + dx;
             var y2 = End.Y + dy;
+            var nx = (double)x2 - x1;
+            var ny = (double)y2 - y1;
+            var n_len = Math.Sqrt(nx * nx + ny * ny);
+            nx /= n_len;
+            ny /= n_len;
+
+            x1 = (int)(x1 + nx * 2);
+            y1 = (int)(y1 + ny * 2);
+            x2 = (int)(x2 - nx * 2);
+            y2 = (int)(y2 - ny * 2);
+
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
@@ -254,6 +301,25 @@ namespace UCBeditor {
                         g.DrawLine(BYELLOW, x1, y1, x2, y2); break;
                     }
                 }
+            }
+        }
+
+        Point nearPointOnLine(Point point) {
+            var abX = End.X - Begin.X;
+            var abY = End.Y - Begin.Y;
+            var apX = point.X - Begin.X;
+            var apY = point.Y - Begin.Y;
+            var abL2 = abX * abX + abY * abY;
+            if (0.0 == abL2) {
+                return Begin;
+            }
+            var r = (double)(abX * apX + abY * apY) / abL2;
+            if (r <= 0.0) {
+                return Begin;
+            } else if (1.0 <= r) {
+                return End;
+            } else {
+                return new Point((int)(Begin.X + r * abX), (int)(Begin.Y + r * abY));
             }
         }
     }

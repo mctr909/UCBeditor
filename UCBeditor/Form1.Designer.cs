@@ -46,7 +46,7 @@
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbSolid = new System.Windows.Forms.ToolStripButton();
-            this.tsbAlpha = new System.Windows.Forms.ToolStripButton();
+            this.tsbTransparent = new System.Windows.Forms.ToolStripButton();
             this.tsbNothing = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
@@ -147,7 +147,7 @@
             this.toolStripSeparator8,
             this.toolStripSeparator4,
             this.tsbSolid,
-            this.tsbAlpha,
+            this.tsbTransparent,
             this.tsbNothing,
             this.toolStripSeparator10,
             this.toolStripSeparator11,
@@ -270,18 +270,18 @@
             this.tsbSolid.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbSolid.Name = "tsbSolid";
             this.tsbSolid.Size = new System.Drawing.Size(23, 22);
-            this.tsbSolid.Text = "部品不透過";
+            this.tsbSolid.Text = "部品を表示";
             this.tsbSolid.Click += new System.EventHandler(this.tsbSolid_Click);
             // 
-            // tsbAlpha
+            // tsbTransparent
             // 
-            this.tsbAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbAlpha.Image = ((System.Drawing.Image)(resources.GetObject("tsbAlpha.Image")));
-            this.tsbAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbAlpha.Name = "tsbAlpha";
-            this.tsbAlpha.Size = new System.Drawing.Size(23, 22);
-            this.tsbAlpha.Text = "部品透過";
-            this.tsbAlpha.Click += new System.EventHandler(this.tsbAlpha_Click);
+            this.tsbTransparent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbTransparent.Image = ((System.Drawing.Image)(resources.GetObject("tsbTransparent.Image")));
+            this.tsbTransparent.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbTransparent.Name = "tsbTransparent";
+            this.tsbTransparent.Size = new System.Drawing.Size(23, 22);
+            this.tsbTransparent.Text = "部品を透過";
+            this.tsbTransparent.Click += new System.EventHandler(this.tsbTransparent_Click);
             // 
             // tsbNothing
             // 
@@ -581,7 +581,7 @@
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripButton tsbSolid;
-		private System.Windows.Forms.ToolStripButton tsbAlpha;
+		private System.Windows.Forms.ToolStripButton tsbTransparent;
         private System.Windows.Forms.ToolStripButton tsbNothing;
         private System.Windows.Forms.ToolStripButton tsbFront;
 		private System.Windows.Forms.ToolStripButton tsbBack;
