@@ -31,8 +31,7 @@ namespace UCBeditor {
 
         static readonly Pen HoverColor = Pens.Blue;
         static readonly Pen LandColor = new Pen(Color.FromArgb(211, 211, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen TIN_W = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen TIN_N = new Pen(Color.FromArgb(231, 231, 231), 1.0f) { DashPattern = new float[] { 1, 1 } };
+        static readonly Pen TIN = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
         static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -236,7 +235,7 @@ namespace UCBeditor {
                     g.FillEllipse(LandColor.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
-                    g.FillEllipse(TIN_W.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(TIN.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
@@ -250,8 +249,7 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                g.DrawLine(TIN_W, x1, y1, x2, y2);
-                g.DrawLine(TIN_N, x1, y1, x2, y2);
+                g.DrawLine(TIN, x1, y1, x2, y2);
             }
         }
 
@@ -260,17 +258,6 @@ namespace UCBeditor {
             var y1 = Begin.Y + dy;
             var x2 = End.X + dx;
             var y2 = End.Y + dy;
-            var nx = (double)x2 - x1;
-            var ny = (double)y2 - y1;
-            var n_len = Math.Sqrt(nx * nx + ny * ny);
-            nx /= n_len;
-            ny /= n_len;
-
-            x1 = (int)(x1 + nx * 2);
-            y1 = (int)(y1 + ny * 2);
-            x2 = (int)(x2 - nx * 2);
-            y2 = (int)(y2 - ny * 2);
-
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {

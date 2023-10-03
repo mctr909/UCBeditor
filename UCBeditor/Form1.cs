@@ -561,12 +561,12 @@ namespace UCBeditor {
 				}
 				var panel = (Panel)ctrl;
 				if (panel.Name == mSelectedParts.Name) {
-					panel.BackColor = SystemColors.ButtonShadow;
+					panel.BackColor = SystemColors.ButtonHighlight;
 					panel.BorderStyle = BorderStyle.FixedSingle;
 					mIsDrag = false;
 					mEditMode = EditMode.PARTS;
 				} else {
-					panel.BackColor = SystemColors.ButtonFace;
+					panel.BackColor = BoardColor.Color;
 					panel.BorderStyle = BorderStyle.None;
 				}
 			}
@@ -830,7 +830,8 @@ namespace UCBeditor {
 					item.Value.Size = solid.Width / 2;
 				}
 			}
-			foreach (var group in mPackageList) {
+			pnlParts.BackColor = BoardColor.Color;
+            foreach (var group in mPackageList) {
 				var tsb = new ToolStripButton();
 				tsb.Name = group.Key;
 				tsb.Image = new Bitmap(ElementPath + "group\\" + group.Key + ".png");
@@ -862,7 +863,7 @@ namespace UCBeditor {
 						picture.Image = bmp;
 						picture.Top = 2;
 						picture.Left = 2;
-						picture.Width = bmp.Width;
+                        picture.Width = bmp.Width;
 						picture.Height = bmp.Height;
 						picture.MouseDown += new MouseEventHandler((s, ev) => {
 							selectParts(parts);
@@ -871,8 +872,8 @@ namespace UCBeditor {
 						var panel = new Panel();
 						panel.Name = parts.Name;
 						panel.Controls.Add(picture);
-						panel.BackColor = SystemColors.ButtonFace;
-						panel.Width = picture.Width + 6;
+                        panel.BackColor = Color.Transparent;
+                        panel.Width = picture.Width + 6;
 						panel.Height = picture.Height + 6;
 						panel.Left = 8;
 						panel.Top = currentY + label.Height;
