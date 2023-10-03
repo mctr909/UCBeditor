@@ -8,7 +8,6 @@ using System.Xml;
 namespace UCBeditor {
 	public partial class Form1 : Form {
         readonly Pen BoardColor = new Pen(Color.FromArgb(239, 255, 239), 0.5f);
-        readonly Pen BoardLineColor = new Pen(Color.FromArgb(255, 255, 255), 4);
         readonly Pen GridMajorColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
         readonly Pen GridMinorColor = new Pen(Color.FromArgb(211, 211, 211), 0.5f);
         readonly Pen DragColor = Pens.Blue;
