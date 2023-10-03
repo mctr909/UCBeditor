@@ -31,11 +31,12 @@ namespace UCBeditor {
 			public Point Offset;
 			public int Size;
 			public List<Point> Terminals = new List<Point>();
-		}
+        }
 
-		Dictionary<string, Dictionary<string, PackageInfo>> mPackageList = new Dictionary<string, Dictionary<string, PackageInfo>>();
+        Dictionary<string, Dictionary<string, PackageInfo>> mPackageList = new Dictionary<string, Dictionary<string, PackageInfo>>();
         List<Item> mList = new List<Item>();
         List<Item> mClipBoard = new List<Item>();
+		bool mItemHeightDesc = false;
 		EditMode mEditMode = EditMode.WIRE;
         Item.EWire mWireColor = Item.EWire.BLACK;
 		RotateFlipType mCurRotate = RotateFlipType.RotateNoneFlipNone;
@@ -369,11 +370,15 @@ namespace UCBeditor {
         private void tsbFront_Click(object sender, EventArgs e) {
             tsbFront.Checked = true;
             tsbBack.Checked = false;
+			mItemHeightDesc = false;
+			sortItem();
         }
 
         private void tsbBack_Click(object sender, EventArgs e) {
             tsbBack.Checked = true;
             tsbFront.Checked = false;
+            mItemHeightDesc = true;
+            sortItem();
         }
 
         private void tscGridWidth_SelectedIndexChanged(object sender, EventArgs e) {
@@ -614,17 +619,37 @@ namespace UCBeditor {
 
 		void addItem(Item newItem) {
             mList.Add(newItem);
-			mList.Sort((a, b) => {
-				var diff = b.Height - a.Height;
-				return 0 == diff ? 0 : diff < 0 ? -1 : 1;
-			});
+			sortItem();
         }
 
+		void sortItem() {
+            if (mItemHeightDesc) {
+				mList.Sort((a, b) => {
+					double aHeight;
+					if (a.Type == Item.EType.TIN) {
+						aHeight = 0;
+                    } else {
+						aHeight = a.Height;
+					}
+                    double bHeight;
+                    if (b.Type == Item.EType.TIN) {
+                        bHeight = 0;
+                    } else {
+                        bHeight = b.Height;
+                    }
+                    var diff = bHeight - aHeight;
+					return 0 == diff ? 0 : diff < 0 ? -1 : 1;
+				});
+			} else {
+				mList.Sort((a, b) => {
+					var diff = a.Height - b.Height;
+					return 0 == diff ? 0 : diff < 0 ? -1 : 1;
+				});
+			}
+		}
+
 		void drawList(Graphics g) {
-			var count = mList.Count;
-			var inc = tsbBack.Checked ? -1 : 1;
-			for (int i = tsbBack.Checked ? (count - 1) : 0; 0 <= i && i < count; i += inc) {
-				var item = mList[i];
+			foreach (var item in mList) {
 				if (Item.EType.PARTS == item.Type) {
 					if (tsbNothing.Checked) {
 						continue;
