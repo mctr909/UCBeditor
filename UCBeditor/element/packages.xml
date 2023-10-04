@@ -65,6 +65,11 @@
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>
 		</item>
+		<item name="DO-35" height="5">
+			<offset x="8" y="0"/>
+			<terminal x="1" y="1"/>
+			<terminal x="2" y="2"/>
+		</item>
 		<item name="TO-220-2" height="15" >
 			<terminal x="29" y="13"/>
 			<terminal x="29" y="45"/>
