@@ -411,17 +411,9 @@ namespace UCBeditor {
 				}
             }
 
-            if (e.Button == MouseButtons.Right) {
-                var temp = new List<Item>();
-                for (var d = 0; d < mList.Count; ++d) {
-					var item = mList[d];
-					if (item.IsSelected(mMousePos)) {
-					} else {
-                        temp.Add(item);
-                    }
-                }
-                mList = temp;
-            }
+			if (e.Button == MouseButtons.Right) {
+				deleteItems();
+			}
         }
 
         private void picBoard_MouseMove(object sender, MouseEventArgs e) {
@@ -548,10 +540,10 @@ namespace UCBeditor {
 				mWireColor = Item.EWire.YELLOW;
 			}
 
-			selectParts(new Item.PackageInfo());
+			selectItem(new Item.PackageInfo());
 		}
 
-		void selectParts(Item.PackageInfo parts) {
+		void selectItem(Item.PackageInfo parts) {
             mIsDragItem = false;
             mIsDragPost = false;
             mSelectedParts = parts;
@@ -617,7 +609,45 @@ namespace UCBeditor {
 			}
 		}
 
-		void addItem(Item newItem) {
+        void deleteItems() {
+            var temp = new List<Item>();
+            var deleteTermList = new List<Point>();
+            foreach (var item in mList) {
+                if (item.IsSelected(mMousePos)) {
+                    var terms = item.GetTerminals();
+                    foreach (var term in terms) {
+                        if (!deleteTermList.Contains(term)) {
+                            deleteTermList.Add(term);
+                        }
+                    }
+                } else {
+                    switch (item.Type) {
+                    case Item.EType.LAND:
+                    case Item.EType.FOOT:
+                        break;
+                    default:
+                        temp.Add(item);
+                        break;
+                    }
+                }
+            }
+            foreach (var item in mList) {
+                switch (item.Type) {
+                case Item.EType.LAND:
+                case Item.EType.FOOT:
+                    if (!deleteTermList.Contains(item.Begin)) {
+                        temp.Add(item);
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+            mList = temp;
+            sortItem();
+        }
+
+        void addItem(Item newItem) {
 			mList.Add(newItem);
 			var terms = newItem.GetTerminals();
 			foreach (var term in terms) {
@@ -871,7 +901,7 @@ namespace UCBeditor {
                         picture.Width = bmp.Width;
 						picture.Height = bmp.Height;
 						picture.MouseDown += new MouseEventHandler((s, ev) => {
-							selectParts(parts);
+							selectItem(parts);
 						});
 
 						var panel = new Panel();

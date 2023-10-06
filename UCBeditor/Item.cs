@@ -111,9 +111,12 @@ namespace UCBeditor {
                 Group = cols[4];
                 Name = cols[5];
                 if (HasPackage(Group, Name)) {
-                    Size = GetPackage(Group, Name).Size;
+                    var item = GetPackage(Group, Name);
+                    Size = item.Size;
+                    Height = item.IsSMD ? -item.Height : item.Height;
                 } else {
                     Size = 0;
+                    Height = 0;
                 }
                 break;
             case "LAND":
