@@ -255,14 +255,7 @@ namespace UCBeditor {
 		}
 
 		private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) {
-			var temp = new List<Item>();
-			for (var d = mList.Count - 1; 0 <= d; --d) {
-				if (!mList[d].IsSelected(mRect)) {
-					temp.Add(mList[d]);
-				}
-			}
-			mList = temp;
-			mRect = new Rect();
+            deleteItems();
 		}
 
 		private void 左回転LToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -609,11 +602,11 @@ namespace UCBeditor {
 			}
 		}
 
-        void deleteItems() {
+		void deleteItems() {
             var temp = new List<Item>();
             var deleteTermList = new List<Point>();
             foreach (var item in mList) {
-                if (item.IsSelected(mMousePos)) {
+                if (item.IsSelected(mRect) || item.IsSelected(mMousePos)) {
                     var terms = item.GetTerminals();
                     foreach (var term in terms) {
                         if (!deleteTermList.Contains(term)) {
@@ -643,8 +636,9 @@ namespace UCBeditor {
                     break;
                 }
             }
+            mRect = new Rect();
             mList = temp;
-            sortItem();
+			sortItem();
         }
 
         void addItem(Item newItem) {
