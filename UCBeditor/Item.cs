@@ -2,6 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
+using System.Collections.Generic;
 
 namespace UCBeditor {
     struct Rect {
@@ -29,6 +30,32 @@ namespace UCBeditor {
             YELLOW
         }
 
+        public class PackageInfo {
+            public string Group;
+            public string Name;
+            public bool IsSMD;
+            public bool Enable;
+            public double Height;
+            public Point Offset;
+            public int Size;
+            public List<Point> Terminals = new List<Point>();
+        }
+
+        public static bool HasPackage(string group, string name) {
+            return PackageList.ContainsKey(group) && PackageList[group].ContainsKey(name);
+        }
+        public static PackageInfo GetPackage(string group, string name) {
+            return PackageList[group][name];
+        }
+        public static void AddPackage(PackageInfo newPackage) {
+            if (!PackageList.ContainsKey(newPackage.Group)) {
+                PackageList.Add(newPackage.Group, new Dictionary<string, PackageInfo>());
+            }
+            PackageList[newPackage.Group].Add(newPackage.Name, newPackage);
+        }
+
+        public static Dictionary<string, Dictionary<string, PackageInfo>> PackageList = new Dictionary<string, Dictionary<string, PackageInfo>>();
+
         static readonly Pen HoverColor = Pens.Blue;
         static readonly Pen LandColor = new Pen(Color.FromArgb(211, 211, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen TIN = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -50,6 +77,7 @@ namespace UCBeditor {
         public RotateFlipType Rotate;
         public string Group;
         public string Name;
+        public int Size;
         public double Height;
 
         EWire mWireColor;
@@ -58,6 +86,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             Group = "";
             Name = "";
+            Size = 0;
             Height = 0;
             mWireColor = EWire.BLACK;
             var cols = line.Split('\t');
@@ -81,6 +110,11 @@ namespace UCBeditor {
                 Rotate = (RotateFlipType)int.Parse(cols[3]);
                 Group = cols[4];
                 Name = cols[5];
+                if (HasPackage(Group, Name)) {
+                    Size = GetPackage(Group, Name).Size;
+                } else {
+                    Size = 0;
+                }
                 break;
             case "LAND":
             default:
@@ -99,6 +133,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             Group = "";
             Name = "";
+            Size = 0;
             Height = -0.1;
             mWireColor = EWire.BLACK;
         }
@@ -110,6 +145,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             Group = "";
             Name = "";
+            Size = 0;
             Height = -0.2;
             mWireColor = EWire.BLACK;
         }
@@ -121,6 +157,7 @@ namespace UCBeditor {
             Rotate = RotateFlipType.RotateNoneFlipNone;
             Group = "";
             Name = "";
+            Size = 0;
             Height = 100;
             mWireColor = color;
         }
@@ -132,16 +169,21 @@ namespace UCBeditor {
             Rotate = rot;
             Group = group;
             Name = name;
+            if (HasPackage(group, name)) {
+                Size = GetPackage(group, name).Size;
+            } else {
+                Size = 0;
+            }
             Height = 0;
             mWireColor = EWire.BLACK;
         }
 
-        public bool isSelected(Point point) {
+        public bool IsSelected(Point point) {
             Point p;
             switch (Type) {
             case EType.WIRE:
             case EType.TIN:
-                p = nearPointOnLine(point);
+                p = NearPointOnLine(point);
                 break;
             default:
                 p = Begin;
@@ -152,7 +194,7 @@ namespace UCBeditor {
             return Math.Sqrt(sx * sx + sy * sy) < 6.0;
         }
 
-        public bool isSelected(Rect rect) {
+        public bool IsSelected(Rect rect) {
             var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
             var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
             var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
@@ -163,6 +205,89 @@ namespace UCBeditor {
             var ry2 = End.Y < Begin.Y ? Begin.Y : End.Y;
             return (rectX1 <= rx1 && rx1 <= rectX2 && rectY1 <= ry1 && ry1 <= rectY2 &&
                 rectX1 <= rx2 && rx2 <= rectX2 && rectY1 <= ry2 && ry2 <= rectY2);
+        }
+
+        public Point NearPointOnLine(Point point) {
+            var abX = End.X - Begin.X;
+            var abY = End.Y - Begin.Y;
+            var apX = point.X - Begin.X;
+            var apY = point.Y - Begin.Y;
+            var abL2 = abX * abX + abY * abY;
+            if (0.0 == abL2) {
+                return Begin;
+            }
+            var r = (double)(abX * apX + abY * apY) / abL2;
+            if (r <= 0.0) {
+                return Begin;
+            } else if (1.0 <= r) {
+                return End;
+            } else {
+                return new Point((int)(Begin.X + r * abX), (int)(Begin.Y + r * abY));
+            }
+        }
+
+        public double Distance(Point point) {
+            switch (Type) {
+            case EType.WIRE:
+            case EType.TIN: {
+                var abX = End.X - Begin.X;
+                var abY = End.Y - Begin.Y;
+                var apX = point.X - Begin.X;
+                var apY = point.Y - Begin.Y;
+                var abL2 = abX * abX + abY * abY;
+                if (0.0 == abL2) {
+                    return Math.Sqrt(apX * apX + apY * apY);
+                }
+                var r = (double)(abX * apX + abY * apY) / abL2;
+                if (r <= 0.0) {
+                    return Math.Sqrt(apX * apX + apY * apY);
+                } else if (1.0 <= r) {
+                    var bpX = point.X - End.X;
+                    var bpY = point.X - End.X;
+                    return Math.Sqrt(bpX * bpX + bpY * bpY);
+                } else {
+                    var x = Begin.X + r * abX;
+                    var y = Begin.Y + r * abY;
+                    return Math.Sqrt(x * x + y * y);
+                }
+            }
+            default: {
+                var apX = point.X - Begin.X;
+                var apY = point.Y - Begin.Y;
+                return Math.Sqrt(apX * apX + apY * apY);
+            }
+            }
+        }
+
+        public Point[] GetTerminals() {
+            if (!HasPackage(Group, Name)) {
+                return new Point[0];
+            }
+            var terminals = GetPackage(Group, Name).Terminals;
+            var points = new Point[terminals.Count];
+            for (int i = 0; i < terminals.Count; i++) {
+                var term = terminals[i];
+                points[i] = Begin;
+                switch (Rotate) {
+                case RotateFlipType.Rotate90FlipNone:
+                    points[i].X += Size - term.Y - 1;
+                    points[i].Y += term.X - Size + 1;
+                    break;
+                case RotateFlipType.Rotate180FlipNone:
+                    points[i].X += Size - term.X - 1;
+                    points[i].Y += Size - term.Y - 1;
+                    break;
+                case RotateFlipType.Rotate270FlipNone:
+                    points[i].X += term.Y - Size + 1;
+                    points[i].Y += Size - term.X - 1;
+                    break;
+                default:
+                    points[i].X += term.X - Size + 1;
+                    points[i].Y += term.Y - Size + 1;
+                    break;
+                }
+            }
+            return points;
         }
 
         public void Write(StreamWriter sw) {
@@ -211,6 +336,7 @@ namespace UCBeditor {
         public void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
             switch (Type) {
             case EType.LAND:
+            case EType.FOOT:
                 DrawLand(g, dx, dy, reverse, selected);
                 break;
             case EType.TIN:
@@ -288,25 +414,6 @@ namespace UCBeditor {
                         g.DrawLine(BYELLOW, x1, y1, x2, y2); break;
                     }
                 }
-            }
-        }
-
-        Point nearPointOnLine(Point point) {
-            var abX = End.X - Begin.X;
-            var abY = End.Y - Begin.Y;
-            var apX = point.X - Begin.X;
-            var apY = point.Y - Begin.Y;
-            var abL2 = abX * abX + abY * abY;
-            if (0.0 == abL2) {
-                return Begin;
-            }
-            var r = (double)(abX * apX + abY * apY) / abL2;
-            if (r <= 0.0) {
-                return Begin;
-            } else if (1.0 <= r) {
-                return End;
-            } else {
-                return new Point((int)(Begin.X + r * abX), (int)(Begin.Y + r * abY));
             }
         }
     }
