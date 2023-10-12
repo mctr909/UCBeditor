@@ -21,11 +21,11 @@ namespace UCBeditor {
         public static Dictionary<string, Dictionary<string, Package>> List = new Dictionary<string, Dictionary<string, Package>>();
 
         public static void LoadXML(string dir, string fileName) {
-            GroupPath = dir + "element\\group\\";
-            SolidPath = dir + "element\\solid\\";
-            AlphaPath = dir + "element\\alpha\\";
+            GroupPath = dir + "group\\";
+            SolidPath = dir + "solid\\";
+            AlphaPath = dir + "alpha\\";
             List.Clear();
-            var xmlPath = dir + "element\\" + fileName;
+            var xmlPath = dir + fileName;
             if (!File.Exists(xmlPath)) {
                 return;
             }
