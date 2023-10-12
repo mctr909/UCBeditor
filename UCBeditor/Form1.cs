@@ -528,7 +528,7 @@ namespace UCBeditor {
 			case EditMode.LAND:
 			case EditMode.TIN:
 			case EditMode.PARTS:
-				snap = 16;
+				snap = BaseGridWidth;
 				break;
 			default:
 				snap = mCurGridWidth;
