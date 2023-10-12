@@ -34,7 +34,7 @@ namespace UCBeditor {
         Point mMousePos = new Point();
 		Point mBeginPos = new Point();
 		Point mEndPos = new Point();
-		Rect mRect = new Rect();
+		Rectangle mSelectArea = new Rectangle();
 
         Package mSelectedParts;
 
@@ -99,7 +99,8 @@ namespace UCBeditor {
 			var sr = new StreamReader(fs);
 
 			mList.Clear();
-			while (!sr.EndOfStream) {
+            mClipBoard.Clear();
+            while (!sr.EndOfStream) {
 				var rec = Item.Construct(sr.ReadLine());
 				addItem(rec);
 			}
@@ -111,7 +112,7 @@ namespace UCBeditor {
             Text = filePath;
             mBeginPos = new Point();
             mEndPos = new Point();
-            mRect = new Rect();
+			mSelectArea = new Rectangle();
             mIsDragItem = false;
             mIsDragPost = false;
         }
@@ -159,7 +160,7 @@ namespace UCBeditor {
 			var min = new Point(int.MaxValue, int.MaxValue);
 			for (var d = 0; d < mList.Count; ++d) {
 				var rec = mList[d];
-				if (rec.IsSelected(mRect)) {
+				if (rec.IsSelected(mSelectArea)) {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec is Parts) {
@@ -196,7 +197,7 @@ namespace UCBeditor {
 			}
 
 			mList = temp;
-			mRect = new Rect();
+			mSelectArea = new Rectangle();
 		}
 
 		private void コピーCToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -204,7 +205,7 @@ namespace UCBeditor {
 
 			for (var d = 0; d < mList.Count; ++d) {
                 var rec = mList[d];
-                if (rec.IsSelected(mRect)) {
+                if (rec.IsSelected(mSelectArea)) {
 					mClipBoard.Add(rec);
 					int size;
 					if (rec is Parts) {
@@ -238,7 +239,7 @@ namespace UCBeditor {
 				mClipBoard[i] = p;
 			}
 
-			mRect = new Rect();
+			mSelectArea = new Rectangle();
 		}
 
 		private void 貼り付けPToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -395,7 +396,7 @@ namespace UCBeditor {
 							mostNearItem = item;
 						}
 					}
-					mRect = new Rect();
+					mSelectArea = new Rectangle();
 					mIsDragItem = true;
 					break;
 				}
@@ -420,11 +421,17 @@ namespace UCBeditor {
             mIsDragPost = false;
 
             switch (mEditMode) {
-            case EditMode.SELECT:
-                mRect = new Rect();
-                mRect.A = mBeginPos;
-                mRect.B = mEndPos;
-                break;
+            case EditMode.SELECT: {
+                mSelectArea.Location = new Point(
+					Math.Min(mBeginPos.X, mEndPos.X),
+					Math.Min(mBeginPos.Y, mEndPos.Y)
+				);
+				mSelectArea.Size = new Size(
+					Math.Abs(mEndPos.X - mBeginPos.X) + 1,
+					Math.Abs(mEndPos.Y - mBeginPos.Y) + 1
+				);
+				break;
+			}
             case EditMode.WIRE:
                 if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
                     addItem(new Wire(mBeginPos, mEndPos, mWireColor));
@@ -538,7 +545,7 @@ namespace UCBeditor {
             mIsDragItem = false;
             mIsDragPost = false;
             mSelectedParts = parts;
-            mRect = new Rect();
+            mSelectArea = new Rectangle();
 			foreach (var ctrl in pnlParts.Controls) {
 				if (!(ctrl is Panel)) {
 					continue;
@@ -604,14 +611,14 @@ namespace UCBeditor {
             var temp = new List<Item>();
             var deleteTermList = new List<Point>();
             foreach (var item in mList) {
-                if (item.IsSelected(mRect) || item.IsSelected(mMousePos)) {
+                if (item.IsSelected(mSelectArea) || item.IsSelected(mMousePos)) {
                     var terms = item.GetTerminals();
                     foreach (var term in terms) {
                         if (!deleteTermList.Contains(term)) {
                             deleteTermList.Add(term);
                         }
                     }
-					if (item is Land && !((Land)item).IsFoot) {
+					if (item is Land) {
 						deleteTermList.Add(item.Begin);
 					}
                 } else {
@@ -621,12 +628,12 @@ namespace UCBeditor {
                 }
             }
 			foreach (var item in mList) {
-				if (!(item is Land) || deleteTermList.Contains(item.Begin)) {
+				if (!(item is Land || item is Foot) || deleteTermList.Contains(item.Begin)) {
 					continue;
 				}
                 temp.Add(item);
             }
-            mRect = new Rect();
+            mSelectArea = new Rectangle();
             mList = temp;
 			sortItem();
         }
@@ -638,9 +645,7 @@ namespace UCBeditor {
 				if (0 < term.X % BaseGridWidth || 0 < term.Y % BaseGridWidth) {
 					continue;
 				}
-				var land = new Land(term);
-				land.IsFoot = true;
-				mList.Add(land);
+				mList.Add(new Foot(term));
 			}
 			sortItem();
 		}
@@ -675,28 +680,28 @@ namespace UCBeditor {
 			foreach (var item in mList) {
 				if (item is Parts) {
 					var p = (Parts)item;
-					if (tsbNothing.Checked) {
+                    var selected = p.IsSelected(mMousePos) || p.IsSelected(mSelectArea);
+                    if (tsbNothing.Checked && !selected) {
 						continue;
 					}
-					if (!Package.Find(p.Group, p.Name)) {
+					if (!Package.Find(p.Group, p.Package)) {
 						continue;
 					}
-					var package = Package.Get(p.Group, p.Name);
-					var filePath = p.Group + "\\" + p.Name + ".png";
-					var selected = p.IsSelected(mMousePos) || p.IsSelected(mRect);
+					var package = Package.Get(p.Group, p.Package);
+					string imagePath;
 					if (tsbTransparent.Checked || (tsbBack.Checked ^ package.IsSMD) || selected) {
-						filePath = Package.AlphaPath + filePath;
+						imagePath = Package.AlphaPath;
 					} else {
-						filePath = Package.SolidPath + filePath;
+						imagePath = Package.SolidPath;
 					}
-					var temp = new Bitmap(filePath);
+					var temp = new Bitmap(imagePath + p.Group + "\\" + p.Package + ".png");
 					temp.RotateFlip(p.Rotate);
 					g.DrawImage(temp, new Point(p.Begin.X - p.Size, p.Begin.Y - p.Size));
 					if (selected) {
 						g.DrawArc(Pens.Red, p.Begin.X - 3, p.Begin.Y - 3, 6, 6, 0, 360);
 					}
 				} else {
-					item.Draw(g, tsbBack.Checked, item.IsSelected(mMousePos) || item.IsSelected(mRect));
+					item.Draw(g, tsbBack.Checked, item.IsSelected(mMousePos) || item.IsSelected(mSelectArea));
 				}
 			}
 		}
@@ -713,7 +718,7 @@ namespace UCBeditor {
 					continue;
 				}
 				var parts = (Parts)d;
-				var filePath = Package.AlphaPath + parts.Group + "\\" + parts.Name + ".png";
+				var filePath = Package.AlphaPath + parts.Group + "\\" + parts.Package + ".png";
 				var b = new Point(parts.Begin.X + mEndPos.X, parts.Begin.Y + mEndPos.Y);
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(parts.Rotate);

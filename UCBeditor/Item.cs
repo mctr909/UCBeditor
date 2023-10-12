@@ -4,15 +4,6 @@ using System.Drawing;
 using System.IO;
 
 namespace UCBeditor {
-    public struct Rect {
-        public Point A;
-        public Point B;
-        public Rect(Point a, Point b) {
-            A = a;
-            B = b;
-        }
-    }
-
     abstract class Item {
         public Point Begin;
         public Point End;
@@ -42,29 +33,27 @@ namespace UCBeditor {
         public virtual Point[] GetTerminals() { return new Point[0]; }
 
         public abstract bool IsSelected(Point point);
-        public abstract bool IsSelected(Rect rect);
+        public abstract bool IsSelected(Rectangle selectArea);
         public abstract double Distance(Point point);
         public abstract void Write(StreamWriter sw);
         public abstract void Draw(Graphics g, int dx, int dy, bool reverse, bool selected);
     }
 
     class Land : Item {
-        public bool IsFoot;
-
         static readonly Pen COLOR = new Pen(Color.FromArgb(211, 211, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+
+        protected Land() { }
 
         public Land(string[] cols) {
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
             End = Begin;
             Height = -0.1;
-            IsFoot = false;
         }
 
         public Land(Point pos) {
             Begin = pos;
             End = pos;
             Height = -0.1;
-            IsFoot = false;
         }
 
         public override bool IsSelected(Point point) {
@@ -73,12 +62,8 @@ namespace UCBeditor {
             return Math.Sqrt(sx * sx + sy * sy) < 6.0;
         }
 
-        public override bool IsSelected(Rect rect) {
-            var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
-            var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
-            var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
-            var rectY2 = rect.B.Y < rect.A.Y ? rect.A.Y : rect.B.Y;
-            return (rectX1 <= Begin.X && Begin.X <= rectX2 && rectY1 <= Begin.Y && Begin.Y <= rectY2);
+        public override bool IsSelected(Rectangle selectArea) {
+            return selectArea.Contains(Begin);
         }
 
         public override double Distance(Point point) {
@@ -88,9 +73,6 @@ namespace UCBeditor {
         }
 
         public override void Write(StreamWriter sw) {
-            if (IsFoot) {
-                return;
-            }
             sw.WriteLine("LAND\t{0}\t{1}", Begin.X, Begin.Y);
         }
 
@@ -111,6 +93,17 @@ namespace UCBeditor {
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
+        }
+    }
+
+    class Foot : Land {
+        public Foot(Point pos) {
+            Begin = pos;
+            End = pos;
+            Height = -0.1;
+        }
+
+        public override void Write(StreamWriter sw) {
         }
     }
 
@@ -138,17 +131,8 @@ namespace UCBeditor {
             return Math.Sqrt(sx * sx + sy * sy) < 6.0;
         }
 
-        public override bool IsSelected(Rect rect) {
-            var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
-            var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
-            var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
-            var rectY2 = rect.B.Y < rect.A.Y ? rect.A.Y : rect.B.Y;
-            var rx1 = End.X < Begin.X ? End.X : Begin.X;
-            var rx2 = End.X < Begin.X ? Begin.X : End.X;
-            var ry1 = End.Y < Begin.Y ? End.Y : Begin.Y;
-            var ry2 = End.Y < Begin.Y ? Begin.Y : End.Y;
-            return (rectX1 <= rx1 && rx1 <= rectX2 && rectY1 <= ry1 && ry1 <= rectY2 &&
-                rectX1 <= rx2 && rx2 <= rectX2 && rectY1 <= ry2 && ry2 <= rectY2);
+        public override bool IsSelected(Rectangle selectArea) {
+            return selectArea.Contains(Begin) || selectArea.Contains(End);
         }
 
         public override double Distance(Point point) {
@@ -191,6 +175,8 @@ namespace UCBeditor {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
                 g.DrawLine(COLOR, x1, y1, x2, y2);
+                g.FillEllipse(COLOR.Brush, x1 - 3, y1 - 3, 6, 6);
+                g.FillEllipse(COLOR.Brush, x2 - 3, y2 - 3, 6, 6);
             }
         }
 
@@ -223,7 +209,7 @@ namespace UCBeditor {
             YELLOW
         }
 
-        Colors mWireColor;
+        Colors mColor;
 
         static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -240,14 +226,14 @@ namespace UCBeditor {
             Height = 100;
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
             End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
-            mWireColor = (Colors)Enum.Parse(typeof(Colors), cols[5]);
+            mColor = (Colors)Enum.Parse(typeof(Colors), cols[5]);
         }
 
         public Wire(Point begin, Point end, Colors color) {
             Height = 100;
             Begin = begin;
             End = end;
-            mWireColor = color;
+            mColor = color;
         }
 
         public override void Write(StreamWriter sw) {
@@ -255,7 +241,7 @@ namespace UCBeditor {
                 "WIRE\t{0}\t{1}\t{2}\t{3}\t{4}",
                 Begin.X, Begin.Y,
                 End.X, End.Y,
-                mWireColor
+                mColor
             );
         }
 
@@ -268,7 +254,7 @@ namespace UCBeditor {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
                 if (reverse) {
-                    switch (mWireColor) {
+                    switch (mColor) {
                     case Colors.BLACK:
                         g.DrawLine(BLACK, x1, y1, x2, y2); break;
                     case Colors.BLUE:
@@ -281,7 +267,7 @@ namespace UCBeditor {
                         g.DrawLine(YELLOW, x1, y1, x2, y2); break;
                     }
                 } else {
-                    switch (mWireColor) {
+                    switch (mColor) {
                     case Colors.BLACK:
                         g.DrawLine(BBLACK, x1, y1, x2, y2); break;
                     case Colors.BLUE:
@@ -302,6 +288,7 @@ namespace UCBeditor {
         public RotateFlipType Rotate;
         public string Group;
         public string Name;
+        public string Package;
         public int Size;
 
         public Parts(string[] cols) {
@@ -309,9 +296,10 @@ namespace UCBeditor {
             End = Begin;
             Rotate = (RotateFlipType)int.Parse(cols[3]);
             Group = cols[4];
-            Name = cols[5];
-            if (Package.Find(Group, Name)) {
-                var p = Package.Get(Group, Name);
+            Name = "";
+            Package = cols[5];
+            if (UCBeditor.Package.Find(Group, Package)) {
+                var p = UCBeditor.Package.Get(Group, Package);
                 Size = p.Size;
                 Height = p.IsSMD ? -p.Height : p.Height;
             } else {
@@ -320,14 +308,15 @@ namespace UCBeditor {
             }
         }
 
-        public Parts(Point pos, RotateFlipType rot, string group, string name) {
+        public Parts(Point pos, RotateFlipType rot, string group, string package) {
             Begin = pos;
             End = pos;
             Rotate = rot;
             Group = group;
-            Name = name;
-            if (Package.Find(group, name)) {
-                var p = Package.Get(group, name);
+            Name = "";
+            Package = package;
+            if (UCBeditor.Package.Find(group, package)) {
+                var p = UCBeditor.Package.Get(group, package);
                 Size = p.Size;
                 Height = p.IsSMD ? -p.Height : p.Height;
             } else {
@@ -342,12 +331,8 @@ namespace UCBeditor {
             return Math.Sqrt(sx * sx + sy * sy) < 6.0;
         }
 
-        public override bool IsSelected(Rect rect) {
-            var rectX1 = rect.B.X < rect.A.X ? rect.B.X : rect.A.X;
-            var rectX2 = rect.B.X < rect.A.X ? rect.A.X : rect.B.X;
-            var rectY1 = rect.B.Y < rect.A.Y ? rect.B.Y : rect.A.Y;
-            var rectY2 = rect.B.Y < rect.A.Y ? rect.A.Y : rect.B.Y;
-            return (rectX1 <= Begin.X && Begin.X <= rectX2 && rectY1 <= Begin.Y && Begin.Y <= rectY2);
+        public override bool IsSelected(Rectangle selectArea) {
+            return selectArea.Contains(Begin);
         }
 
         public override double Distance(Point point) {
@@ -357,10 +342,10 @@ namespace UCBeditor {
         }
 
         public override Point[] GetTerminals() {
-            if (!Package.Find(Group, Name)) {
+            if (!UCBeditor.Package.Find(Group, Package)) {
                 return new Point[0];
             }
-            var terminals = Package.Get(Group, Name).Terminals;
+            var terminals = UCBeditor.Package.Get(Group, Package).Terminals;
             var points = new Point[terminals.Count];
             for (int i = 0; i < terminals.Count; i++) {
                 var term = terminals[i];
@@ -393,7 +378,7 @@ namespace UCBeditor {
                 Begin.X, Begin.Y,
                 (int)Rotate,
                 Group,
-                Name
+                Package
             );
         }
 
