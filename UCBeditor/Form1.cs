@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
-using System.Xml;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
@@ -11,7 +10,6 @@ namespace UCBeditor {
         readonly Pen GridMajorColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
         readonly Pen GridMinorColor = new Pen(Color.FromArgb(211, 211, 211), 0.5f);
         readonly Pen DragColor = Pens.Blue;
-		readonly string ElementPath = AppDomain.CurrentDomain.BaseDirectory + "element\\";
 
 		enum EditMode {
 			INVALID,
@@ -47,7 +45,7 @@ namespace UCBeditor {
 			picBoard.Width = mCurGridWidth * 80;
 			picBoard.Height = mCurGridWidth * 80;
 
-			loadPackageXML(ElementPath + "packages.xml");
+            Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			setPackageList();
 			selectLine(tsbCursor);
 
@@ -687,9 +685,9 @@ namespace UCBeditor {
 					var filePath = p.Group + "\\" + p.Name + ".png";
 					var selected = p.IsSelected(mMousePos) || p.IsSelected(mRect);
 					if (tsbTransparent.Checked || (tsbBack.Checked ^ package.IsSMD) || selected) {
-						filePath = ElementPath + "alpha\\" + filePath;
+						filePath = Package.AlphaPath + filePath;
 					} else {
-						filePath = ElementPath + "solid\\" + filePath;
+						filePath = Package.SolidPath + filePath;
 					}
 					var temp = new Bitmap(filePath);
 					temp.RotateFlip(p.Rotate);
@@ -715,7 +713,7 @@ namespace UCBeditor {
 					continue;
 				}
 				var parts = (Parts)d;
-				var filePath = ElementPath + "alpha\\" + parts.Group + "\\" + parts.Name + ".png";
+				var filePath = Package.AlphaPath + parts.Group + "\\" + parts.Name + ".png";
 				var b = new Point(parts.Begin.X + mEndPos.X, parts.Begin.Y + mEndPos.Y);
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(parts.Rotate);
@@ -760,9 +758,7 @@ namespace UCBeditor {
 				break;
 
 			case EditMode.PARTS:
-				var filePath = ElementPath + "alpha\\"
-					+ mSelectedParts.Group + "\\"
-					+ mSelectedParts.Name + ".png";
+				var filePath = Package.AlphaPath + mSelectedParts.Group + "\\" + mSelectedParts.Name + ".png";
 				var temp = new Bitmap(filePath);
 				temp.RotateFlip(mCurRotate);
 				g.DrawImage(temp, new Point(
@@ -773,91 +769,12 @@ namespace UCBeditor {
 			}
 		}
 
-		void loadPackageXML(string xmlPath) {
-			Package.List.Clear();
-			if (!File.Exists(xmlPath)) {
-				return;
-			}
-			var xml = XmlReader.Create(xmlPath);
-			var currentGroup = "";
-			var currentParts = new Package();
-			while (xml.Read()) {
-				switch (xml.NodeType) {
-				case XmlNodeType.Element:
-					switch (xml.Name) {
-					case "group":
-						currentGroup = xml.GetAttribute("name").ToUpper();
-						break;
-					case "item":
-						currentParts = new Package();
-						currentParts.Group = currentGroup;
-						currentParts.Name = xml.GetAttribute("name");
-						currentParts.IsSMD = xml.GetAttribute("type") == "smd";
-						currentParts.Height = double.Parse(xml.GetAttribute("height"));
-						break;
-					case "offset":
-						currentParts.Offset = new Point(
-							int.Parse(xml.GetAttribute("x")),
-							int.Parse(xml.GetAttribute("y"))
-						);
-						break;
-					case "terminal":
-						currentParts.Terminals.Add(new Point(
-							int.Parse(xml.GetAttribute("x")),
-							int.Parse(xml.GetAttribute("y")))
-						);
-						break;
-					default:
-						break;
-					}
-					break;
-				case XmlNodeType.EndElement:
-					switch (xml.Name) {
-					case "item":
-                        Package.Add(currentParts);
-						break;
-					}
-					break;
-				default:
-					break;
-				}
-			}
-		}
-
 		void setPackageList() {
-			foreach (var group in Package.List) {
-				var groupIcon = ElementPath + "group\\" + group.Key + ".png";
-				if (!File.Exists(groupIcon)) {
-					continue;
-				}
-				var solidDir = ElementPath + "solid\\" + group.Key;
-				var alphaDir = ElementPath + "alpha\\" + group.Key;
-				foreach (var item in group.Value) {
-					var solidPath = solidDir + "\\" + item.Key + ".png";
-					if (!File.Exists(solidPath)) {
-						continue;
-					}
-					var alphaPath = alphaDir + "\\" + item.Key + ".png";
-					if (!File.Exists(alphaPath)) {
-						continue;
-					}
-					var solid = new Bitmap(solidPath);
-					var alpha = new Bitmap(alphaPath);
-					if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
-						continue;
-					}
-					if (solid.Width != solid.Height) {
-						continue;
-					}
-					item.Value.Enable = true;
-					item.Value.Size = solid.Width / 2;
-				}
-			}
 			pnlParts.BackColor = BoardColor.Color;
             foreach (var group in Package.List) {
 				var tsb = new ToolStripButton();
 				tsb.Name = group.Key;
-				tsb.Image = new Bitmap(ElementPath + "group\\" + group.Key + ".png");
+				tsb.Image = new Bitmap(Package.GroupPath + group.Key + ".png");
 				tsb.Click += new EventHandler((object sender, EventArgs e) => {
 					for (var j = 0; j < tsParts.Items.Count; ++j) {
 						if (tsParts.Items[j] is ToolStripButton) {
@@ -868,20 +785,16 @@ namespace UCBeditor {
 					tsb.Checked = true;
 					var currentY = 0;
 					pnlParts.Controls.Clear();
-					foreach (var parts in group.Value.Values) {
-						if (!parts.Enable) {
-							continue;
-						}
-
+					foreach (var package in group.Value.Values) {
 						var label = new Label();
-						label.Text = parts.Name;
+						label.Text = package.Name;
 						label.TextAlign = ContentAlignment.BottomLeft;
 						label.Height = 16;
 						label.Top = currentY;
 						label.Left = 8;
 						pnlParts.Controls.Add(label);
 
-						var bmp = new Bitmap(ElementPath + "solid\\" + parts.Group + "\\" + parts.Name + ".png");
+						var bmp = new Bitmap(Package.SolidPath + package.Group + "\\" + package.Name + ".png");
 						var picture = new PictureBox();
 						picture.Image = bmp;
 						picture.Top = 2;
@@ -889,11 +802,11 @@ namespace UCBeditor {
                         picture.Width = bmp.Width;
 						picture.Height = bmp.Height;
 						picture.MouseDown += new MouseEventHandler((s, ev) => {
-							selectItem(parts);
+							selectItem(package);
 						});
 
 						var panel = new Panel();
-						panel.Name = parts.Name;
+						panel.Name = package.Name;
 						panel.Controls.Add(picture);
                         panel.BackColor = Color.Transparent;
                         panel.Width = picture.Width + 6;

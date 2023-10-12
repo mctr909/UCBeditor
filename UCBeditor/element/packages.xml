@@ -51,7 +51,7 @@
 		</item>
 	</group>
 	<group name="D">
-		<item name="USC(SOD-323)" height="2" type="smd">
+		<item name="UMD2(SOD-323)" height="2" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>

@@ -13,7 +13,7 @@ namespace UCBeditor {
         }
     }
 
-    public abstract class Item {
+    abstract class Item {
         public Point Begin;
         public Point End;
         public double Height;
@@ -35,14 +35,16 @@ namespace UCBeditor {
             }
         }
 
+        public void Draw(Graphics g, bool reverse, bool selected) {
+            Draw(g, 0, 0, reverse, selected);
+        }
+
         public virtual Point[] GetTerminals() { return new Point[0]; }
 
         public abstract bool IsSelected(Point point);
         public abstract bool IsSelected(Rect rect);
         public abstract double Distance(Point point);
-
         public abstract void Write(StreamWriter sw);
-        public abstract void Draw(Graphics g, bool reverse, bool selected);
         public abstract void Draw(Graphics g, int dx, int dy, bool reverse, bool selected);
     }
 
@@ -90,10 +92,6 @@ namespace UCBeditor {
                 return;
             }
             sw.WriteLine("LAND\t{0}\t{1}", Begin.X, Begin.Y);
-        }
-
-        public override void Draw(Graphics g, bool reverse, bool selected) {
-            Draw(g, 0, 0, reverse, selected);
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
@@ -184,10 +182,6 @@ namespace UCBeditor {
             );
         }
 
-        public override void Draw(Graphics g, bool reverse, bool selected) {
-            Draw(g, 0, 0, reverse, selected);
-        }
-
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
             var x1 = Begin.X + dx;
             var y1 = Begin.Y + dy;
@@ -263,10 +257,6 @@ namespace UCBeditor {
                 End.X, End.Y,
                 mWireColor
             );
-        }
-
-        public override void Draw(Graphics g, bool reverse, bool selected) {
-            Draw(g, 0, 0, reverse, selected);
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
@@ -405,10 +395,6 @@ namespace UCBeditor {
                 Group,
                 Name
             );
-        }
-
-        public override void Draw(Graphics g, bool reverse, bool selected) {
-            Draw(g, 0, 0, reverse, selected);
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
