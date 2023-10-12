@@ -770,7 +770,7 @@ namespace UCBeditor {
 							Width = picture.Width + 6,
 							Height = picture.Height + 6,
 							Left = 8,
-							Top = currentY + label.Height,
+							Top = currentY + label.Height
 						};
                         panel.Controls.Add(picture);
                         pnlParts.Controls.Add(panel);
