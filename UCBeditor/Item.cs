@@ -209,7 +209,7 @@ namespace UCBeditor {
             YELLOW
         }
 
-        Colors mColor;
+        readonly Colors mColor;
 
         static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };

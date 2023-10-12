@@ -40,11 +40,12 @@ namespace UCBeditor {
                         currentGroup = xml.GetAttribute("name").ToUpper();
                         break;
                     case "item":
-                        currentPackage = new Package();
-                        currentPackage.Group = currentGroup;
-                        currentPackage.Name = xml.GetAttribute("name");
-                        currentPackage.IsSMD = xml.GetAttribute("type") == "smd";
-                        currentPackage.Height = double.Parse(xml.GetAttribute("height"));
+                        currentPackage = new Package() {
+                            Group = currentGroup,
+                            Name = xml.GetAttribute("name"),
+                            Height = double.Parse(xml.GetAttribute("height")),
+                            IsSMD = xml.GetAttribute("type") == "smd"
+                        };
                         break;
                     case "offset":
                         currentPackage.Offset = new Point(

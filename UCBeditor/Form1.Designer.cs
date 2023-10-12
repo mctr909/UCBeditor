@@ -129,9 +129,9 @@
             this.picBoard.Size = new System.Drawing.Size(100, 50);
             this.picBoard.TabIndex = 1;
             this.picBoard.TabStop = false;
-            this.picBoard.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picBoard_MouseDown);
-            this.picBoard.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picBoard_MouseMove);
-            this.picBoard.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picBoard_MouseUp);
+            this.picBoard.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Board_MouseDown);
+            this.picBoard.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Board_MouseMove);
+            this.picBoard.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Board_MouseUp);
             // 
             // tsBoard
             // 
@@ -173,7 +173,7 @@
             this.tsbCursor.Name = "tsbCursor";
             this.tsbCursor.Size = new System.Drawing.Size(23, 22);
             this.tsbCursor.Text = "選択";
-            this.tsbCursor.Click += new System.EventHandler(this.tsbCursor_Click);
+            this.tsbCursor.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbLand
             // 
@@ -183,7 +183,7 @@
             this.tsbLand.Name = "tsbLand";
             this.tsbLand.Size = new System.Drawing.Size(23, 22);
             this.tsbLand.Text = "ランド";
-            this.tsbLand.Click += new System.EventHandler(this.tsbLand_Click);
+            this.tsbLand.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbWireBlack
             // 
@@ -194,7 +194,7 @@
             this.tsbWireBlack.Name = "tsbWireBlack";
             this.tsbWireBlack.Size = new System.Drawing.Size(23, 22);
             this.tsbWireBlack.Text = "導線(黒)";
-            this.tsbWireBlack.Click += new System.EventHandler(this.tsbWireBlack_Click);
+            this.tsbWireBlack.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbWireRed
             // 
@@ -205,7 +205,7 @@
             this.tsbWireRed.Name = "tsbWireRed";
             this.tsbWireRed.Size = new System.Drawing.Size(23, 22);
             this.tsbWireRed.Text = "導線(赤)";
-            this.tsbWireRed.Click += new System.EventHandler(this.tsbWireRed_Click);
+            this.tsbWireRed.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbWireBlue
             // 
@@ -216,7 +216,7 @@
             this.tsbWireBlue.Name = "tsbWireBlue";
             this.tsbWireBlue.Size = new System.Drawing.Size(23, 22);
             this.tsbWireBlue.Text = "導線(青)";
-            this.tsbWireBlue.Click += new System.EventHandler(this.tsbWireBlue_Click);
+            this.tsbWireBlue.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbWireGreen
             // 
@@ -227,7 +227,7 @@
             this.tsbWireGreen.Name = "tsbWireGreen";
             this.tsbWireGreen.Size = new System.Drawing.Size(23, 22);
             this.tsbWireGreen.Text = "導線(緑)";
-            this.tsbWireGreen.Click += new System.EventHandler(this.tsbWireGreen_Click);
+            this.tsbWireGreen.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbWireYellow
             // 
@@ -238,7 +238,7 @@
             this.tsbWireYellow.Name = "tsbWireYellow";
             this.tsbWireYellow.Size = new System.Drawing.Size(23, 22);
             this.tsbWireYellow.Text = "導線(黄)";
-            this.tsbWireYellow.Click += new System.EventHandler(this.tsbWireYellow_Click);
+            this.tsbWireYellow.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbTin
             // 
@@ -249,7 +249,7 @@
             this.tsbTin.Name = "tsbTin";
             this.tsbTin.Size = new System.Drawing.Size(23, 22);
             this.tsbTin.Text = "すずメッキ線";
-            this.tsbTin.Click += new System.EventHandler(this.tsbTin_Click);
+            this.tsbTin.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // toolStripSeparator8
             // 
@@ -271,7 +271,7 @@
             this.tsbSolid.Name = "tsbSolid";
             this.tsbSolid.Size = new System.Drawing.Size(23, 22);
             this.tsbSolid.Text = "部品を表示";
-            this.tsbSolid.Click += new System.EventHandler(this.tsbSolid_Click);
+            this.tsbSolid.Click += new System.EventHandler(this.DispParts_Click);
             // 
             // tsbTransparent
             // 
@@ -281,7 +281,7 @@
             this.tsbTransparent.Name = "tsbTransparent";
             this.tsbTransparent.Size = new System.Drawing.Size(23, 22);
             this.tsbTransparent.Text = "部品を透過";
-            this.tsbTransparent.Click += new System.EventHandler(this.tsbTransparent_Click);
+            this.tsbTransparent.Click += new System.EventHandler(this.DispParts_Click);
             // 
             // tsbNothing
             // 
@@ -291,7 +291,7 @@
             this.tsbNothing.Name = "tsbNothing";
             this.tsbNothing.Size = new System.Drawing.Size(23, 22);
             this.tsbNothing.Text = "部品を表示しない";
-            this.tsbNothing.Click += new System.EventHandler(this.tsbNothing_Click);
+            this.tsbNothing.Click += new System.EventHandler(this.DispParts_Click);
             // 
             // toolStripSeparator10
             // 
@@ -313,7 +313,7 @@
             this.tsbFront.Name = "tsbFront";
             this.tsbFront.Size = new System.Drawing.Size(23, 22);
             this.tsbFront.Text = "正面";
-            this.tsbFront.Click += new System.EventHandler(this.tsbFront_Click);
+            this.tsbFront.Click += new System.EventHandler(this.DispBoard_Click);
             // 
             // tsbBack
             // 
@@ -323,7 +323,7 @@
             this.tsbBack.Name = "tsbBack";
             this.tsbBack.Size = new System.Drawing.Size(23, 22);
             this.tsbBack.Text = "裏面";
-            this.tsbBack.Click += new System.EventHandler(this.tsbBack_Click);
+            this.tsbBack.Click += new System.EventHandler(this.DispBoard_Click);
             // 
             // toolStripSeparator9
             // 
@@ -343,7 +343,7 @@
             "1.27mm"});
             this.tscGridWidth.Name = "tscGridWidth";
             this.tscGridWidth.Size = new System.Drawing.Size(80, 25);
-            this.tscGridWidth.SelectedIndexChanged += new System.EventHandler(this.tscGridWidth_SelectedIndexChanged);
+            this.tscGridWidth.SelectedIndexChanged += new System.EventHandler(this.GridWidth_SelectedIndexChanged);
             // 
             // pnlParts
             // 
