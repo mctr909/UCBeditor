@@ -104,8 +104,7 @@ namespace UCBeditor {
             return new Foot(Begin);
         }
 
-        public override void Write(StreamWriter sw) {
-        }
+        public override void Write(StreamWriter sw) { }
     }
 
     class Tin : Item {
@@ -364,17 +363,14 @@ namespace UCBeditor {
                 return;
             }
             string bmpPath;
-            if (selected || (reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
-                bmpPath = Package.AlphaPath;
+            if ((reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
+                bmpPath = selected ? Package.SolidPath : Package.AlphaPath;
             } else {
-                bmpPath = Package.SolidPath;
+                bmpPath = selected ? Package.AlphaPath : Package.SolidPath;
             }
             var bmp = new Bitmap(bmpPath + Group + "\\" + PackageName + ".png");
             bmp.RotateFlip(Rotate);
             g.DrawImage(bmp, new Point(Begin.X + dx - Center, Begin.Y + dy - Center));
-            if (selected) {
-                g.DrawArc(Pens.Red, Begin.X + dx - 3, Begin.Y + dy - 3, 6, 6, 0, 360);
-            }
         }
     }
 }

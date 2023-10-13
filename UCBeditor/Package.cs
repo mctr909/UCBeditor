@@ -12,7 +12,7 @@ namespace UCBeditor {
         public double Height { get; private set; }
         public Point Offset { get; private set; }
         public int Center { get; private set; }
-        
+
         public List<Point> Terminals = new List<Point>();
 
         public enum EDisplay {
