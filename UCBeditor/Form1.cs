@@ -508,10 +508,14 @@ namespace UCBeditor {
 				}
 			}
 			foreach (var rec in mList) {
-				if (!(rec is Land) || deleteTermList.Contains(rec.Begin)) {
+				if (!(rec is Land)) {
 					continue;
 				}
-				temp.Add(rec);
+				if (deleteTermList.Contains(rec.Begin)) {
+                    deleteTermList.Remove(rec.Begin);
+                    continue;
+				}
+                temp.Add(rec);
 			}
 			mSelectArea = new Rectangle();
 			mList = temp;
