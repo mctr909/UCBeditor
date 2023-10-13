@@ -592,7 +592,7 @@ namespace UCBeditor {
 				if (0 < term.X % BaseGridWidth || 0 < term.Y % BaseGridWidth) {
 					continue;
 				}
-				mList.Add(new Foot(term));
+				mList.Add(new Foot(term, newItem));
 			}
 		}
 

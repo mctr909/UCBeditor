@@ -94,15 +94,16 @@ namespace UCBeditor {
     }
 
     class Foot : Land {
-        public Foot(Point pos) {
+        public readonly Item Parent;
+        
+        public Foot(Point pos, Item parent) {
             Begin = pos;
             End = pos;
             Height = -0.01;
+            Parent = parent;
         }
 
-        public override Item Clone() {
-            return new Foot(Begin);
-        }
+        public override Item Clone() { return null; }
 
         public override void Write(StreamWriter sw) { }
     }
