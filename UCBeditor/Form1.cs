@@ -110,6 +110,7 @@ namespace UCBeditor {
 				var rec = Item.Construct(sr.ReadLine());
 				AddItem(rec);
 			}
+			SortItems();
 			sr.Close();
 			fs.Close();
 			sr.Dispose();
@@ -581,7 +582,8 @@ namespace UCBeditor {
 				item.End.Y += ofsY;
 				AddItem(item);
 			}
-		}
+            SortItems();
+        }
 
 		void AddItem(Item newItem) {
 			mList.Add(newItem);
@@ -592,7 +594,6 @@ namespace UCBeditor {
 				}
 				mList.Add(new Foot(term));
 			}
-			SortItems();
 		}
 
 		void SortItems() {
