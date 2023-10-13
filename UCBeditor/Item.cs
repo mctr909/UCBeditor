@@ -9,7 +9,7 @@ namespace UCBeditor {
         public Point End;
         public double Height { get; protected set; }
 
-        protected static readonly Pen HoverColor = Pens.Blue;
+        public static readonly Pen HoverColor = Pens.Blue;
 
         public static Item Construct(string line) {
             var cols = line.Split('\t');

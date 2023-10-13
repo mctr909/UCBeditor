@@ -6,10 +6,9 @@ using System.IO;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
-		readonly Pen BoardColor = new Pen(Color.FromArgb(239, 255, 239), 0.5f);
+		readonly Pen BoardColor = new Pen(Color.FromArgb(255, 255, 235), 0.5f);
 		readonly Pen GridMajorColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
 		readonly Pen GridMinorColor = new Pen(Color.FromArgb(211, 211, 211), 0.5f);
-		readonly Pen DragColor = Pens.Blue;
         const int BaseGridWidth = 16;
 
         enum EditMode {
@@ -369,7 +368,7 @@ namespace UCBeditor {
 
 			DrawEditItem(g);
 
-			g.DrawEllipse(DragColor, mEndPos.X - 3, mEndPos.Y - 3, 6, 6);
+			g.DrawEllipse(Item.HoverColor, mEndPos.X - 3, mEndPos.Y - 3, 6, 6);
 
 			picBoard.Image = bmp;
 		}
@@ -639,7 +638,7 @@ namespace UCBeditor {
             case EditMode.TIN:
             case EditMode.WIRE:
 				if (mIsDragItem) {
-					g.DrawLine(DragColor, mBeginPos, mEndPos);
+					g.DrawLine(Item.HoverColor, mBeginPos, mEndPos);
 				}
 				break;
 			case EditMode.PARTS:
