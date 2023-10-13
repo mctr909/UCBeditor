@@ -216,6 +216,10 @@ namespace UCBeditor {
             return new Wire(Begin, End, mColor);
         }
 
+        public override Point[] GetTerminals() {
+            return new Point[] { Begin, End };
+        }
+
         public override void Write(StreamWriter sw) {
             sw.WriteLine(
                 "WIRE\t{0}\t{1}\t{2}\t{3}\t{4}",
