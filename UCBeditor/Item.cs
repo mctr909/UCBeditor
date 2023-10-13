@@ -7,7 +7,7 @@ namespace UCBeditor {
     abstract class Item {
         public Point Begin;
         public Point End;
-        public double Height;
+        public double Height { get; protected set; }
 
         protected static readonly Pen HoverColor = Pens.Blue;
 
@@ -26,15 +26,24 @@ namespace UCBeditor {
             }
         }
 
+        public bool IsSelected(Point point) {
+            return Distance(point) < 8.0;
+        }
+        public bool IsSelected(Rectangle selectArea) {
+            return selectArea.Contains(Begin) || selectArea.Contains(End);
+        }
         public void Draw(Graphics g, bool reverse, bool selected) {
             Draw(g, 0, 0, reverse, selected);
         }
 
+        public virtual double Distance(Point point) {
+            var apX = point.X - Begin.X;
+            var apY = point.Y - Begin.Y;
+            return Math.Sqrt(apX * apX + apY * apY);
+        }
         public virtual Point[] GetTerminals() { return new Point[0]; }
 
-        public abstract bool IsSelected(Point point);
-        public abstract bool IsSelected(Rectangle selectArea);
-        public abstract double Distance(Point point);
+        public abstract Item Clone();
         public abstract void Write(StreamWriter sw);
         public abstract void Draw(Graphics g, int dx, int dy, bool reverse, bool selected);
     }
@@ -47,29 +56,17 @@ namespace UCBeditor {
         public Land(string[] cols) {
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
             End = Begin;
-            Height = -0.1;
+            Height = -0.01;
         }
 
         public Land(Point pos) {
             Begin = pos;
             End = pos;
-            Height = -0.1;
+            Height = -0.01;
         }
 
-        public override bool IsSelected(Point point) {
-            var sx = Begin.X - point.X;
-            var sy = Begin.Y - point.Y;
-            return Math.Sqrt(sx * sx + sy * sy) < 6.0;
-        }
-
-        public override bool IsSelected(Rectangle selectArea) {
-            return selectArea.Contains(Begin);
-        }
-
-        public override double Distance(Point point) {
-            var apX = point.X - Begin.X;
-            var apY = point.Y - Begin.Y;
-            return Math.Sqrt(apX * apX + apY * apY);
+        public override Item Clone() {
+            return new Land(Begin);
         }
 
         public override void Write(StreamWriter sw) {
@@ -100,7 +97,11 @@ namespace UCBeditor {
         public Foot(Point pos) {
             Begin = pos;
             End = pos;
-            Height = -0.1;
+            Height = -0.01;
+        }
+
+        public override Item Clone() {
+            return new Foot(Begin);
         }
 
         public override void Write(StreamWriter sw) {
@@ -113,26 +114,19 @@ namespace UCBeditor {
         protected Tin() { }
 
         public Tin(string[] cols) {
-            Height = -0.2;
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
             End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
+            Height = -0.02;
         }
 
         public Tin(Point begin, Point end) {
-            Height = -0.2;
             Begin = begin;
             End = end;
+            Height = -0.02;
         }
 
-        public override bool IsSelected(Point point) {
-            var p = NearPointOnLine(point);
-            var sx = p.X - point.X;
-            var sy = p.Y - point.Y;
-            return Math.Sqrt(sx * sx + sy * sy) < 6.0;
-        }
-
-        public override bool IsSelected(Rectangle selectArea) {
-            return selectArea.Contains(Begin) || selectArea.Contains(End);
+        public override Item Clone() {
+            return new Tin(Begin, End);
         }
 
         public override double Distance(Point point) {
@@ -149,12 +143,12 @@ namespace UCBeditor {
                 return Math.Sqrt(apX * apX + apY * apY);
             } else if (1.0 <= r) {
                 var bpX = point.X - End.X;
-                var bpY = point.X - End.X;
+                var bpY = point.Y - End.Y;
                 return Math.Sqrt(bpX * bpX + bpY * bpY);
             } else {
-                var x = Begin.X + r * abX;
-                var y = Begin.Y + r * abY;
-                return Math.Sqrt(x * x + y * y);
+                var qpX = point.X - (Begin.X + r * abX);
+                var qpY = point.Y - (Begin.Y + r * abY);
+                return Math.Sqrt(qpX * qpX + qpY * qpY);
             }
         }
 
@@ -177,25 +171,6 @@ namespace UCBeditor {
                 g.DrawLine(COLOR, x1, y1, x2, y2);
                 g.FillEllipse(COLOR.Brush, x1 - 3, y1 - 3, 6, 6);
                 g.FillEllipse(COLOR.Brush, x2 - 3, y2 - 3, 6, 6);
-            }
-        }
-
-        Point NearPointOnLine(Point point) {
-            var abX = End.X - Begin.X;
-            var abY = End.Y - Begin.Y;
-            var apX = point.X - Begin.X;
-            var apY = point.Y - Begin.Y;
-            var abL2 = abX * abX + abY * abY;
-            if (0.0 == abL2) {
-                return Begin;
-            }
-            var r = (double)(abX * apX + abY * apY) / abL2;
-            if (r <= 0.0) {
-                return Begin;
-            } else if (1.0 <= r) {
-                return End;
-            } else {
-                return new Point((int)(Begin.X + r * abX), (int)(Begin.Y + r * abY));
             }
         }
     }
@@ -222,6 +197,8 @@ namespace UCBeditor {
         static readonly Pen BGREEN = new Pen(GREEN.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         static readonly Pen BYELLOW = new Pen(YELLOW.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
+        Wire() { }
+
         public Wire(string[] cols) {
             Height = 100;
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
@@ -234,6 +211,10 @@ namespace UCBeditor {
             Begin = begin;
             End = end;
             mColor = color;
+        }
+
+        public override Item Clone() {
+            return new Wire(Begin, End, mColor);
         }
 
         public override void Write(StreamWriter sw) {
@@ -285,11 +266,13 @@ namespace UCBeditor {
     }
 
     class Parts : Item {
-        public RotateFlipType Rotate;
-        public string Group;
-        public string Name;
-        public string Package;
-        public int Size;
+        public readonly RotateFlipType Rotate;
+        public readonly int Center;
+        public readonly string Group;
+        public readonly string Name;
+        public readonly string PackageName;
+
+        readonly Package mPackage;
 
         public Parts(string[] cols) {
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
@@ -297,75 +280,66 @@ namespace UCBeditor {
             Rotate = (RotateFlipType)int.Parse(cols[3]);
             Group = cols[4];
             Name = "";
-            Package = cols[5];
-            if (UCBeditor.Package.Find(Group, Package)) {
-                var p = UCBeditor.Package.Get(Group, Package);
-                Size = p.Size;
-                Height = p.IsSMD ? -p.Height : p.Height;
+            PackageName = cols[5];
+            if (Package.Find(Group, PackageName)) {
+                mPackage = Package.Get(Group, PackageName);
+                Center = mPackage.Center;
+                Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
             } else {
-                Size = 0;
+                mPackage = null;
+                Center = 0;
                 Height = 0;
             }
         }
 
-        public Parts(Point pos, RotateFlipType rot, string group, string package) {
+        public Parts(Point pos, RotateFlipType rotate, string group, string package) {
             Begin = pos;
             End = pos;
-            Rotate = rot;
+            Rotate = rotate;
             Group = group;
             Name = "";
-            Package = package;
-            if (UCBeditor.Package.Find(group, package)) {
-                var p = UCBeditor.Package.Get(group, package);
-                Size = p.Size;
-                Height = p.IsSMD ? -p.Height : p.Height;
+            PackageName = package;
+            if (Package.Find(group, package)) {
+                mPackage = Package.Get(group, package);
+                Center = mPackage.Center;
+                Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
             } else {
-                Size = 0;
+                mPackage = null;
+                Center = 0;
                 Height = 0;
             }
         }
 
-        public override bool IsSelected(Point point) {
-            var sx = Begin.X - point.X;
-            var sy = Begin.Y - point.Y;
-            return Math.Sqrt(sx * sx + sy * sy) < 6.0;
-        }
-
-        public override bool IsSelected(Rectangle selectArea) {
-            return selectArea.Contains(Begin);
-        }
-
-        public override double Distance(Point point) {
-            var apX = point.X - Begin.X;
-            var apY = point.Y - Begin.Y;
-            return Math.Sqrt(apX * apX + apY * apY);
+        public override Item Clone() {
+            return new Parts(Begin, Rotate, Group, PackageName);
         }
 
         public override Point[] GetTerminals() {
-            if (!UCBeditor.Package.Find(Group, Package)) {
+            if (null == mPackage) {
                 return new Point[0];
             }
-            var terminals = UCBeditor.Package.Get(Group, Package).Terminals;
+            var terminals = mPackage.Terminals;
             var points = new Point[terminals.Count];
+            var ofs = Center - 1;
             for (int i = 0; i < terminals.Count; i++) {
                 var term = terminals[i];
                 points[i] = Begin;
                 switch (Rotate) {
                 case RotateFlipType.Rotate90FlipNone:
-                    points[i].X += Size - term.Y - 1;
-                    points[i].Y += term.X - Size + 1;
+                    points[i].X += ofs - term.Y;
+                    points[i].Y += term.X - ofs;
                     break;
                 case RotateFlipType.Rotate180FlipNone:
-                    points[i].X += Size - term.X - 1;
-                    points[i].Y += Size - term.Y - 1;
+                    points[i].X += ofs - term.X;
+                    points[i].Y += ofs - term.Y;
                     break;
                 case RotateFlipType.Rotate270FlipNone:
-                    points[i].X += term.Y - Size + 1;
-                    points[i].Y += Size - term.X - 1;
+                    points[i].X += term.Y - ofs;
+                    points[i].Y += ofs - term.X;
                     break;
                 default:
-                    points[i].X += term.X - Size + 1;
-                    points[i].Y += term.Y - Size + 1;
+                    points[i].X += term.X - ofs;
+                    points[i].Y += term.Y - ofs;
                     break;
                 }
             }
@@ -378,11 +352,29 @@ namespace UCBeditor {
                 Begin.X, Begin.Y,
                 (int)Rotate,
                 Group,
-                Package
+                PackageName
             );
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
+            if (null == mPackage) {
+                return;
+            }
+            if (!selected && Package.Display == Package.EDisplay.INVISIBLE) {
+                return;
+            }
+            string bmpPath;
+            if (selected || (reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
+                bmpPath = Package.AlphaPath;
+            } else {
+                bmpPath = Package.SolidPath;
+            }
+            var bmp = new Bitmap(bmpPath + Group + "\\" + PackageName + ".png");
+            bmp.RotateFlip(Rotate);
+            g.DrawImage(bmp, new Point(Begin.X + dx - Center, Begin.Y + dy - Center));
+            if (selected) {
+                g.DrawArc(Pens.Red, Begin.X + dx - 3, Begin.Y + dy - 3, 6, 6, 0, 360);
+            }
         }
     }
 }

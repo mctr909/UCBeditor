@@ -35,7 +35,7 @@
             this.pnlBoard = new System.Windows.Forms.Panel();
             this.picBoard = new System.Windows.Forms.PictureBox();
             this.tsBoard = new System.Windows.Forms.ToolStrip();
-            this.tsbCursor = new System.Windows.Forms.ToolStripButton();
+            this.tsbSelect = new System.Windows.Forms.ToolStripButton();
             this.tsbLand = new System.Windows.Forms.ToolStripButton();
             this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
             this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
@@ -47,7 +47,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbSolid = new System.Windows.Forms.ToolStripButton();
             this.tsbTransparent = new System.Windows.Forms.ToolStripButton();
-            this.tsbNothing = new System.Windows.Forms.ToolStripButton();
+            this.tsbInvisible = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbFront = new System.Windows.Forms.ToolStripButton();
@@ -136,19 +136,19 @@
             // tsBoard
             // 
             this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbCursor,
+            this.tsbSelect,
             this.tsbLand,
+            this.tsbTin,
             this.tsbWireBlack,
             this.tsbWireRed,
             this.tsbWireBlue,
             this.tsbWireGreen,
             this.tsbWireYellow,
-            this.tsbTin,
             this.toolStripSeparator8,
             this.toolStripSeparator4,
             this.tsbSolid,
             this.tsbTransparent,
-            this.tsbNothing,
+            this.tsbInvisible,
             this.toolStripSeparator10,
             this.toolStripSeparator11,
             this.tsbFront,
@@ -162,18 +162,18 @@
             this.tsBoard.TabIndex = 0;
             this.tsBoard.Text = "toolStrip1";
             // 
-            // tsbCursor
+            // tsbSelect
             // 
-            this.tsbCursor.Checked = true;
-            this.tsbCursor.CheckOnClick = true;
-            this.tsbCursor.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tsbCursor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbCursor.Image = ((System.Drawing.Image)(resources.GetObject("tsbCursor.Image")));
-            this.tsbCursor.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbCursor.Name = "tsbCursor";
-            this.tsbCursor.Size = new System.Drawing.Size(23, 22);
-            this.tsbCursor.Text = "選択";
-            this.tsbCursor.Click += new System.EventHandler(this.EditMode_Click);
+            this.tsbSelect.Checked = true;
+            this.tsbSelect.CheckOnClick = true;
+            this.tsbSelect.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsbSelect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSelect.Image = ((System.Drawing.Image)(resources.GetObject("tsbSelect.Image")));
+            this.tsbSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSelect.Name = "tsbSelect";
+            this.tsbSelect.Size = new System.Drawing.Size(23, 22);
+            this.tsbSelect.Text = "選択";
+            this.tsbSelect.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbLand
             // 
@@ -283,15 +283,15 @@
             this.tsbTransparent.Text = "部品を透過";
             this.tsbTransparent.Click += new System.EventHandler(this.DispParts_Click);
             // 
-            // tsbNothing
+            // tsbInvisible
             // 
-            this.tsbNothing.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbNothing.Image = ((System.Drawing.Image)(resources.GetObject("tsbNothing.Image")));
-            this.tsbNothing.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbNothing.Name = "tsbNothing";
-            this.tsbNothing.Size = new System.Drawing.Size(23, 22);
-            this.tsbNothing.Text = "部品を表示しない";
-            this.tsbNothing.Click += new System.EventHandler(this.DispParts_Click);
+            this.tsbInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbInvisible.Image")));
+            this.tsbInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbInvisible.Name = "tsbInvisible";
+            this.tsbInvisible.Size = new System.Drawing.Size(23, 22);
+            this.tsbInvisible.Text = "部品を表示しない";
+            this.tsbInvisible.Click += new System.EventHandler(this.DispParts_Click);
             // 
             // toolStripSeparator10
             // 
@@ -451,7 +451,7 @@
             // 選択SToolStripMenuItem
             // 
             this.選択SToolStripMenuItem.Name = "選択SToolStripMenuItem";
-            this.選択SToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
+            this.選択SToolStripMenuItem.ShortcutKeyDisplayString = "Esc";
             this.選択SToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.選択SToolStripMenuItem.Text = "選択(S)";
             this.選択SToolStripMenuItem.Click += new System.EventHandler(this.選択SToolStripMenuItem_Click);
@@ -550,7 +550,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStrip tsBoard;
         private System.Windows.Forms.ToolStrip tsParts;
-        private System.Windows.Forms.ToolStripButton tsbCursor;
+        private System.Windows.Forms.ToolStripButton tsbSelect;
         private System.Windows.Forms.ToolStripButton tsbWireBlack;
         private System.Windows.Forms.ToolStripButton tsbTin;
         private System.Windows.Forms.ToolStripButton tsbWireRed;
@@ -582,7 +582,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripButton tsbSolid;
 		private System.Windows.Forms.ToolStripButton tsbTransparent;
-        private System.Windows.Forms.ToolStripButton tsbNothing;
+        private System.Windows.Forms.ToolStripButton tsbInvisible;
         private System.Windows.Forms.ToolStripButton tsbFront;
 		private System.Windows.Forms.ToolStripButton tsbBack;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;

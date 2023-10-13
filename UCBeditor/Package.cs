@@ -6,14 +6,22 @@ using System.Xml;
 
 namespace UCBeditor {
     public class Package {
-        public string Group;
-        public string Name;
-        public bool IsSMD;
-        public double Height;
-        public Point Offset;
-        public int Size;
+        public string Group { get; private set; }
+        public string Name { get; private set; }
+        public bool IsSMD { get; private set; }
+        public double Height { get; private set; }
+        public Point Offset { get; private set; }
+        public int Center { get; private set; }
+        
         public List<Point> Terminals = new List<Point>();
 
+        public enum EDisplay {
+            INVISIBLE,
+            TRANSPARENT,
+            SOLID,
+        }
+
+        public static EDisplay Display { get; set; }
         public static string GroupPath { get; private set; }
         public static string SolidPath { get; private set; }
         public static string AlphaPath { get; private set; }
@@ -86,7 +94,7 @@ namespace UCBeditor {
                         if (solid.Width != solid.Height) {
                             break;
                         }
-                        currentPackage.Size = solid.Width / 2;
+                        currentPackage.Center = solid.Width / 2;
                         if (!List.ContainsKey(currentPackage.Group)) {
                             List.Add(currentPackage.Group, new Dictionary<string, Package>());
                         }

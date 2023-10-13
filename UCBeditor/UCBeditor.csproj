@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -88,6 +91,17 @@
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>del "$(TargetDir)*.xml"
+rd /s /q "$(TargetDir)group\"
+rd /s /q "$(TargetDir)solid\"
+rd /s /q "$(TargetDir)alpha\"
+cd "$(ProjectDir)element\"
+xcopy "*.xml" "$(TargetDir)"
+xcopy /s "group\*" "$(TargetDir)group\"
+xcopy /s "solid\*" "$(TargetDir)solid\"
+xcopy /s "alpha\*" "$(TargetDir)alpha\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
