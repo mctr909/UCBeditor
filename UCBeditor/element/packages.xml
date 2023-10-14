@@ -9,7 +9,7 @@
 			<terminal x="32" y="0"/>
 			<terminal x="32" y="64"/>
 		</item>
-		<item name="VR" height="5">
+		<item name="VR SF6" height="5">
 			<terminal x="5" y="5"/>
 			<terminal x="5" y="37"/>
 			<terminal x="37" y="21"/>
