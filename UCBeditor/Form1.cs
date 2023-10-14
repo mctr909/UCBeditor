@@ -369,6 +369,7 @@ namespace UCBeditor {
 
 			DrawEditItem(g);
 
+			g.DrawEllipse(Item.HoverColor, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
 			picBoard.Image = bmp;
 		}
 
@@ -482,39 +483,28 @@ namespace UCBeditor {
 
 		void DeleteItems() {
 			var temp = new List<Item>();
-			var deleteTermList = new List<Point>();
+			var deleteList = new List<Item>();
 			foreach (var rec in mList) {
 				if (rec.IsSelected(mSelectArea) || rec.IsSelected(mMousePos)) {
 					if (rec is Foot) {
 						continue;
 					}
-					if (rec is Land) {
-						if (!deleteTermList.Contains(rec.Begin)) {
-							deleteTermList.Add(rec.Begin);
-						}
-						continue;
-					}
-					var terms = rec.GetTerminals();
-					foreach (var term in terms) {
-						if (!deleteTermList.Contains(term)) {
-							deleteTermList.Add(term);
-						}
+					if (!deleteList.Contains(rec)) {
+						deleteList.Add(rec);
 					}
 				} else {
-					if (!(rec is Land)) {
+					if (!(rec is Foot)) {
 						temp.Add(rec);
 					}
 				}
 			}
 			foreach (var rec in mList) {
-				if (!(rec is Land)) {
-					continue;
+				if (rec is Foot foot) {
+					if (deleteList.Contains(foot.Parent)) {
+						continue;
+					}
+					temp.Add(rec);
 				}
-				if (deleteTermList.Contains(rec.Begin)) {
-                    deleteTermList.Remove(rec.Begin);
-                    continue;
-				}
-                temp.Add(rec);
 			}
 			mSelectArea = new Rectangle();
 			mList = temp;

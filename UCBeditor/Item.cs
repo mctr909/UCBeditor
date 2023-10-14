@@ -231,10 +231,15 @@ namespace UCBeditor {
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
-            var x1 = Begin.X + dx;
-            var y1 = Begin.Y + dy;
-            var x2 = End.X + dx;
-            var y2 = End.Y + dy;
+            var nx = End.X - Begin.X;
+            var ny = End.Y - Begin.Y;
+            var r = Math.Sqrt(nx*nx + ny*ny);
+            nx = (int)(nx * 3 / r);
+            ny = (int)(ny * 3 / r);
+            var x1 = Begin.X + dx + nx;
+            var y1 = Begin.Y + dy + ny;
+            var x2 = End.X + dx - nx;
+            var y2 = End.Y + dy - ny;
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
@@ -383,7 +388,7 @@ namespace UCBeditor {
             var y = Begin.Y + dy;
             g.DrawImage(bmp, new Point(x - Center, y - Center));
             if (selected) {
-                g.DrawEllipse(Pens.Red, x - 3, y - 3, 6, 6);
+                g.DrawEllipse(Pens.Red, x - 4, y - 4, 8, 8);
             }
         }
     }
