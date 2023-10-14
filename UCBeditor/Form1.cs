@@ -666,7 +666,7 @@ namespace UCBeditor {
 							TextAlign = ContentAlignment.BottomLeft,
 							Height = 16,
 							Top = currentY,
-							Left = 8
+							Left = 2
 						};
 						pnlParts.Controls.Add(label);
 
@@ -686,9 +686,10 @@ namespace UCBeditor {
 							BackColor = Color.Transparent,
 							Width = picture.Width + 6,
 							Height = picture.Height + 6,
-							Left = 8,
+							Left = 2,
 							Top = currentY + label.Height
 						};
+
 						panel.Controls.Add(picture);
 						pnlParts.Controls.Add(panel);
 

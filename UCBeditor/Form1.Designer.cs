@@ -109,7 +109,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.tsParts);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
             this.splitContainer1.Size = new System.Drawing.Size(1008, 705);
-            this.splitContainer1.SplitterDistance = 737;
+            this.splitContainer1.SplitterDistance = 800;
             this.splitContainer1.TabIndex = 0;
             // 
             // pnlBoard
