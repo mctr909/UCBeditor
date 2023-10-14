@@ -12,6 +12,8 @@ namespace UCBeditor {
         public double Height { get; private set; }
         public Point Offset { get; private set; }
         public int Center { get; private set; }
+        public Bitmap[] Solid { get; private set; } = new Bitmap[4];
+        public Bitmap[] Alpha { get; private set; } = new Bitmap[4];
 
         public List<Point> Terminals = new List<Point>();
 
@@ -23,21 +25,18 @@ namespace UCBeditor {
 
         public static EDisplay Display { get; set; }
         public static string GroupPath { get; private set; }
-        public static string SolidPath { get; private set; }
-        public static string AlphaPath { get; private set; }
-
         public static Dictionary<string, Dictionary<string, Package>> List = new Dictionary<string, Dictionary<string, Package>>();
 
         public static void LoadXML(string dir, string fileName) {
             GroupPath = dir + "group\\";
-            SolidPath = dir + "solid\\";
-            AlphaPath = dir + "alpha\\";
             List.Clear();
             var xmlPath = dir + fileName;
             if (!File.Exists(xmlPath)) {
                 return;
             }
             var xml = XmlReader.Create(xmlPath);
+            var dirSolid = dir + "solid\\";
+            var dirAlpha = dir + "alpha\\";
             var currentGroup = "";
             var currentPackage = new Package();
             while (xml.Read()) {
@@ -74,20 +73,20 @@ namespace UCBeditor {
                 case XmlNodeType.EndElement:
                     switch (xml.Name) {
                     case "item": {
-                        var groupPath = GroupPath + currentGroup + ".png";
-                        if (!File.Exists(groupPath)) {
+                        var pathGroup = GroupPath + currentGroup + ".png";
+                        if (!File.Exists(pathGroup)) {
                             break;
                         }
-                        var solidPath = SolidPath + currentGroup + "\\" + currentPackage.Name + ".png";
-                        if (!File.Exists(solidPath)) {
+                        var pathSolid = dirSolid + currentGroup + "\\" + currentPackage.Name + ".png";
+                        if (!File.Exists(pathSolid)) {
                             break;
                         }
-                        var alphaPath = AlphaPath + currentGroup + "\\" + currentPackage.Name + ".png";
-                        if (!File.Exists(alphaPath)) {
+                        var pathAlpha = dirAlpha + currentGroup + "\\" + currentPackage.Name + ".png";
+                        if (!File.Exists(pathAlpha)) {
                             break;
                         }
-                        var solid = new Bitmap(solidPath);
-                        var alpha = new Bitmap(alphaPath);
+                        var solid = new Bitmap(pathSolid);
+                        var alpha = new Bitmap(pathAlpha);
                         if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
                             break;
                         }
@@ -95,6 +94,20 @@ namespace UCBeditor {
                             break;
                         }
                         currentPackage.Center = solid.Width / 2;
+                        currentPackage.Solid[0] = (Bitmap)solid.Clone();
+                        currentPackage.Solid[1] = (Bitmap)solid.Clone();
+                        currentPackage.Solid[2] = (Bitmap)solid.Clone();
+                        currentPackage.Solid[3] = (Bitmap)solid.Clone();
+                        currentPackage.Solid[1].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        currentPackage.Solid[2].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        currentPackage.Solid[3].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        currentPackage.Alpha[0] = (Bitmap)alpha.Clone();
+                        currentPackage.Alpha[1] = (Bitmap)alpha.Clone();
+                        currentPackage.Alpha[2] = (Bitmap)alpha.Clone();
+                        currentPackage.Alpha[3] = (Bitmap)alpha.Clone();
+                        currentPackage.Alpha[1].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        currentPackage.Alpha[2].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        currentPackage.Alpha[3].RotateFlip(RotateFlipType.Rotate270FlipNone);
                         if (!List.ContainsKey(currentPackage.Group)) {
                             List.Add(currentPackage.Group, new Dictionary<string, Package>());
                         }

@@ -270,7 +270,13 @@ namespace UCBeditor {
     }
 
     class Parts : Item {
-        public readonly RotateFlipType Rotate;
+        public enum ROTATE {
+            NONE,
+            DEG90,
+            DEG180,
+            DEG270
+        }
+        public readonly ROTATE Rotate;
         public readonly int Center;
         public readonly string Group;
         public readonly string Name;
@@ -281,7 +287,7 @@ namespace UCBeditor {
         public Parts(string[] cols) {
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
             End = Begin;
-            Rotate = (RotateFlipType)int.Parse(cols[3]);
+            Rotate = (ROTATE)int.Parse(cols[3]);
             Group = cols[4];
             Name = "";
             PackageName = cols[5];
@@ -296,7 +302,7 @@ namespace UCBeditor {
             }
         }
 
-        public Parts(Point pos, RotateFlipType rotate, string group, string package) {
+        public Parts(Point pos, ROTATE rotate, string group, string package) {
             Begin = pos;
             End = pos;
             Rotate = rotate;
@@ -329,15 +335,15 @@ namespace UCBeditor {
                 var term = terminals[i];
                 points[i] = Begin;
                 switch (Rotate) {
-                case RotateFlipType.Rotate90FlipNone:
+                case ROTATE.DEG90:
                     points[i].X += ofs - term.Y;
                     points[i].Y += term.X - ofs;
                     break;
-                case RotateFlipType.Rotate180FlipNone:
+                case ROTATE.DEG180:
                     points[i].X += ofs - term.X;
                     points[i].Y += ofs - term.Y;
                     break;
-                case RotateFlipType.Rotate270FlipNone:
+                case ROTATE.DEG270:
                     points[i].X += term.Y - ofs;
                     points[i].Y += ofs - term.X;
                     break;
@@ -367,15 +373,18 @@ namespace UCBeditor {
             if (!selected && Package.Display == Package.EDisplay.INVISIBLE) {
                 return;
             }
-            string bmpPath;
-            if ((reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
-                bmpPath = selected ? Package.SolidPath : Package.AlphaPath;
+            Bitmap bmp;
+            if (selected || (reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
+                bmp = mPackage.Alpha[(int)Rotate];
             } else {
-                bmpPath = selected ? Package.AlphaPath : Package.SolidPath;
+                bmp = mPackage.Solid[(int)Rotate];
             }
-            var bmp = new Bitmap(bmpPath + Group + "\\" + PackageName + ".png");
-            bmp.RotateFlip(Rotate);
-            g.DrawImage(bmp, new Point(Begin.X + dx - Center, Begin.Y + dy - Center));
+            var x = Begin.X + dx;
+            var y = Begin.Y + dy;
+            g.DrawImage(bmp, new Point(x - Center, y - Center));
+            if (selected) {
+                g.DrawEllipse(Pens.Red, x - 3, y - 3, 6, 6);
+            }
         }
     }
 }

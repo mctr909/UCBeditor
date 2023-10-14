@@ -24,7 +24,7 @@ namespace UCBeditor {
 		bool mItemHeightDesc = false;
 		EditMode mEditMode = EditMode.WIRE;
 		Wire.Colors mWireColor = Wire.Colors.BLACK;
-		RotateFlipType mRotate = RotateFlipType.RotateNoneFlipNone;
+		Parts.ROTATE mRotate = Parts.ROTATE.NONE;
 		Package mSelectedParts;
 
 		bool mIsDragItem;
@@ -179,17 +179,17 @@ namespace UCBeditor {
 
 		private void 左回転LToolStripMenuItem_Click(object sender, EventArgs e) {
 			switch (mRotate) {
-			case RotateFlipType.RotateNoneFlipXY:
-				mRotate = RotateFlipType.Rotate90FlipXY;
+			case Parts.ROTATE.NONE:
+				mRotate = Parts.ROTATE.DEG90;
 				break;
-			case RotateFlipType.Rotate90FlipXY:
-				mRotate = RotateFlipType.Rotate180FlipXY;
+			case Parts.ROTATE.DEG90:
+				mRotate = Parts.ROTATE.DEG180;
 				break;
-			case RotateFlipType.Rotate180FlipXY:
-				mRotate = RotateFlipType.Rotate270FlipXY;
+			case Parts.ROTATE.DEG180:
+				mRotate = Parts.ROTATE.DEG270;
 				break;
-			case RotateFlipType.Rotate270FlipXY:
-				mRotate = RotateFlipType.RotateNoneFlipXY;
+			case Parts.ROTATE.DEG270:
+				mRotate = Parts.ROTATE.NONE;
 				break;
 			}
 			SetPos();
@@ -197,17 +197,17 @@ namespace UCBeditor {
 
 		private void 右回転RToolStripMenuItem_Click(object sender, EventArgs e) {
 			switch (mRotate) {
-			case RotateFlipType.RotateNoneFlipXY:
-				mRotate = RotateFlipType.Rotate270FlipXY;
+			case Parts.ROTATE.NONE:
+				mRotate = Parts.ROTATE.DEG270;
 				break;
-			case RotateFlipType.Rotate270FlipXY:
-				mRotate = RotateFlipType.Rotate180FlipXY;
+			case Parts.ROTATE.DEG270:
+				mRotate = Parts.ROTATE.DEG180;
 				break;
-			case RotateFlipType.Rotate180FlipXY:
-				mRotate = RotateFlipType.Rotate90FlipXY;
+			case Parts.ROTATE.DEG180:
+				mRotate = Parts.ROTATE.DEG90;
 				break;
-			case RotateFlipType.Rotate90FlipXY:
-				mRotate = RotateFlipType.RotateNoneFlipXY;
+			case Parts.ROTATE.DEG90:
+				mRotate = Parts.ROTATE.NONE;
 				break;
 			}
 			SetPos();
@@ -369,8 +369,6 @@ namespace UCBeditor {
 
 			DrawEditItem(g);
 
-			g.DrawEllipse(Item.HoverColor, mEndPos.X - 3, mEndPos.Y - 3, 6, 6);
-
 			picBoard.Image = bmp;
 		}
 
@@ -441,8 +439,8 @@ namespace UCBeditor {
 			mMousePos = picBoard.PointToClient(Cursor.Position);
 			int ox, oy;
 			switch (mRotate) {
-			case RotateFlipType.Rotate90FlipNone:
-			case RotateFlipType.Rotate270FlipNone:
+			case Parts.ROTATE.DEG90:
+			case Parts.ROTATE.DEG270:
 				ox = mSelectedParts.Offset.X;
 				oy = mSelectedParts.Offset.Y;
 				break;
@@ -647,10 +645,8 @@ namespace UCBeditor {
 				}
 				break;
 			case EditMode.PARTS:
-				var filePath = Package.AlphaPath + mSelectedParts.Group + "\\" + mSelectedParts.Name + ".png";
-				var temp = new Bitmap(filePath);
-				temp.RotateFlip(mRotate);
-				g.DrawImage(temp, new Point(
+				var bmp = mSelectedParts.Alpha[(int)mRotate];
+				g.DrawImage(bmp, new Point(
 					mEndPos.X - mSelectedParts.Center,
 					mEndPos.Y - mSelectedParts.Center
 				));
@@ -684,13 +680,12 @@ namespace UCBeditor {
 						};
 						pnlParts.Controls.Add(label);
 
-						var bmp = new Bitmap(Package.SolidPath + package.Group + "\\" + package.Name + ".png");
 						var picture = new PictureBox() {
-							Image = bmp,
+							Image = package.Solid[0],
 							Top = 2,
 							Left = 2,
-							Width = bmp.Width,
-							Height = bmp.Height
+							Width = package.Solid[0].Width,
+							Height = package.Solid[0].Height
 						};
 						picture.MouseDown += new MouseEventHandler((s, ev) => {
 							SetEditParts(package);
