@@ -297,17 +297,21 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                switch (mColor) {
-                case Colors.BLACK:
-                    g.DrawLine(BLACK, x1, y1, x2, y2); break;
-                case Colors.BLUE:
-                    g.DrawLine(BLUE, x1, y1, x2, y2); break;
-                case Colors.RED:
-                    g.DrawLine(RED, x1, y1, x2, y2); break;
-                case Colors.GREEN:
-                    g.DrawLine(GREEN, x1, y1, x2, y2); break;
-                case Colors.YELLOW:
-                    g.DrawLine(YELLOW, x1, y1, x2, y2); break;
+                if (Package.Reverse) {
+                    switch (mColor) {
+                    case Colors.BLACK:
+                        g.DrawLine(BLACK, x1, y1, x2, y2); break;
+                    case Colors.BLUE:
+                        g.DrawLine(BLUE, x1, y1, x2, y2); break;
+                    case Colors.RED:
+                        g.DrawLine(RED, x1, y1, x2, y2); break;
+                    case Colors.GREEN:
+                        g.DrawLine(GREEN, x1, y1, x2, y2); break;
+                    case Colors.YELLOW:
+                        g.DrawLine(YELLOW, x1, y1, x2, y2); break;
+                    }
+                } else {
+                    g.DrawLine(COLOR, x1, y1, x2, y2);
                 }
             }
         }

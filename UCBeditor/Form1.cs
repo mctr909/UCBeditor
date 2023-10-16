@@ -248,6 +248,9 @@ namespace UCBeditor {
                 tsbBack.Checked = true;
                 Package.Reverse = true;
             }
+			if (mEditMode == EditMode.WIRE || mEditMode == EditMode.WLAP) {
+				mEditMode = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
+            }
             SortItems();
 		}
 
@@ -404,24 +407,25 @@ namespace UCBeditor {
 			tsbWireBlue.Checked = tsbWireBlue == btn;
 			tsbWireGreen.Checked = tsbWireGreen == btn;
 			tsbWireYellow.Checked = tsbWireYellow == btn;
+			var wireType = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
-				mEditMode = EditMode.WIRE;
+				mEditMode = wireType;
 				mWireColor = Wire.Colors.BLACK;
 			}
 			if (tsbWireRed.Checked) {
-				mEditMode = EditMode.WIRE;
+				mEditMode = wireType;
 				mWireColor = Wire.Colors.RED;
 			}
 			if (tsbWireBlue.Checked) {
-				mEditMode = EditMode.WIRE;
+				mEditMode = wireType;
 				mWireColor = Wire.Colors.BLUE;
 			}
 			if (tsbWireGreen.Checked) {
-				mEditMode = EditMode.WIRE;
+				mEditMode = wireType;
 				mWireColor = Wire.Colors.GREEN;
 			}
 			if (tsbWireYellow.Checked) {
-				mEditMode = EditMode.WIRE;
+				mEditMode = wireType;
 				mWireColor = Wire.Colors.YELLOW;
 			}
 
