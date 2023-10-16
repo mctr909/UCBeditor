@@ -112,7 +112,7 @@ namespace UCBeditor {
 
     class Tin : Item {
         public static readonly Pen COLOR = new Pen(Color.FromArgb(167, 167, 167), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        public static readonly Pen BCOLOR = new Pen(COLOR.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        public static readonly Pen COLOR_B = new Pen(COLOR.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
         protected Tin() { }
 
@@ -171,9 +171,9 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                g.DrawLine(BCOLOR, x1, y1, x2, y2);
-                g.FillEllipse(BCOLOR.Brush, x1 - 3, y1 - 3, 6, 6);
-                g.FillEllipse(BCOLOR.Brush, x2 - 3, y2 - 3, 6, 6);
+                g.DrawLine(COLOR_B, x1, y1, x2, y2);
+                g.FillEllipse(COLOR_B.Brush, x1 - 3, y1 - 3, 6, 6);
+                g.FillEllipse(COLOR_B.Brush, x2 - 3, y2 - 3, 6, 6);
             }
         }
     }
