@@ -7,8 +7,8 @@ using System.IO;
 namespace UCBeditor {
 	public partial class Form1 : Form {
 		readonly Pen BoardColor = new Pen(Color.FromArgb(255, 255, 235), 0.5f);
-        readonly Pen BorderColor = new Pen(Color.FromArgb(221, 221, 221), 0.5f);
-        readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
+		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
+		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
 		const int BaseGridWidth = 16;
 
 		enum EditMode {
@@ -23,7 +23,7 @@ namespace UCBeditor {
 		List<Item> mList = new List<Item>();
 		List<Item> mClipBoard = new List<Item>();
 		EditMode mEditMode = EditMode.WIRE;
-		Wire.Colors mWireColor = Wire.Colors.BLACK;
+		Tin.Colors mWireColor = Tin.Colors.BLACK;
 		Parts.ROTATE mRotate = Parts.ROTATE.NONE;
 		Package mSelectedParts;
 
@@ -260,20 +260,24 @@ namespace UCBeditor {
 		private void Board_MouseDown(object sender, MouseEventArgs e) {
 			if (e.Button == MouseButtons.Left) {
 				mMousePos = picBoard.PointToClient(Cursor.Position);
-                int snap;
-                if (mEditMode == EditMode.WLAP) {
-                    snap = BaseGridWidth / 2;
-                } else {
-                    snap = BaseGridWidth;
-                }
-                mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
+				int snap;
+				switch (mEditMode) {
+				case EditMode.SELECT:
+				case EditMode.WLAP:
+					snap = BaseGridWidth / 2;
+					break;
+				default:
+					snap = BaseGridWidth;
+					break;
+				}
+				mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
 				mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
 
 				switch (mEditMode) {
 				case EditMode.SELECT:
 				case EditMode.WIRE:
 				case EditMode.WLAP:
-                case EditMode.TIN: {
+				case EditMode.TIN: {
 					double mostNear = double.MaxValue;
 					Item mostNearItem;
 					foreach (var rec in mList) {
@@ -355,11 +359,11 @@ namespace UCBeditor {
 			g.FillRectangle(BoardColor.Brush, 0, 0, bmp.Width, bmp.Height);
 
 			for (int x = 0; x < bmp.Width; x += BaseGridWidth * 5) {
-				g.DrawLine(BorderColor, x - BaseGridWidth / 2, 0, x - BaseGridWidth / 2, bmp.Height);
+				g.DrawLine(BorderColor, x, 0, x, bmp.Height);
 			}
 			for (int y = 0; y < bmp.Height; y += BaseGridWidth) {
 				if (0 == y % (BaseGridWidth * 5)) {
-					g.DrawLine(BorderColor, 0, y - BaseGridWidth / 2, bmp.Width, y - BaseGridWidth / 2);
+					g.DrawLine(BorderColor, 0, y, bmp.Width, y);
 				}
 				for (int x = 0; x < bmp.Width; x += BaseGridWidth) {
 					g.DrawRectangle(GridColor, x, y, 0.5f, 0.5f);
@@ -462,10 +466,14 @@ namespace UCBeditor {
 				break;
 			}
 			int snap;
-			if (mEditMode == EditMode.WLAP) {
+			switch (mEditMode) {
+			case EditMode.SELECT:
+			case EditMode.WLAP:
 				snap = BaseGridWidth / 2;
-			} else {
+				break;
+			default:
 				snap = BaseGridWidth;
+				break;
 			}
 			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / snap + 0.5) * snap;
 			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / snap + 0.5) * snap;
@@ -491,16 +499,16 @@ namespace UCBeditor {
 			var temp = new List<Item>();
 			var deleteList = new List<Item>();
 			foreach (var rec in mList) {
-                if (rec is Land) {
-                    continue;
-                }
-                if (rec.IsSelected(mSelectArea) || rec.IsSelected(mMousePos)) {
+				if (rec is Land) {
+					continue;
+				}
+				if (rec.IsSelected(mSelectArea) || rec.IsSelected(mMousePos)) {
 					if (!deleteList.Contains(rec)) {
 						deleteList.Add(rec);
 					}
 				} else {
-                    temp.Add(rec);
-                }
+					temp.Add(rec);
+				}
 			}
 			foreach (var rec in mList) {
 				if (rec is Land land) {

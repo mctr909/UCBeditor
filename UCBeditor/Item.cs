@@ -28,9 +28,6 @@ namespace UCBeditor {
             }
         }
 
-        public bool IsSelected(Point point) {
-            return Distance(point) < 4.0;
-        }
         public bool IsSelected(Rectangle selectArea) {
             return selectArea.Contains(Begin) || selectArea.Contains(End);
         }
@@ -42,6 +39,9 @@ namespace UCBeditor {
             var apX = point.X - Begin.X;
             var apY = point.Y - Begin.Y;
             return Math.Sqrt(apX * apX + apY * apY);
+        }
+        public virtual bool IsSelected(Point point) {
+            return Distance(point) <= 4.0;
         }
         public virtual Point[] GetTerminals() { return new Point[0]; }
 
@@ -88,7 +88,7 @@ namespace UCBeditor {
                     g.FillEllipse(COLOR.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
-                    g.FillEllipse(Tin.COLOR_D.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(Tin.DARK.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
@@ -111,10 +111,29 @@ namespace UCBeditor {
     }
 
     class Tin : Item {
-        public static readonly Pen COLOR_D = new Pen(Color.FromArgb(147, 147, 147), 2.0f);
-        public static readonly Pen COLOR_L = new Pen(Color.FromArgb(211, 211, 211), 2.0f);
-        public static readonly Pen COLOR_DB = new Pen(COLOR_D.Color, 4.0f);
-        public static readonly Pen COLOR_LB = new Pen(COLOR_L.Color, 4.0f);
+        public enum Colors {
+            BLACK,
+            BLUE,
+            RED,
+            GREEN,
+            YELLOW
+        }
+
+        public static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 2.0f);
+        public static readonly Pen LIGHT = new Pen(Color.FromArgb(211, 211, 211), 2.0f);
+        public static readonly Pen DARK_B = new Pen(DARK.Color, 4.0f);
+        public static readonly Pen LIGHT_B = new Pen(LIGHT.Color, 4.0f);
+
+        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f);
+        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f);
+        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f);
+        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f);
+        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f);
+        protected static readonly Pen BLACK_B = new Pen(BLACK.Color, 4.0f);
+        protected static readonly Pen BLUE_B = new Pen(BLUE.Color, 4.0f);
+        protected static readonly Pen RED_B = new Pen(RED.Color, 4.0f);
+        protected static readonly Pen GREEN_B = new Pen(GREEN.Color, 4.0f);
+        protected static readonly Pen YELLOW_B = new Pen(YELLOW.Color, 4.0f);
 
         protected Tin() { }
 
@@ -173,34 +192,15 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                g.DrawLine(COLOR_DB, x1, y1, x2, y2);
-                g.FillEllipse(COLOR_DB.Brush, x1 - 4, y1 - 4, 8, 8);
-                g.FillEllipse(COLOR_DB.Brush, x2 - 4, y2 - 4, 8, 8);
+                g.DrawLine(DARK_B, x1, y1, x2, y2);
+                g.FillEllipse(DARK_B.Brush, x1 - 4, y1 - 4, 8, 8);
+                g.FillEllipse(DARK_B.Brush, x2 - 4, y2 - 4, 8, 8);
             }
         }
     }
 
     class Wire : Tin {
-        public enum Colors {
-            BLACK,
-            BLUE,
-            RED,
-            GREEN,
-            YELLOW
-        }
-
-        protected readonly Colors mColor;
-
-        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f);
-        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f);
-        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f);
-        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f);
-        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f);
-        protected static readonly Pen BBLACK = new Pen(BLACK.Color, 4.0f);
-        protected static readonly Pen BBLUE = new Pen(BLUE.Color, 4.0f);
-        protected static readonly Pen BRED = new Pen(RED.Color, 4.0f);
-        protected static readonly Pen BGREEN = new Pen(GREEN.Color, 4.0f);
-        protected static readonly Pen BYELLOW = new Pen(YELLOW.Color, 4.0f);
+        readonly Colors mColor;
 
         Wire() { }
 
@@ -220,6 +220,10 @@ namespace UCBeditor {
 
         public override Item Clone() {
             return new Wire(Begin, End, mColor);
+        }
+
+        public override bool IsSelected(Point point) {
+            return !Package.Reverse && base.IsSelected(point);
         }
 
         public override Point[] GetTerminals() {
@@ -249,23 +253,23 @@ namespace UCBeditor {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
                 if (Package.Reverse) {
-                    g.DrawLine(COLOR_LB, x1, y1, x2, y2);
+                    g.DrawLine(LIGHT_B, x1, y1, x2, y2);
                 } else {
                     switch (mColor) {
                     case Colors.BLACK:
-                        g.DrawLine(BBLACK, x1, y1, x2, y2);
+                        g.DrawLine(BLACK_B, x1, y1, x2, y2);
                         break;
                     case Colors.BLUE:
-                        g.DrawLine(BBLUE, x1, y1, x2, y2);
+                        g.DrawLine(BLUE_B, x1, y1, x2, y2);
                         break;
                     case Colors.RED:
-                        g.DrawLine(BRED, x1, y1, x2, y2);
+                        g.DrawLine(RED_B, x1, y1, x2, y2);
                         break;
                     case Colors.GREEN:
-                        g.DrawLine(BGREEN, x1, y1, x2, y2);
+                        g.DrawLine(GREEN_B, x1, y1, x2, y2);
                         break;
                     case Colors.YELLOW:
-                        g.DrawLine(BYELLOW, x1, y1, x2, y2);
+                        g.DrawLine(YELLOW_B, x1, y1, x2, y2);
                         break;
                     }
                 }
@@ -273,17 +277,35 @@ namespace UCBeditor {
         }
     }
 
-    class Wlap : Wire {
-        public Wlap(string[] cols) : base(cols) {
-            Height *= -1;
+    class Wlap : Tin {
+        readonly Colors mColor;
+
+        Wlap() { }
+
+        public Wlap(string[] cols) {
+            Height = -100;
+            Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
+            End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
+            mColor = (Colors)Enum.Parse(typeof(Colors), cols[5]);
         }
 
-        public Wlap(Point begin, Point end, Colors color) : base(begin, end, color) {
-            Height *= -1;
+        public Wlap(Point begin, Point end, Colors color) {
+            Height = -100;
+            Begin = begin;
+            End = end;
+            mColor = color;
         }
 
         public override Item Clone() {
             return new Wlap(Begin, End, mColor);
+        }
+
+        public override bool IsSelected(Point point) {
+            return Package.Reverse && base.IsSelected(point);
+        }
+
+        public override Point[] GetTerminals() {
+            return new Point[] { Begin, End };
         }
 
         public override void Write(StreamWriter sw) {
@@ -317,7 +339,7 @@ namespace UCBeditor {
                         g.DrawLine(YELLOW, x1, y1, x2, y2); break;
                     }
                 } else {
-                    g.DrawLine(COLOR_L, x1, y1, x2, y2);
+                    g.DrawLine(LIGHT, x1, y1, x2, y2);
                 }
             }
         }
@@ -378,6 +400,10 @@ namespace UCBeditor {
             return new Parts(Begin, Rotate, Group, PackageName);
         }
 
+        public override bool IsSelected(Point point) {
+            return (!Package.Reverse ^ mPackage.IsSMD) && base.IsSelected(point);
+        }
+
         public override Point[] GetTerminals() {
             if (null == mPackage) {
                 return new Point[0];
@@ -436,9 +462,6 @@ namespace UCBeditor {
             var x = Begin.X + dx;
             var y = Begin.Y + dy;
             g.DrawImage(bmp, new Point(x - Center, y - Center));
-            if (selected) {
-                g.DrawEllipse(Pens.Red, x - 4, y - 4, 8, 8);
-            }
         }
     }
 }
