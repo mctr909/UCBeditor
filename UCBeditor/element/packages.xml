@@ -21,6 +21,11 @@
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
 		</item>
+		<item name="MLCC(2012)" height="1" type="smd">
+			<offset x="8" y="0"/>
+			<terminal x="8" y="0"/>
+			<terminal x="8" y="16"/>
+		</item>
 		<item name="radial-ceramic1" height="10" >
 			<terminal x="1" y="1"/>
 			<terminal x="2" y="2"/>

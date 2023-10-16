@@ -13,7 +13,7 @@ namespace UCBeditor {
 
 		enum EditMode {
 			SELECT,
-			LAND,
+			TERMINAL,
 			TIN,
 			WIRE,
 			PARTS
@@ -310,8 +310,8 @@ namespace UCBeditor {
 					Math.Abs(mEndPos.Y - mBeginPos.Y) + 1
 				);
 				break;
-			case EditMode.LAND:
-				AddItem(new Land(mEndPos));
+			case EditMode.TERMINAL:
+				AddItem(new Terminal(mEndPos));
 				break;
 			case EditMode.TIN:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
@@ -375,13 +375,13 @@ namespace UCBeditor {
 
 		void SetEditMode(ToolStripButton btn) {
 			tsbSelect.Checked = tsbSelect == btn;
-			tsbLand.Checked = tsbLand == btn;
+			tsbTerminal.Checked = tsbTerminal == btn;
 			tsbTin.Checked = tsbTin == btn;
 			if (tsbSelect.Checked) {
 				mEditMode = EditMode.SELECT;
 			}
-			if (tsbLand.Checked) {
-				mEditMode = EditMode.LAND;
+			if (tsbTerminal.Checked) {
+				mEditMode = EditMode.TERMINAL;
 			}
 			if (tsbTin.Checked) {
 				mEditMode = EditMode.TIN;
@@ -452,7 +452,7 @@ namespace UCBeditor {
 			}
 			int snap;
 			switch (mEditMode) {
-			case EditMode.LAND:
+			case EditMode.TERMINAL:
 			case EditMode.TIN:
 			case EditMode.PARTS:
 				snap = BaseGridWidth;
@@ -485,22 +485,20 @@ namespace UCBeditor {
 			var temp = new List<Item>();
 			var deleteList = new List<Item>();
 			foreach (var rec in mList) {
-				if (rec.IsSelected(mSelectArea) || rec.IsSelected(mMousePos)) {
-					if (rec is Foot) {
-						continue;
-					}
+                if (rec is Land) {
+                    continue;
+                }
+                if (rec.IsSelected(mSelectArea) || rec.IsSelected(mMousePos)) {
 					if (!deleteList.Contains(rec)) {
 						deleteList.Add(rec);
 					}
 				} else {
-					if (!(rec is Foot)) {
-						temp.Add(rec);
-					}
-				}
+                    temp.Add(rec);
+                }
 			}
 			foreach (var rec in mList) {
-				if (rec is Foot foot) {
-					if (deleteList.Contains(foot.Parent)) {
+				if (rec is Land land) {
+					if (deleteList.Contains(land.Parent)) {
 						continue;
 					}
 					temp.Add(rec);
@@ -516,7 +514,7 @@ namespace UCBeditor {
 			var gripPos = new Point(int.MaxValue, int.MaxValue);
 			foreach (var rec in mList) {
 				if (rec.IsSelected(mSelectArea)) {
-					if (rec is Foot) {
+					if (rec is Land) {
 						continue;
 					}
 					mClipBoard.Add(enableCut ? rec : rec.Clone());
@@ -580,7 +578,7 @@ namespace UCBeditor {
 				if (0 < term.X % BaseGridWidth || 0 < term.Y % BaseGridWidth) {
 					continue;
 				}
-				mList.Add(new Foot(term, newItem));
+				mList.Add(new Land(term, newItem));
 			}
 		}
 
@@ -615,7 +613,7 @@ namespace UCBeditor {
 				}
 				break;
 
-			case EditMode.LAND:
+			case EditMode.TERMINAL:
 				g.DrawArc(
 					Pens.Gray,
 					mEndPos.X - 4, mEndPos.Y - 4,

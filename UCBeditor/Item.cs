@@ -20,9 +20,9 @@ namespace UCBeditor {
                 return new Wire(cols);
             case "PARTS":
                 return new Parts(cols);
-            case "LAND":
+            case "TERM":
             default:
-                return new Land(cols);
+                return new Terminal(cols);
             }
         }
 
@@ -48,29 +48,29 @@ namespace UCBeditor {
         public abstract void Draw(Graphics g, int dx, int dy, bool reverse, bool selected);
     }
 
-    class Land : Item {
+    class Terminal : Item {
         static readonly Pen COLOR = new Pen(Color.FromArgb(211, 211, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
-        protected Land() { }
+        protected Terminal() { }
 
-        public Land(string[] cols) {
+        public Terminal(string[] cols) {
             Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
             End = Begin;
             Height = -0.01;
         }
 
-        public Land(Point pos) {
+        public Terminal(Point pos) {
             Begin = pos;
             End = pos;
             Height = -0.01;
         }
 
         public override Item Clone() {
-            return new Land(Begin);
+            return new Terminal(Begin);
         }
 
         public override void Write(StreamWriter sw) {
-            sw.WriteLine("LAND\t{0}\t{1}", Begin.X, Begin.Y);
+            sw.WriteLine("TERM\t{0}\t{1}", Begin.X, Begin.Y);
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
@@ -93,10 +93,10 @@ namespace UCBeditor {
         }
     }
 
-    class Foot : Land {
+    class Land : Terminal {
         public readonly Item Parent;
         
-        public Foot(Point pos, Item parent) {
+        public Land(Point pos, Item parent) {
             Begin = pos;
             End = pos;
             Height = -0.01;

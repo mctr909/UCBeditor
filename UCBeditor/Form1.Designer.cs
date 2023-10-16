@@ -36,7 +36,7 @@
             this.picBoard = new System.Windows.Forms.PictureBox();
             this.tsBoard = new System.Windows.Forms.ToolStrip();
             this.tsbSelect = new System.Windows.Forms.ToolStripButton();
-            this.tsbLand = new System.Windows.Forms.ToolStripButton();
+            this.tsbTerminal = new System.Windows.Forms.ToolStripButton();
             this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
             this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
             this.tsbWireBlue = new System.Windows.Forms.ToolStripButton();
@@ -137,7 +137,7 @@
             // 
             this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbSelect,
-            this.tsbLand,
+            this.tsbTerminal,
             this.tsbTin,
             this.tsbWireBlack,
             this.tsbWireRed,
@@ -175,15 +175,15 @@
             this.tsbSelect.Text = "選択";
             this.tsbSelect.Click += new System.EventHandler(this.EditMode_Click);
             // 
-            // tsbLand
+            // tsbTerminal
             // 
-            this.tsbLand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbLand.Image = ((System.Drawing.Image)(resources.GetObject("tsbLand.Image")));
-            this.tsbLand.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbLand.Name = "tsbLand";
-            this.tsbLand.Size = new System.Drawing.Size(23, 22);
-            this.tsbLand.Text = "ランド";
-            this.tsbLand.Click += new System.EventHandler(this.EditMode_Click);
+            this.tsbTerminal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbTerminal.Image = ((System.Drawing.Image)(resources.GetObject("tsbLand.Image")));
+            this.tsbTerminal.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbTerminal.Name = "tsbTerminal";
+            this.tsbTerminal.Size = new System.Drawing.Size(23, 22);
+            this.tsbTerminal.Text = "端子";
+            this.tsbTerminal.Click += new System.EventHandler(this.EditMode_Click);
             // 
             // tsbWireBlack
             // 
@@ -560,7 +560,7 @@
         private System.Windows.Forms.PictureBox picBoard;
         private System.Windows.Forms.Panel pnlBoard;
 		private System.Windows.Forms.Panel pnlParts;
-        private System.Windows.Forms.ToolStripButton tsbLand;
+        private System.Windows.Forms.ToolStripButton tsbTerminal;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem ファイルFToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 開くOToolStripMenuItem;
