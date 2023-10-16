@@ -470,7 +470,8 @@ namespace UCBeditor {
 			switch (mEditMode) {
 			case EditMode.TERMINAL:
 			case EditMode.TIN:
-			case EditMode.PARTS:
+			case EditMode.WIRE:
+            case EditMode.PARTS:
 				snap = BaseGridWidth;
 				break;
 			default:
