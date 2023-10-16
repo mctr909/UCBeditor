@@ -21,7 +21,6 @@ namespace UCBeditor {
 
 		List<Item> mList = new List<Item>();
 		List<Item> mClipBoard = new List<Item>();
-		bool mItemHeightDesc = false;
 		EditMode mEditMode = EditMode.WIRE;
 		Wire.Colors mWireColor = Wire.Colors.BLACK;
 		Parts.ROTATE mRotate = Parts.ROTATE.NONE;
@@ -240,9 +239,15 @@ namespace UCBeditor {
 		private void DispBoard_Click(object sender, EventArgs e) {
 			tsbBack.Checked = false;
 			tsbFront.Checked = false;
-			((ToolStripButton)sender).Checked = true;
-			mItemHeightDesc = tsbBack.Checked;
-			SortItems();
+            if (tsbFront == sender) {
+                tsbFront.Checked = true;
+				Package.Reverse = false;
+            }
+            if (tsbBack == sender) {
+                tsbBack.Checked = true;
+                Package.Reverse = true;
+            }
+            SortItems();
 		}
 
 		private void GridWidth_SelectedIndexChanged(object sender, EventArgs e) {
@@ -357,13 +362,13 @@ namespace UCBeditor {
 			}
 
 			foreach (var rec in mList) {
-				rec.Draw(g, tsbBack.Checked, rec.IsSelected(mMousePos) || rec.IsSelected(mSelectArea));
+				rec.Draw(g, rec.IsSelected(mMousePos) || rec.IsSelected(mSelectArea));
 			}
 			foreach (var rec in mClipBoard) {
 				rec.Draw(g,
 					mEndPos.X / BaseGridWidth * BaseGridWidth,
 					mEndPos.Y / BaseGridWidth * BaseGridWidth,
-					false, true
+					true
 				);
 			}
 
@@ -583,7 +588,7 @@ namespace UCBeditor {
 		}
 
 		void SortItems() {
-			if (mItemHeightDesc) {
+			if (Package.Reverse) {
 				mList.Sort((a, b) => {
 					var aHeight = (a is Tin) ? 0 : a.Height;
 					var bHeight = (b is Tin) ? 0 : b.Height;

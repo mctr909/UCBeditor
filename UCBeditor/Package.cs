@@ -24,6 +24,7 @@ namespace UCBeditor {
         }
 
         public static EDisplay Display { get; set; }
+        public static bool Reverse { get; set; }
         public static string GroupPath { get; private set; }
         public static Dictionary<string, Dictionary<string, Package>> List = new Dictionary<string, Dictionary<string, Package>>();
 

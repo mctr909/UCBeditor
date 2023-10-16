@@ -32,8 +32,8 @@ namespace UCBeditor {
         public bool IsSelected(Rectangle selectArea) {
             return selectArea.Contains(Begin) || selectArea.Contains(End);
         }
-        public void Draw(Graphics g, bool reverse, bool selected) {
-            Draw(g, 0, 0, reverse, selected);
+        public void Draw(Graphics g, bool selected) {
+            Draw(g, 0, 0, selected);
         }
 
         public virtual double Distance(Point point) {
@@ -45,7 +45,7 @@ namespace UCBeditor {
 
         public abstract Item Clone();
         public abstract void Write(StreamWriter sw);
-        public abstract void Draw(Graphics g, int dx, int dy, bool reverse, bool selected);
+        public abstract void Draw(Graphics g, int dx, int dy, bool selected);
     }
 
     class Terminal : Item {
@@ -73,7 +73,7 @@ namespace UCBeditor {
             sw.WriteLine("TERM\t{0}\t{1}", Begin.X, Begin.Y);
         }
 
-        public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
+        public override void Draw(Graphics g, int dx, int dy, bool selected) {
             var x1 = Begin.X + dx - 4;
             var y1 = Begin.Y + dy - 4;
             var x2 = Begin.X + dx - 2;
@@ -82,7 +82,7 @@ namespace UCBeditor {
                 g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
                 g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
             } else {
-                if (reverse) {
+                if (Package.Reverse) {
                     g.FillEllipse(COLOR.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
@@ -109,7 +109,7 @@ namespace UCBeditor {
     }
 
     class Tin : Item {
-        public static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 191), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        public static readonly Pen COLOR = new Pen(Color.FromArgb(167, 167, 167), 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
         protected Tin() { }
 
@@ -160,7 +160,7 @@ namespace UCBeditor {
             );
         }
 
-        public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
+        public override void Draw(Graphics g, int dx, int dy, bool selected) {
             var x1 = Begin.X + dx;
             var y1 = Begin.Y + dy;
             var x2 = End.X + dx;
@@ -230,7 +230,7 @@ namespace UCBeditor {
             );
         }
 
-        public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
+        public override void Draw(Graphics g, int dx, int dy, bool selected) {
             var nx = End.X - Begin.X;
             var ny = End.Y - Begin.Y;
             var r = Math.Sqrt(nx*nx + ny*ny);
@@ -243,7 +243,7 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                if (reverse) {
+                if (Package.Reverse) {
                     switch (mColor) {
                     case Colors.BLACK:
                         g.DrawLine(BLACK, x1, y1, x2, y2); break;
@@ -371,7 +371,7 @@ namespace UCBeditor {
             );
         }
 
-        public override void Draw(Graphics g, int dx, int dy, bool reverse, bool selected) {
+        public override void Draw(Graphics g, int dx, int dy, bool selected) {
             if (null == mPackage) {
                 return;
             }
@@ -379,7 +379,7 @@ namespace UCBeditor {
                 return;
             }
             Bitmap bmp;
-            if (selected || (reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
+            if (selected || (Package.Reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
                 bmp = mPackage.Alpha[(int)Rotate];
             } else {
                 bmp = mPackage.Solid[(int)Rotate];
