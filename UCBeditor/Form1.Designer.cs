@@ -54,7 +54,6 @@
             this.tsbBack = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.tscGridWidth = new System.Windows.Forms.ToolStripComboBox();
             this.pnlParts = new System.Windows.Forms.Panel();
             this.tsParts = new System.Windows.Forms.ToolStrip();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -152,10 +151,7 @@
             this.toolStripSeparator10,
             this.toolStripSeparator11,
             this.tsbFront,
-            this.tsbBack,
-            this.toolStripSeparator9,
-            this.toolStripSeparator5,
-            this.tscGridWidth});
+            this.tsbBack});
             this.tsBoard.Location = new System.Drawing.Point(0, 0);
             this.tsBoard.Name = "tsBoard";
             this.tsBoard.Size = new System.Drawing.Size(737, 25);
@@ -334,16 +330,6 @@
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
-            // 
-            // tscGridWidth
-            // 
-            this.tscGridWidth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.tscGridWidth.Items.AddRange(new object[] {
-            "2.54mm",
-            "1.27mm"});
-            this.tscGridWidth.Name = "tscGridWidth";
-            this.tscGridWidth.Size = new System.Drawing.Size(80, 25);
-            this.tscGridWidth.SelectedIndexChanged += new System.EventHandler(this.GridWidth_SelectedIndexChanged);
             // 
             // pnlParts
             // 
@@ -572,7 +558,6 @@
         private System.Windows.Forms.ToolStripMenuItem 左回転LToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 右回転RToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-		private System.Windows.Forms.ToolStripComboBox tscGridWidth;
 		private System.Windows.Forms.ToolStripMenuItem 切り取りTToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem コピーCToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem 貼り付けPToolStripMenuItem;

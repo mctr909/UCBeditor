@@ -7,8 +7,8 @@ using System.IO;
 namespace UCBeditor {
 	public partial class Form1 : Form {
 		readonly Pen BoardColor = new Pen(Color.FromArgb(255, 255, 235), 0.5f);
-		readonly Pen GridMajorColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
-		readonly Pen GridMinorColor = new Pen(Color.FromArgb(211, 211, 211), 0.5f);
+        readonly Pen BorderColor = new Pen(Color.FromArgb(221, 221, 221), 0.5f);
+        readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
 		const int BaseGridWidth = 16;
 
 		enum EditMode {
@@ -28,7 +28,6 @@ namespace UCBeditor {
 		Package mSelectedParts;
 
 		bool mIsDragItem;
-		int mCurGridWidth = BaseGridWidth;
 		Point mMousePos = new Point();
 		Point mBeginPos = new Point();
 		Point mEndPos = new Point();
@@ -47,15 +46,14 @@ namespace UCBeditor {
 			});
 
 			PanelResize();
-			picBoard.Width = mCurGridWidth * 80;
-			picBoard.Height = mCurGridWidth * 80;
+			picBoard.Width = BaseGridWidth * 80;
+			picBoard.Height = BaseGridWidth * 80;
 
 			Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			SetPackageList();
 			SetEditMode(tsbSelect);
 
 			tsbSolid.PerformClick();
-			tscGridWidth.SelectedIndex = 0;
 
 			timer1.Interval = 50;
 			timer1.Enabled = true;
@@ -255,17 +253,6 @@ namespace UCBeditor {
 		}
 
 		private void GridWidth_SelectedIndexChanged(object sender, EventArgs e) {
-			switch (tscGridWidth.SelectedIndex) {
-			case 0:
-				mCurGridWidth = BaseGridWidth;
-				break;
-			case 1:
-				mCurGridWidth = BaseGridWidth / 2;
-				break;
-			case 2:
-				mCurGridWidth = BaseGridWidth / 4;
-				break;
-			}
 		}
 		#endregion
 
@@ -273,8 +260,14 @@ namespace UCBeditor {
 		private void Board_MouseDown(object sender, MouseEventArgs e) {
 			if (e.Button == MouseButtons.Left) {
 				mMousePos = picBoard.PointToClient(Cursor.Position);
-				mBeginPos.X = (int)((double)mMousePos.X / mCurGridWidth + 0.5) * mCurGridWidth;
-				mBeginPos.Y = (int)((double)mMousePos.Y / mCurGridWidth + 0.5) * mCurGridWidth;
+                int snap;
+                if (mEditMode == EditMode.WLAP) {
+                    snap = BaseGridWidth / 2;
+                } else {
+                    snap = BaseGridWidth;
+                }
+                mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
+				mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
 
 				switch (mEditMode) {
 				case EditMode.SELECT:
@@ -361,13 +354,15 @@ namespace UCBeditor {
 
 			g.FillRectangle(BoardColor.Brush, 0, 0, bmp.Width, bmp.Height);
 
-			for (int y = 0; y < bmp.Height; y += mCurGridWidth) {
-				for (int x = 0; x < bmp.Width; x += mCurGridWidth) {
-					if (0 != x % BaseGridWidth || 0 != y % BaseGridWidth) {
-						g.DrawRectangle(GridMinorColor, x, y, 0.5f, 0.5f);
-					} else {
-						g.DrawRectangle(GridMajorColor, x, y, 0.5f, 0.5f);
-					}
+			for (int x = 0; x < bmp.Width; x += BaseGridWidth * 5) {
+				g.DrawLine(BorderColor, x - BaseGridWidth / 2, 0, x - BaseGridWidth / 2, bmp.Height);
+			}
+			for (int y = 0; y < bmp.Height; y += BaseGridWidth) {
+				if (0 == y % (BaseGridWidth * 5)) {
+					g.DrawLine(BorderColor, 0, y - BaseGridWidth / 2, bmp.Width, y - BaseGridWidth / 2);
+				}
+				for (int x = 0; x < bmp.Width; x += BaseGridWidth) {
+					g.DrawRectangle(GridColor, x, y, 0.5f, 0.5f);
 				}
 			}
 
@@ -467,16 +462,10 @@ namespace UCBeditor {
 				break;
 			}
 			int snap;
-			switch (mEditMode) {
-			case EditMode.TERMINAL:
-			case EditMode.TIN:
-			case EditMode.WIRE:
-            case EditMode.PARTS:
+			if (mEditMode == EditMode.WLAP) {
+				snap = BaseGridWidth / 2;
+			} else {
 				snap = BaseGridWidth;
-				break;
-			default:
-				snap = mCurGridWidth;
-				break;
 			}
 			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / snap + 0.5) * snap;
 			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / snap + 0.5) * snap;
