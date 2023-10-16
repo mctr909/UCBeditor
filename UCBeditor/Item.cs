@@ -88,7 +88,7 @@ namespace UCBeditor {
                     g.FillEllipse(COLOR.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
-                    g.FillEllipse(Tin.COLOR.Brush, x1, y1, 8, 8);
+                    g.FillEllipse(Tin.COLOR_D.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 }
             }
@@ -111,8 +111,10 @@ namespace UCBeditor {
     }
 
     class Tin : Item {
-        public static readonly Pen COLOR = new Pen(Color.FromArgb(167, 167, 167), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        public static readonly Pen COLOR_B = new Pen(COLOR.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        public static readonly Pen COLOR_D = new Pen(Color.FromArgb(147, 147, 147), 2.0f);
+        public static readonly Pen COLOR_L = new Pen(Color.FromArgb(211, 211, 211), 2.0f);
+        public static readonly Pen COLOR_DB = new Pen(COLOR_D.Color, 4.0f);
+        public static readonly Pen COLOR_LB = new Pen(COLOR_L.Color, 4.0f);
 
         protected Tin() { }
 
@@ -171,9 +173,9 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                g.DrawLine(COLOR_B, x1, y1, x2, y2);
-                g.FillEllipse(COLOR_B.Brush, x1 - 3, y1 - 3, 6, 6);
-                g.FillEllipse(COLOR_B.Brush, x2 - 3, y2 - 3, 6, 6);
+                g.DrawLine(COLOR_DB, x1, y1, x2, y2);
+                g.FillEllipse(COLOR_DB.Brush, x1 - 4, y1 - 4, 8, 8);
+                g.FillEllipse(COLOR_DB.Brush, x2 - 4, y2 - 4, 8, 8);
             }
         }
     }
@@ -189,16 +191,16 @@ namespace UCBeditor {
 
         protected readonly Colors mColor;
 
-        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen BBLACK = new Pen(BLACK.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen BBLUE = new Pen(BLUE.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen BRED = new Pen(RED.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen BGREEN = new Pen(GREEN.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        protected static readonly Pen BYELLOW = new Pen(YELLOW.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f);
+        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f);
+        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f);
+        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f);
+        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f);
+        protected static readonly Pen BBLACK = new Pen(BLACK.Color, 4.0f);
+        protected static readonly Pen BBLUE = new Pen(BLUE.Color, 4.0f);
+        protected static readonly Pen BRED = new Pen(RED.Color, 4.0f);
+        protected static readonly Pen BGREEN = new Pen(GREEN.Color, 4.0f);
+        protected static readonly Pen BYELLOW = new Pen(YELLOW.Color, 4.0f);
 
         Wire() { }
 
@@ -237,8 +239,8 @@ namespace UCBeditor {
             var nx = End.X - Begin.X;
             var ny = End.Y - Begin.Y;
             var r = Math.Sqrt(nx*nx + ny*ny);
-            nx = (int)(nx * 3 / r);
-            ny = (int)(ny * 3 / r);
+            nx = (int)(nx * 2 / r);
+            ny = (int)(ny * 2 / r);
             var x1 = Begin.X + dx + nx;
             var y1 = Begin.Y + dy + ny;
             var x2 = End.X + dx - nx;
@@ -246,17 +248,26 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                switch (mColor) {
-                case Colors.BLACK:
-                    g.DrawLine(BBLACK, x1, y1, x2, y2); break;
-                case Colors.BLUE:
-                    g.DrawLine(BBLUE, x1, y1, x2, y2); break;
-                case Colors.RED:
-                    g.DrawLine(BRED, x1, y1, x2, y2); break;
-                case Colors.GREEN:
-                    g.DrawLine(BGREEN, x1, y1, x2, y2); break;
-                case Colors.YELLOW:
-                    g.DrawLine(BYELLOW, x1, y1, x2, y2); break;
+                if (Package.Reverse) {
+                    g.DrawLine(COLOR_LB, x1, y1, x2, y2);
+                } else {
+                    switch (mColor) {
+                    case Colors.BLACK:
+                        g.DrawLine(BBLACK, x1, y1, x2, y2);
+                        break;
+                    case Colors.BLUE:
+                        g.DrawLine(BBLUE, x1, y1, x2, y2);
+                        break;
+                    case Colors.RED:
+                        g.DrawLine(BRED, x1, y1, x2, y2);
+                        break;
+                    case Colors.GREEN:
+                        g.DrawLine(BGREEN, x1, y1, x2, y2);
+                        break;
+                    case Colors.YELLOW:
+                        g.DrawLine(BYELLOW, x1, y1, x2, y2);
+                        break;
+                    }
                 }
             }
         }
@@ -285,15 +296,10 @@ namespace UCBeditor {
         }
 
         public override void Draw(Graphics g, int dx, int dy, bool selected) {
-            var nx = End.X - Begin.X;
-            var ny = End.Y - Begin.Y;
-            var r = Math.Sqrt(nx * nx + ny * ny);
-            nx = (int)(nx / r);
-            ny = (int)(ny / r);
-            var x1 = Begin.X + dx + nx;
-            var y1 = Begin.Y + dy + ny;
-            var x2 = End.X + dx - nx;
-            var y2 = End.Y + dy - ny;
+            var x1 = Begin.X + dx;
+            var y1 = Begin.Y + dy;
+            var x2 = End.X + dx;
+            var y2 = End.Y + dy;
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
@@ -311,7 +317,7 @@ namespace UCBeditor {
                         g.DrawLine(YELLOW, x1, y1, x2, y2); break;
                     }
                 } else {
-                    g.DrawLine(COLOR, x1, y1, x2, y2);
+                    g.DrawLine(COLOR_L, x1, y1, x2, y2);
                 }
             }
         }
