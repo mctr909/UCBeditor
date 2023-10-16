@@ -16,6 +16,7 @@ namespace UCBeditor {
 			TERMINAL,
 			TIN,
 			WIRE,
+			WLAP,
 			PARTS
 		}
 
@@ -275,7 +276,8 @@ namespace UCBeditor {
 				switch (mEditMode) {
 				case EditMode.SELECT:
 				case EditMode.WIRE:
-				case EditMode.TIN: {
+				case EditMode.WLAP:
+                case EditMode.TIN: {
 					double mostNear = double.MaxValue;
 					Item mostNearItem;
 					foreach (var rec in mList) {
@@ -328,7 +330,12 @@ namespace UCBeditor {
 					AddItem(new Wire(mBeginPos, mEndPos, mWireColor));
 				}
 				break;
-			case EditMode.PARTS:
+            case EditMode.WLAP:
+                if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+                    AddItem(new Wlap(mBeginPos, mEndPos, mWireColor));
+                }
+                break;
+            case EditMode.PARTS:
 				AddItem(new Parts(
 					mEndPos, mRotate,
 					mSelectedParts.Group,
@@ -590,8 +597,8 @@ namespace UCBeditor {
 		void SortItems() {
 			if (Package.Reverse) {
 				mList.Sort((a, b) => {
-					var aHeight = (a is Tin) ? 0 : a.Height;
-					var bHeight = (b is Tin) ? 0 : b.Height;
+					var aHeight = (a.GetType() == typeof(Tin)) ? 0 : a.Height;
+					var bHeight = (b.GetType() == typeof(Tin)) ? 0 : b.Height;
 					var diff = bHeight - aHeight;
 					return 0 == diff ? 0 : diff < 0 ? -1 : 1;
 				});
@@ -633,7 +640,8 @@ namespace UCBeditor {
 				break;
 			case EditMode.TIN:
 			case EditMode.WIRE:
-				if (mIsDragItem) {
+            case EditMode.WLAP:
+                if (mIsDragItem) {
 					g.DrawLine(Item.HoverColor, mBeginPos, mEndPos);
 				}
 				break;

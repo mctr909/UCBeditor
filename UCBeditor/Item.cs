@@ -18,6 +18,8 @@ namespace UCBeditor {
                 return new Tin(cols);
             case "WIRE":
                 return new Wire(cols);
+            case "WLAP":
+                return new Wlap(cols);
             case "PARTS":
                 return new Parts(cols);
             case "TERM":
@@ -27,7 +29,7 @@ namespace UCBeditor {
         }
 
         public bool IsSelected(Point point) {
-            return Distance(point) < 8.0;
+            return Distance(point) < 4.0;
         }
         public bool IsSelected(Rectangle selectArea) {
             return selectArea.Contains(Begin) || selectArea.Contains(End);
@@ -184,18 +186,18 @@ namespace UCBeditor {
             YELLOW
         }
 
-        readonly Colors mColor;
+        protected readonly Colors mColor;
 
-        static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen BBLACK = new Pen(BLACK.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen BBLUE = new Pen(BLUE.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen BRED = new Pen(RED.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen BGREEN = new Pen(GREEN.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-        static readonly Pen BYELLOW = new Pen(YELLOW.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BBLACK = new Pen(BLACK.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BBLUE = new Pen(BLUE.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BRED = new Pen(RED.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BGREEN = new Pen(GREEN.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        protected static readonly Pen BYELLOW = new Pen(YELLOW.Color, 3.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
         Wire() { }
 
@@ -243,32 +245,68 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                if (Package.Reverse) {
-                    switch (mColor) {
-                    case Colors.BLACK:
-                        g.DrawLine(BLACK, x1, y1, x2, y2); break;
-                    case Colors.BLUE:
-                        g.DrawLine(BLUE, x1, y1, x2, y2); break;
-                    case Colors.RED:
-                        g.DrawLine(RED, x1, y1, x2, y2); break;
-                    case Colors.GREEN:
-                        g.DrawLine(GREEN, x1, y1, x2, y2); break;
-                    case Colors.YELLOW:
-                        g.DrawLine(YELLOW, x1, y1, x2, y2); break;
-                    }
-                } else {
-                    switch (mColor) {
-                    case Colors.BLACK:
-                        g.DrawLine(BBLACK, x1, y1, x2, y2); break;
-                    case Colors.BLUE:
-                        g.DrawLine(BBLUE, x1, y1, x2, y2); break;
-                    case Colors.RED:
-                        g.DrawLine(BRED, x1, y1, x2, y2); break;
-                    case Colors.GREEN:
-                        g.DrawLine(BGREEN, x1, y1, x2, y2); break;
-                    case Colors.YELLOW:
-                        g.DrawLine(BYELLOW, x1, y1, x2, y2); break;
-                    }
+                switch (mColor) {
+                case Colors.BLACK:
+                    g.DrawLine(BBLACK, x1, y1, x2, y2); break;
+                case Colors.BLUE:
+                    g.DrawLine(BBLUE, x1, y1, x2, y2); break;
+                case Colors.RED:
+                    g.DrawLine(BRED, x1, y1, x2, y2); break;
+                case Colors.GREEN:
+                    g.DrawLine(BGREEN, x1, y1, x2, y2); break;
+                case Colors.YELLOW:
+                    g.DrawLine(BYELLOW, x1, y1, x2, y2); break;
+                }
+            }
+        }
+    }
+
+    class Wlap : Wire {
+        public Wlap(string[] cols) : base(cols) {
+            Height *= -1;
+        }
+
+        public Wlap(Point begin, Point end, Colors color) : base(begin, end, color) {
+            Height *= -1;
+        }
+
+        public override Item Clone() {
+            return new Wlap(Begin, End, mColor);
+        }
+
+        public override void Write(StreamWriter sw) {
+            sw.WriteLine(
+                "WLAP\t{0}\t{1}\t{2}\t{3}\t{4}",
+                Begin.X, Begin.Y,
+                End.X, End.Y,
+                mColor
+            );
+        }
+
+        public override void Draw(Graphics g, int dx, int dy, bool selected) {
+            var nx = End.X - Begin.X;
+            var ny = End.Y - Begin.Y;
+            var r = Math.Sqrt(nx * nx + ny * ny);
+            nx = (int)(nx * 2 / r);
+            ny = (int)(ny * 2 / r);
+            var x1 = Begin.X + dx + nx;
+            var y1 = Begin.Y + dy + ny;
+            var x2 = End.X + dx - nx;
+            var y2 = End.Y + dy - ny;
+            if (selected) {
+                g.DrawLine(HoverColor, x1, y1, x2, y2);
+            } else {
+                switch (mColor) {
+                case Colors.BLACK:
+                    g.DrawLine(BLACK, x1, y1, x2, y2); break;
+                case Colors.BLUE:
+                    g.DrawLine(BLUE, x1, y1, x2, y2); break;
+                case Colors.RED:
+                    g.DrawLine(RED, x1, y1, x2, y2); break;
+                case Colors.GREEN:
+                    g.DrawLine(GREEN, x1, y1, x2, y2); break;
+                case Colors.YELLOW:
+                    g.DrawLine(YELLOW, x1, y1, x2, y2); break;
                 }
             }
         }
