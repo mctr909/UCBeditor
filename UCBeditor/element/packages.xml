@@ -16,7 +16,7 @@
 		</item>
 	</group>
 	<group name="C">
-		<item name="1608" height="1" type="smd">
+		<item name="MLCC(1608)" height="1" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
