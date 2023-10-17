@@ -119,16 +119,16 @@ namespace UCBeditor {
             YELLOW
         }
 
-        public static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 2.0f);
-        public static readonly Pen LIGHT = new Pen(Color.FromArgb(211, 211, 211), 2.0f);
+        public static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        public static readonly Pen LIGHT = new Pen(Color.FromArgb(211, 211, 211), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         public static readonly Pen DARK_B = new Pen(DARK.Color, 4.0f);
         public static readonly Pen LIGHT_B = new Pen(LIGHT.Color, 4.0f);
 
-        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f);
-        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f);
-        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f);
-        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f);
-        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f);
+        protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         protected static readonly Pen BLACK_B = new Pen(BLACK.Color, 4.0f);
         protected static readonly Pen BLUE_B = new Pen(BLUE.Color, 4.0f);
         protected static readonly Pen RED_B = new Pen(RED.Color, 4.0f);

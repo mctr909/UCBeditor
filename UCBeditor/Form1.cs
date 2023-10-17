@@ -240,49 +240,13 @@ namespace UCBeditor {
 			}
 			SortItems();
 		}
-
-		private void GridWidth_SelectedIndexChanged(object sender, EventArgs e) {
-		}
 		#endregion
 
 		#region MouseEvent
 		private void Board_MouseDown(object sender, MouseEventArgs e) {
 			if (e.Button == MouseButtons.Left) {
-				mMousePos = picBoard.PointToClient(Cursor.Position);
-				int snap;
-				switch (mEditMode) {
-				case EditMode.SELECT:
-				case EditMode.WLAP:
-					snap = BaseGridWidth / 2;
-					break;
-				default:
-					snap = BaseGridWidth;
-					break;
-				}
-				mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
-				mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
-
-				switch (mEditMode) {
-				case EditMode.SELECT:
-				case EditMode.WIRE:
-				case EditMode.WLAP:
-				case EditMode.TIN: {
-					double mostNear = double.MaxValue;
-					Item mostNearItem;
-					foreach (var rec in mList) {
-						var dist = rec.Distance(mMousePos);
-						if (dist < mostNear) {
-							mostNear = dist;
-							mostNearItem = rec;
-						}
-					}
-					mSelectArea = new Rectangle();
-					mIsDragItem = true;
-					break;
-				}
-				}
+				SetBeginPos();
 			}
-
 			if (e.Button == MouseButtons.Right) {
 				DeleteItems();
 			}
@@ -442,6 +406,32 @@ namespace UCBeditor {
 					panel.BackColor = BoardColor.Color;
 					panel.BorderStyle = BorderStyle.None;
 				}
+			}
+		}
+
+		void SetBeginPos() {
+			mMousePos = picBoard.PointToClient(Cursor.Position);
+			int snap;
+			switch (mEditMode) {
+			case EditMode.SELECT:
+			case EditMode.WLAP:
+				snap = BaseGridWidth / 2;
+				break;
+			default:
+				snap = BaseGridWidth;
+				break;
+			}
+			mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
+			mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
+			switch (mEditMode) {
+			case EditMode.SELECT:
+			case EditMode.WIRE:
+			case EditMode.WLAP:
+			case EditMode.TIN: {
+				mSelectArea = new Rectangle();
+				mIsDragItem = true;
+				break;
+			}
 			}
 		}
 
