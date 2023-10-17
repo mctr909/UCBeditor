@@ -97,7 +97,7 @@ namespace UCBeditor {
 
     class Land : Terminal {
         public readonly Item Parent;
-        
+
         public Land(Point pos, Item parent) {
             Begin = pos;
             End = pos;
@@ -242,7 +242,7 @@ namespace UCBeditor {
         public override void Draw(Graphics g, int dx, int dy, bool selected) {
             var nx = End.X - Begin.X;
             var ny = End.Y - Begin.Y;
-            var r = Math.Sqrt(nx*nx + ny*ny);
+            var r = Math.Sqrt(nx * nx + ny * ny);
             nx = (int)(nx * 2 / r);
             ny = (int)(ny * 2 / r);
             var x1 = Begin.X + dx + nx;
