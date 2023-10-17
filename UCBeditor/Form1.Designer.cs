@@ -93,13 +93,13 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.pnlBoard);
             this.splitContainer1.Panel1.Controls.Add(this.tsBoard);
-            this.splitContainer1.Panel1.Resize += new System.EventHandler(this.splitContainer1_Panel1_Resize);
+            this.splitContainer1.Panel1.Resize += new System.EventHandler(this.PanelResize);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.pnlParts);
             this.splitContainer1.Panel2.Controls.Add(this.tsParts);
-            this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
+            this.splitContainer1.Panel2.Resize += new System.EventHandler(this.PanelResize);
             this.splitContainer1.Size = new System.Drawing.Size(1008, 705);
             this.splitContainer1.SplitterDistance = 800;
             this.splitContainer1.TabIndex = 0;

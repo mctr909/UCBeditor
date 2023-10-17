@@ -28,7 +28,6 @@ namespace UCBeditor {
 		Package mSelectedParts;
 
 		bool mIsDragItem;
-		Point mMousePos = new Point();
 		Point mBeginPos = new Point();
 		Point mEndPos = new Point();
 		Rectangle mSelectArea = new Rectangle();
@@ -60,22 +59,12 @@ namespace UCBeditor {
 			timer1.Start();
 		}
 
-		#region resize
-		private void splitContainer1_Panel1_Resize(object sender, EventArgs e) {
-			PanelResize();
-		}
-
-		private void splitContainer1_Panel2_Resize(object sender, EventArgs e) {
-			PanelResize();
-		}
-
-		private void PanelResize() {
+		private void PanelResize(object sender = null, EventArgs e = null) {
 			pnlBoard.Width = splitContainer1.Panel1.Width - 4;
 			pnlBoard.Height = splitContainer1.Panel1.Height - tsBoard.Height - 6;
 			pnlParts.Width = splitContainer1.Panel2.Width - 4;
 			pnlParts.Height = splitContainer1.Panel2.Height - tsParts.Height - 6;
 		}
-		#endregion
 
 		#region MenuberEvent [File]
 		private void MenuFileNew_Click(object sender, EventArgs e) {
@@ -324,7 +313,7 @@ namespace UCBeditor {
 			}
 
 			foreach (var rec in mList) {
-				rec.Draw(g, rec.IsSelected(mMousePos) || rec.IsSelected(mSelectArea));
+				rec.Draw(g, rec.IsSelected(mEndPos) || rec.IsSelected(mSelectArea));
 			}
 			foreach (var rec in mClipBoard) {
 				rec.Draw(g,
@@ -410,7 +399,7 @@ namespace UCBeditor {
 		}
 
 		void SetBeginPos() {
-			mMousePos = picBoard.PointToClient(Cursor.Position);
+			var mousePos = picBoard.PointToClient(Cursor.Position);
 			int snap;
 			switch (mEditMode) {
 			case EditMode.SELECT:
@@ -421,8 +410,8 @@ namespace UCBeditor {
 				snap = BaseGridWidth;
 				break;
 			}
-			mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
-			mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
+			mBeginPos.X = (int)((double)mousePos.X / snap + 0.5) * snap;
+			mBeginPos.Y = (int)((double)mousePos.Y / snap + 0.5) * snap;
 			switch (mEditMode) {
 			case EditMode.SELECT:
 			case EditMode.WIRE:
@@ -436,7 +425,7 @@ namespace UCBeditor {
 		}
 
 		void SetPos() {
-			mMousePos = picBoard.PointToClient(Cursor.Position);
+			var mousePos = picBoard.PointToClient(Cursor.Position);
 			int ox, oy;
 			switch (mRotate) {
 			case Parts.ROTATE.DEG90:
@@ -459,8 +448,8 @@ namespace UCBeditor {
 				snap = BaseGridWidth;
 				break;
 			}
-			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / snap + 0.5) * snap;
-			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / snap + 0.5) * snap;
+			mEndPos.X = ox + (int)((double)(mousePos.X - ox) / snap + 0.5) * snap;
+			mEndPos.Y = oy + (int)((double)(mousePos.Y - oy) / snap + 0.5) * snap;
 		}
 
 		void SaveFile(string filePath) {
@@ -486,7 +475,7 @@ namespace UCBeditor {
 				if (rec is Land) {
 					continue;
 				}
-				if (rec.IsSelected(mSelectArea) || rec.IsSelected(mMousePos)) {
+				if (rec.IsSelected(mSelectArea) || rec.IsSelected(mEndPos)) {
 					if (!deleteList.Contains(rec)) {
 						deleteList.Add(rec);
 					}
