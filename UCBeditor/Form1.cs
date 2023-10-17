@@ -40,7 +40,7 @@ namespace UCBeditor {
 			KeyUp += new KeyEventHandler((sender, args) => {
 				switch (args.KeyCode) {
 				case Keys.Escape:
-					選択SToolStripMenuItem.PerformClick();
+					MenuEditSelect.PerformClick();
 					break;
 				}
 			});
@@ -78,16 +78,13 @@ namespace UCBeditor {
 		#endregion
 
 		#region MenuberEvent [File]
-		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuFileNew_Click(object sender, EventArgs e) {
 			mList.Clear();
-			mClipBoard.Clear();
-			Text = "";
-
-			tsbSelect.Checked = true;
 			SetEditMode(tsbSelect);
+			Text = "";
 		}
 
-		private void 開くOToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuFileOpen_Click(object sender, EventArgs e) {
 			openFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
 			openFileDialog1.FileName = "";
 			openFileDialog1.ShowDialog();
@@ -96,14 +93,12 @@ namespace UCBeditor {
 				return;
 			}
 
-			tsbSelect.Checked = true;
 			SetEditMode(tsbSelect);
 
 			var fs = new FileStream(filePath, FileMode.Open);
 			var sr = new StreamReader(fs);
 
 			mList.Clear();
-			mClipBoard.Clear();
 			while (!sr.EndOfStream) {
 				var rec = Item.Construct(sr.ReadLine());
 				AddItem(rec);
@@ -115,13 +110,9 @@ namespace UCBeditor {
 			fs.Dispose();
 
 			Text = filePath;
-			mBeginPos = new Point();
-			mEndPos = new Point();
-			mSelectArea = new Rectangle();
-			mIsDragItem = false;
 		}
 
-		private void 上書き保存SToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuFileSave_Click(object sender, EventArgs e) {
 			string filePath;
 			if (string.IsNullOrEmpty(Text) || !File.Exists(Text)) {
 				saveFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
@@ -139,7 +130,7 @@ namespace UCBeditor {
 			SaveFile(filePath);
 		}
 
-		private void 名前を付けて保存AToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuFileSaveAs_Click(object sender, EventArgs e) {
 			saveFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
 			saveFileDialog1.FileName = "";
 			saveFileDialog1.ShowDialog();
@@ -153,58 +144,56 @@ namespace UCBeditor {
 		#endregion
 
 		#region MenuberEvent [Edit]
-		private void 選択SToolStripMenuItem_Click(object sender, EventArgs e) {
-			mSelectArea = new Rectangle();
-			mClipBoard.Clear();
+		private void MenuEditSelect_Click(object sender, EventArgs e) {
 			SetEditMode(tsbSelect);
 		}
 
-		private void 切り取りTToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuEditCut_Click(object sender, EventArgs e) {
 			CopyItems(true);
 		}
 
-		private void コピーCToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuEditCopy_Click(object sender, EventArgs e) {
 			CopyItems();
 		}
 
-		private void 貼り付けPToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuEditPaste_Click(object sender, EventArgs e) {
 			PasteItems();
 		}
 
-		private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuEditDelete_Click(object sender, EventArgs e) {
 			DeleteItems();
 		}
 
-		private void 左回転LToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuEditRotL_Click(object sender, EventArgs e) {
 			switch (mRotate) {
 			case Parts.ROTATE.NONE:
-				mRotate = Parts.ROTATE.DEG90;
-				break;
-			case Parts.ROTATE.DEG90:
-				mRotate = Parts.ROTATE.DEG180;
-				break;
-			case Parts.ROTATE.DEG180:
 				mRotate = Parts.ROTATE.DEG270;
 				break;
 			case Parts.ROTATE.DEG270:
+				mRotate = Parts.ROTATE.DEG180;
+				break;
+			case Parts.ROTATE.DEG180:
+				mRotate = Parts.ROTATE.DEG90;
+				break;
+			case Parts.ROTATE.DEG90:
 				mRotate = Parts.ROTATE.NONE;
 				break;
 			}
 			SetPos();
 		}
 
-		private void 右回転RToolStripMenuItem_Click(object sender, EventArgs e) {
+		private void MenuEditRotR_Click(object sender, EventArgs e) {
 			switch (mRotate) {
 			case Parts.ROTATE.NONE:
-				mRotate = Parts.ROTATE.DEG270;
-				break;
-			case Parts.ROTATE.DEG270:
-				mRotate = Parts.ROTATE.DEG180;
-				break;
-			case Parts.ROTATE.DEG180:
 				mRotate = Parts.ROTATE.DEG90;
 				break;
 			case Parts.ROTATE.DEG90:
+				mRotate = Parts.ROTATE.DEG180;
+				break;
+			case Parts.ROTATE.DEG180:
+				mRotate = Parts.ROTATE.DEG270;
+				break;
+			case Parts.ROTATE.DEG270:
 				mRotate = Parts.ROTATE.NONE;
 				break;
 			}
@@ -238,18 +227,18 @@ namespace UCBeditor {
 		private void DispBoard_Click(object sender, EventArgs e) {
 			tsbBack.Checked = false;
 			tsbFront.Checked = false;
-            if (tsbFront == sender) {
-                tsbFront.Checked = true;
+			if (tsbFront == sender) {
+				tsbFront.Checked = true;
 				Package.Reverse = false;
-            }
-            if (tsbBack == sender) {
-                tsbBack.Checked = true;
-                Package.Reverse = true;
-            }
+			}
+			if (tsbBack == sender) {
+				tsbBack.Checked = true;
+				Package.Reverse = true;
+			}
 			if (mEditMode == EditMode.WIRE || mEditMode == EditMode.WLAP) {
 				mEditMode = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
-            }
-            SortItems();
+			}
+			SortItems();
 		}
 
 		private void GridWidth_SelectedIndexChanged(object sender, EventArgs e) {
@@ -330,12 +319,12 @@ namespace UCBeditor {
 					AddItem(new Wire(mBeginPos, mEndPos, mWireColor));
 				}
 				break;
-            case EditMode.WLAP:
-                if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-                    AddItem(new Wlap(mBeginPos, mEndPos, mWireColor));
-                }
-                break;
-            case EditMode.PARTS:
+			case EditMode.WLAP:
+				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
+					AddItem(new Wlap(mBeginPos, mEndPos, mWireColor));
+				}
+				break;
+			case EditMode.PARTS:
 				AddItem(new Parts(
 					mEndPos, mRotate,
 					mSelectedParts.Group,
@@ -387,10 +376,10 @@ namespace UCBeditor {
 			picBoard.Image = bmp;
 		}
 
-		void SetEditMode(ToolStripButton btn) {
-			tsbSelect.Checked = tsbSelect == btn;
-			tsbTerminal.Checked = tsbTerminal == btn;
-			tsbTin.Checked = tsbTin == btn;
+		void SetEditMode(ToolStripButton button) {
+			tsbSelect.Checked = tsbSelect == button;
+			tsbTerminal.Checked = tsbTerminal == button;
+			tsbTin.Checked = tsbTin == button;
 			if (tsbSelect.Checked) {
 				mEditMode = EditMode.SELECT;
 			}
@@ -401,33 +390,38 @@ namespace UCBeditor {
 				mEditMode = EditMode.TIN;
 			}
 
-			tsbWireBlack.Checked = tsbWireBlack == btn;
-			tsbWireRed.Checked = tsbWireRed == btn;
-			tsbWireBlue.Checked = tsbWireBlue == btn;
-			tsbWireGreen.Checked = tsbWireGreen == btn;
-			tsbWireYellow.Checked = tsbWireYellow == btn;
+			tsbWireBlack.Checked = tsbWireBlack == button;
+			tsbWireRed.Checked = tsbWireRed == button;
+			tsbWireBlue.Checked = tsbWireBlue == button;
+			tsbWireGreen.Checked = tsbWireGreen == button;
+			tsbWireYellow.Checked = tsbWireYellow == button;
 			var wireType = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
 				mEditMode = wireType;
-				mWireColor = Wire.Colors.BLACK;
+				mWireColor = Tin.Colors.BLACK;
 			}
 			if (tsbWireRed.Checked) {
 				mEditMode = wireType;
-				mWireColor = Wire.Colors.RED;
+				mWireColor = Tin.Colors.RED;
 			}
 			if (tsbWireBlue.Checked) {
 				mEditMode = wireType;
-				mWireColor = Wire.Colors.BLUE;
+				mWireColor = Tin.Colors.BLUE;
 			}
 			if (tsbWireGreen.Checked) {
 				mEditMode = wireType;
-				mWireColor = Wire.Colors.GREEN;
+				mWireColor = Tin.Colors.GREEN;
 			}
 			if (tsbWireYellow.Checked) {
 				mEditMode = wireType;
-				mWireColor = Wire.Colors.YELLOW;
+				mWireColor = Tin.Colors.YELLOW;
 			}
 
+			mBeginPos = new Point();
+			mEndPos = new Point();
+			mSelectArea = new Rectangle();
+			mIsDragItem = false;
+			mClipBoard.Clear();
 			SetEditParts(new Package());
 		}
 
@@ -582,8 +576,8 @@ namespace UCBeditor {
 				item.End.Y += ofsY;
 				AddItem(item);
 			}
-            SortItems();
-        }
+			SortItems();
+		}
 
 		void AddItem(Item newItem) {
 			mList.Add(newItem);
@@ -642,8 +636,8 @@ namespace UCBeditor {
 				break;
 			case EditMode.TIN:
 			case EditMode.WIRE:
-            case EditMode.WLAP:
-                if (mIsDragItem) {
+			case EditMode.WLAP:
+				if (mIsDragItem) {
 					g.DrawLine(Item.HoverColor, mBeginPos, mEndPos);
 				}
 				break;
