@@ -113,9 +113,10 @@ namespace UCBeditor {
     class Tin : Item {
         public enum Colors {
             BLACK,
-            BLUE,
             RED,
             GREEN,
+            BLUE,
+            MAGENTA,
             YELLOW
         }
 
@@ -125,14 +126,16 @@ namespace UCBeditor {
         public static readonly Pen LIGHT_B = new Pen(LIGHT.Color, 4.0f);
 
         protected static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         protected static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         protected static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        protected static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        protected static readonly Pen MAGENTA = new Pen(Color.FromArgb(167, 0, 167), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         protected static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         protected static readonly Pen BLACK_B = new Pen(BLACK.Color, 4.0f);
-        protected static readonly Pen BLUE_B = new Pen(BLUE.Color, 4.0f);
         protected static readonly Pen RED_B = new Pen(RED.Color, 4.0f);
         protected static readonly Pen GREEN_B = new Pen(GREEN.Color, 4.0f);
+        protected static readonly Pen BLUE_B = new Pen(BLUE.Color, 4.0f);
+        protected static readonly Pen MAGENTA_B = new Pen(MAGENTA.Color, 4.0f);
         protected static readonly Pen YELLOW_B = new Pen(YELLOW.Color, 4.0f);
 
         protected Tin() { }
@@ -257,20 +260,17 @@ namespace UCBeditor {
                 } else {
                     switch (mColor) {
                     case Colors.BLACK:
-                        g.DrawLine(BLACK_B, x1, y1, x2, y2);
-                        break;
-                    case Colors.BLUE:
-                        g.DrawLine(BLUE_B, x1, y1, x2, y2);
-                        break;
+                        g.DrawLine(BLACK_B, x1, y1, x2, y2); break;
                     case Colors.RED:
-                        g.DrawLine(RED_B, x1, y1, x2, y2);
-                        break;
+                        g.DrawLine(RED_B, x1, y1, x2, y2); break;
                     case Colors.GREEN:
-                        g.DrawLine(GREEN_B, x1, y1, x2, y2);
-                        break;
+                        g.DrawLine(GREEN_B, x1, y1, x2, y2); break;
+                    case Colors.BLUE:
+                        g.DrawLine(BLUE_B, x1, y1, x2, y2); break;
+                    case Colors.MAGENTA:
+                        g.DrawLine(MAGENTA_B, x1, y1, x2, y2); break;
                     case Colors.YELLOW:
-                        g.DrawLine(YELLOW_B, x1, y1, x2, y2);
-                        break;
+                        g.DrawLine(YELLOW_B, x1, y1, x2, y2); break;
                     }
                 }
             }
@@ -329,12 +329,14 @@ namespace UCBeditor {
                     switch (mColor) {
                     case Colors.BLACK:
                         g.DrawLine(BLACK, x1, y1, x2, y2); break;
-                    case Colors.BLUE:
-                        g.DrawLine(BLUE, x1, y1, x2, y2); break;
                     case Colors.RED:
                         g.DrawLine(RED, x1, y1, x2, y2); break;
                     case Colors.GREEN:
                         g.DrawLine(GREEN, x1, y1, x2, y2); break;
+                    case Colors.BLUE:
+                        g.DrawLine(BLUE, x1, y1, x2, y2); break;
+                    case Colors.MAGENTA:
+                        g.DrawLine(MAGENTA, x1, y1, x2, y2); break;
                     case Colors.YELLOW:
                         g.DrawLine(YELLOW, x1, y1, x2, y2); break;
                     }
@@ -454,7 +456,9 @@ namespace UCBeditor {
                 return;
             }
             Bitmap bmp;
-            if (selected || (Package.Reverse ^ mPackage.IsSMD) || Package.Display == Package.EDisplay.TRANSPARENT) {
+            if (Package.Display == Package.EDisplay.TRANSPARENT) {
+                bmp = (selected ? mPackage.Solid : mPackage.Alpha)[(int)Rotate];
+            } else if (selected || (Package.Reverse ^ mPackage.IsSMD)) {
                 bmp = mPackage.Alpha[(int)Rotate];
             } else {
                 bmp = mPackage.Solid[(int)Rotate];

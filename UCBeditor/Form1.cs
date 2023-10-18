@@ -312,8 +312,9 @@ namespace UCBeditor {
 
 			tsbWireBlack.Checked = tsbWireBlack == button;
 			tsbWireRed.Checked = tsbWireRed == button;
-			tsbWireBlue.Checked = tsbWireBlue == button;
 			tsbWireGreen.Checked = tsbWireGreen == button;
+			tsbWireBlue.Checked = tsbWireBlue == button;
+			tsbWireMagenta.Checked = tsbWireMagenta == button;
 			tsbWireYellow.Checked = tsbWireYellow == button;
 			var wireType = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
@@ -324,13 +325,17 @@ namespace UCBeditor {
 				mEditMode = wireType;
 				mWireColor = Tin.Colors.RED;
 			}
+			if (tsbWireGreen.Checked) {
+				mEditMode = wireType;
+				mWireColor = Tin.Colors.GREEN;
+			}
 			if (tsbWireBlue.Checked) {
 				mEditMode = wireType;
 				mWireColor = Tin.Colors.BLUE;
 			}
-			if (tsbWireGreen.Checked) {
+			if (tsbWireMagenta.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.GREEN;
+				mWireColor = Tin.Colors.MAGENTA;
 			}
 			if (tsbWireYellow.Checked) {
 				mEditMode = wireType;
