@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.drawTimer = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pnlBoard = new System.Windows.Forms.Panel();
             this.picBoard = new System.Windows.Forms.PictureBox();
@@ -81,7 +81,7 @@
             // 
             // timer1
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.drawTimer.Tick += new System.EventHandler(this.Draw);
             // 
             // splitContainer1
             // 
@@ -93,13 +93,13 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.pnlBoard);
             this.splitContainer1.Panel1.Controls.Add(this.tsBoard);
-            this.splitContainer1.Panel1.Resize += new System.EventHandler(this.PanelResize);
+            this.splitContainer1.Panel1.Resize += new System.EventHandler(this.Panel_Resize);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.pnlParts);
             this.splitContainer1.Panel2.Controls.Add(this.tsParts);
-            this.splitContainer1.Panel2.Resize += new System.EventHandler(this.PanelResize);
+            this.splitContainer1.Panel2.Resize += new System.EventHandler(this.Panel_Resize);
             this.splitContainer1.Size = new System.Drawing.Size(1008, 705);
             this.splitContainer1.SplitterDistance = 800;
             this.splitContainer1.TabIndex = 0;
@@ -485,7 +485,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer drawTimer;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStrip tsBoard;
         private System.Windows.Forms.ToolStrip tsParts;
