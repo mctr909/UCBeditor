@@ -17,14 +17,6 @@ namespace UCBeditor {
 
         public List<Point> Terminals = new List<Point>();
 
-        public enum EDisplay {
-            INVISIBLE,
-            TRANSPARENT,
-            SOLID,
-        }
-
-        public static EDisplay Display { get; set; }
-        public static bool Reverse { get; set; }
         public static string GroupPath { get; private set; }
         public static Dictionary<string, Dictionary<string, Package>> List = new Dictionary<string, Dictionary<string, Package>>();
 

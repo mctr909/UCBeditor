@@ -10,6 +10,7 @@ namespace UCBeditor {
         public double Height { get; protected set; }
 
         public static readonly Pen HoverColor = Pens.Blue;
+        public static bool Reverse { get; set; }
 
         public static Item Construct(string line) {
             var cols = line.Split('\t');
@@ -41,7 +42,7 @@ namespace UCBeditor {
             return Math.Sqrt(apX * apX + apY * apY);
         }
         public virtual bool IsSelected(Point point) {
-            return Distance(point) <= 4.0;
+            return Distance(point) < 8.0;
         }
         public virtual Point[] GetTerminals() { return new Point[0]; }
 
@@ -84,7 +85,7 @@ namespace UCBeditor {
                 g.DrawArc(HoverColor, x1, y1, 8, 8, 0, 360);
                 g.DrawArc(HoverColor, x2, y2, 4, 4, 0, 360);
             } else {
-                if (Package.Reverse) {
+                if (Reverse) {
                     g.FillEllipse(COLOR.Brush, x1, y1, 8, 8);
                     g.FillEllipse(Brushes.White, x2, y2, 4, 4);
                 } else {
@@ -226,7 +227,7 @@ namespace UCBeditor {
         }
 
         public override bool IsSelected(Point point) {
-            return !Package.Reverse && base.IsSelected(point);
+            return !Reverse && base.IsSelected(point);
         }
 
         public override Point[] GetTerminals() {
@@ -255,7 +256,7 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                if (Package.Reverse) {
+                if (Reverse) {
                     g.DrawLine(LIGHT_B, x1, y1, x2, y2);
                 } else {
                     switch (mColor) {
@@ -301,7 +302,7 @@ namespace UCBeditor {
         }
 
         public override bool IsSelected(Point point) {
-            return Package.Reverse && base.IsSelected(point);
+            return Reverse && base.IsSelected(point);
         }
 
         public override Point[] GetTerminals() {
@@ -325,7 +326,7 @@ namespace UCBeditor {
             if (selected) {
                 g.DrawLine(HoverColor, x1, y1, x2, y2);
             } else {
-                if (Package.Reverse) {
+                if (Reverse) {
                     switch (mColor) {
                     case Colors.BLACK:
                         g.DrawLine(BLACK, x1, y1, x2, y2); break;
@@ -354,6 +355,13 @@ namespace UCBeditor {
             DEG180,
             DEG270
         }
+        public enum EDisplay {
+            INVISIBLE,
+            TRANSPARENT,
+            SOLID,
+        }
+        public static EDisplay Display { get; set; }
+
         public readonly ROTATE Rotate;
         public readonly int Center;
         public readonly string Group;
@@ -403,7 +411,7 @@ namespace UCBeditor {
         }
 
         public override bool IsSelected(Point point) {
-            return (!Package.Reverse ^ mPackage.IsSMD) && base.IsSelected(point);
+            return (!Reverse ^ mPackage.IsSMD) && base.IsSelected(point);
         }
 
         public override Point[] GetTerminals() {
@@ -452,13 +460,13 @@ namespace UCBeditor {
             if (null == mPackage) {
                 return;
             }
-            if (!selected && Package.Display == Package.EDisplay.INVISIBLE) {
+            if (!selected && Display == EDisplay.INVISIBLE) {
                 return;
             }
             Bitmap bmp;
-            if (Package.Display == Package.EDisplay.TRANSPARENT) {
+            if (Display == EDisplay.TRANSPARENT) {
                 bmp = (selected ? mPackage.Solid : mPackage.Alpha)[(int)Rotate];
-            } else if (selected || (Package.Reverse ^ mPackage.IsSMD)) {
+            } else if (selected || (Reverse ^ mPackage.IsSMD)) {
                 bmp = mPackage.Alpha[(int)Rotate];
             } else {
                 bmp = mPackage.Solid[(int)Rotate];

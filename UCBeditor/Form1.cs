@@ -202,15 +202,15 @@ namespace UCBeditor {
 			tsbSolid.Checked = false;
 			if (tsbInvisible == sender) {
 				tsbInvisible.Checked = true;
-				Package.Display = Package.EDisplay.INVISIBLE;
+				Parts.Display = Parts.EDisplay.INVISIBLE;
 			}
 			if (tsbTransparent == sender) {
 				tsbTransparent.Checked = true;
-				Package.Display = Package.EDisplay.TRANSPARENT;
+				Parts.Display = Parts.EDisplay.TRANSPARENT;
 			}
 			if (tsbSolid == sender) {
 				tsbSolid.Checked = true;
-				Package.Display = Package.EDisplay.SOLID;
+				Parts.Display = Parts.EDisplay.SOLID;
 			}
 		}
 
@@ -219,14 +219,14 @@ namespace UCBeditor {
 			tsbFront.Checked = false;
 			if (tsbFront == sender) {
 				tsbFront.Checked = true;
-				Package.Reverse = false;
+				Item.Reverse = false;
 			}
 			if (tsbBack == sender) {
 				tsbBack.Checked = true;
-				Package.Reverse = true;
+				Item.Reverse = true;
 			}
 			if (mEditMode == EditMode.WIRE || mEditMode == EditMode.WLAP) {
-				mEditMode = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
+				mEditMode = Item.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			}
 			SortItems();
 		}
@@ -316,7 +316,7 @@ namespace UCBeditor {
 			tsbWireBlue.Checked = tsbWireBlue == button;
 			tsbWireMagenta.Checked = tsbWireMagenta == button;
 			tsbWireYellow.Checked = tsbWireYellow == button;
-			var wireType = Package.Reverse ? EditMode.WLAP : EditMode.WIRE;
+			var wireType = Item.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
 				mEditMode = wireType;
 				mWireColor = Tin.Colors.BLACK;
@@ -560,7 +560,7 @@ namespace UCBeditor {
 		}
 
 		void SortItems() {
-			if (Package.Reverse) {
+			if (Item.Reverse) {
 				mList.Sort((a, b) => {
 					var aHeight = (a.GetType() == typeof(Tin)) ? 0 : a.Height;
 					var bHeight = (b.GetType() == typeof(Tin)) ? 0 : b.Height;
