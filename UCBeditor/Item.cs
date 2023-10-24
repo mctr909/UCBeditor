@@ -42,6 +42,15 @@ namespace UCBeditor {
             return Math.Sqrt(apX * apX + apY * apY);
         }
         public virtual bool IsSelected(Point point) {
+            if (Reverse) {
+                if (GetType() == typeof(Wire)) {
+                    return false;
+                }
+            } else {
+                if (GetType() == typeof(Wlap)) {
+                    return false;
+                }
+            }
             if (Tin.Enable) {
                 if (GetType() == typeof(Wire)) {
                     return false;
@@ -250,10 +259,6 @@ namespace UCBeditor {
             return new Wire(Begin, End, mColor);
         }
 
-        public override bool IsSelected(Point point) {
-            return !Reverse && base.IsSelected(point);
-        }
-
         public override Point[] GetTerminals() {
             return new Point[] { Begin, End };
         }
@@ -323,10 +328,6 @@ namespace UCBeditor {
 
         public override Item Clone() {
             return new Wlap(Begin, End, mColor);
-        }
-
-        public override bool IsSelected(Point point) {
-            return Reverse && base.IsSelected(point);
         }
 
         public override Point[] GetTerminals() {
