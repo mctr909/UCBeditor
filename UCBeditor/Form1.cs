@@ -309,6 +309,7 @@ namespace UCBeditor {
 			if (tsbTin.Checked) {
 				mEditMode = EditMode.TIN;
 			}
+			Tin.Enable = tsbTin.Checked;
 
 			tsbWireBlack.Checked = tsbWireBlack == button;
 			tsbWireRed.Checked = tsbWireRed == button;

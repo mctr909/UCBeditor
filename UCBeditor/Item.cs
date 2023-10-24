@@ -42,6 +42,18 @@ namespace UCBeditor {
             return Math.Sqrt(apX * apX + apY * apY);
         }
         public virtual bool IsSelected(Point point) {
+            if (Tin.Enable) {
+                if (GetType() == typeof(Wire)) {
+                    return false;
+                }
+                if (GetType() == typeof(Wlap)) {
+                    return false;
+                }
+            } else {
+                if (GetType() == typeof(Tin)) {
+                    return false;
+                }
+            }
             return Distance(point) < 8.0;
         }
         public virtual Point[] GetTerminals() { return new Point[0]; }
@@ -121,8 +133,8 @@ namespace UCBeditor {
             YELLOW
         }
 
-        public static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-        public static readonly Pen LIGHT = new Pen(Color.FromArgb(211, 211, 211), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        public static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+        public static readonly Pen LIGHT = new Pen(Color.FromArgb(221, 221, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
         public static readonly Pen DARK_B = new Pen(DARK.Color, 4.0f);
         public static readonly Pen LIGHT_B = new Pen(LIGHT.Color, 4.0f);
 
@@ -138,6 +150,8 @@ namespace UCBeditor {
         protected static readonly Pen BLUE_B = new Pen(BLUE.Color, 4.0f);
         protected static readonly Pen MAGENTA_B = new Pen(MAGENTA.Color, 4.0f);
         protected static readonly Pen YELLOW_B = new Pen(YELLOW.Color, 4.0f);
+
+        public static bool Enable { get; set; } = false;
 
         protected Tin() { }
 
@@ -193,12 +207,22 @@ namespace UCBeditor {
             var y1 = Begin.Y + dy;
             var x2 = End.X + dx;
             var y2 = End.Y + dy;
-            if (selected) {
-                g.DrawLine(HoverColor, x1, y1, x2, y2);
+            if (Enable) {
+                if (selected) {
+                    g.DrawLine(HoverColor, x1, y1, x2, y2);
+                } else {
+                    g.DrawLine(DARK_B, x1, y1, x2, y2);
+                    g.FillEllipse(DARK_B.Brush, x1 - 4, y1 - 4, 8, 8);
+                    g.FillEllipse(DARK_B.Brush, x2 - 4, y2 - 4, 8, 8);
+                }
             } else {
-                g.DrawLine(DARK_B, x1, y1, x2, y2);
-                g.FillEllipse(DARK_B.Brush, x1 - 4, y1 - 4, 8, 8);
-                g.FillEllipse(DARK_B.Brush, x2 - 4, y2 - 4, 8, 8);
+                if (selected) {
+                    g.DrawLine(HoverColor, x1, y1, x2, y2);
+                } else {
+                    g.DrawLine(DARK, x1, y1, x2, y2);
+                    g.FillEllipse(DARK.Brush, x1 - 2, y1 - 2, 4, 4);
+                    g.FillEllipse(DARK.Brush, x2 - 2, y2 - 2, 4, 4);
+                }
             }
         }
     }
