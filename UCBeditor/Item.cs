@@ -203,6 +203,28 @@ namespace UCBeditor {
 			}
 		}
 
+		protected PointF NeerPoint(Point point) {
+			var abX = End.X - Begin.X;
+			var abY = End.Y - Begin.Y;
+			var apX = point.X - Begin.X;
+			var apY = point.Y - Begin.Y;
+			var abL2 = abX * abX + abY * abY;
+			if (0.0 == abL2) {
+				return Begin;
+			}
+			var r = (double)(abX * apX + abY * apY) / abL2;
+			if (r <= 0.0) {
+				return Begin;
+			} else if (1.0 <= r) {
+				return End;
+			} else {
+				return new PointF(
+					(float)(Begin.X + r * abX),
+					(float)(Begin.Y + r * abY)
+				);
+			}
+		}
+
 		protected Wire() { }
 
 		public Wire(string[] cols) {
@@ -230,26 +252,10 @@ namespace UCBeditor {
 		}
 
 		public override double Distance(Point point) {
-			var abX = End.X - Begin.X;
-			var abY = End.Y - Begin.Y;
-			var apX = point.X - Begin.X;
-			var apY = point.Y - Begin.Y;
-			var abL2 = abX * abX + abY * abY;
-			if (0.0 == abL2) {
-				return Math.Sqrt(apX * apX + apY * apY);
-			}
-			var r = (double)(abX * apX + abY * apY) / abL2;
-			if (r <= 0.0) {
-				return Math.Sqrt(apX * apX + apY * apY);
-			} else if (1.0 <= r) {
-				var bpX = point.X - End.X;
-				var bpY = point.Y - End.Y;
-				return Math.Sqrt(bpX * bpX + bpY * bpY);
-			} else {
-				var qpX = point.X - (Begin.X + r * abX);
-				var qpY = point.Y - (Begin.Y + r * abY);
-				return Math.Sqrt(qpX * qpX + qpY * qpY);
-			}
+			var n = NeerPoint(point);
+			var sx = point.X - n.X;
+			var sy = point.Y - n.Y;
+			return Math.Sqrt(sx * sx + sy * sy);
 		}
 
 		public override void Write(StreamWriter sw) {
