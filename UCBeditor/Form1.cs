@@ -667,7 +667,7 @@ namespace UCBeditor {
 
 			DrawEditItem(g);
 
-			g.DrawEllipse(Item.HoverColor, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
+			g.DrawEllipse(Pens.Red, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
 			picBoard.Image = bmp;
 		}
 
@@ -703,7 +703,7 @@ namespace UCBeditor {
 			case EditMode.WIRE:
 			case EditMode.WLAP:
 				if (mIsDrag) {
-					g.DrawLine(Item.HoverColor, mBeginPos, mEndPos);
+					g.DrawLine(Pens.Turquoise, mBeginPos, mEndPos);
 				}
 				break;
 			case EditMode.PARTS:
