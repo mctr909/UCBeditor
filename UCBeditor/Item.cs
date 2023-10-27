@@ -11,9 +11,7 @@ namespace UCBeditor {
 
 		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
 		protected static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		protected static readonly Pen LIGHT = new Pen(Color.FromArgb(221, 221, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		protected static readonly Pen BOLD_DARK = new Pen(DARK.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		protected static readonly Pen BOLD_LIGHT = new Pen(LIGHT.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		protected static readonly Pen B_DARK = new Pen(DARK.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 
 		public static bool Reverse { get; set; }
 
@@ -155,6 +153,7 @@ namespace UCBeditor {
 			YELLOW
 		}
 
+		static readonly Pen LIGHT = new Pen(Color.FromArgb(231, 231, 231), 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 		static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 		static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 		static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
@@ -281,7 +280,7 @@ namespace UCBeditor {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
 				if (Reverse) {
-					g.DrawLine(BOLD_LIGHT, x1, y1, x2, y2);
+					g.DrawLine(LIGHT, x1, y1, x2, y2);
 				} else {
 					g.DrawLine(mPenB, x1, y1, x2, y2);
 				}
@@ -290,6 +289,8 @@ namespace UCBeditor {
 	}
 
 	class Wlap : Wire {
+		static readonly Pen LIGHT = new Pen(Color.FromArgb(211, 211, 211), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+
 		Wlap() { }
 
 		public Wlap(string[] cols) : base(cols) {
@@ -366,7 +367,7 @@ namespace UCBeditor {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
 				if (Enable) {
-					g.DrawLine(BOLD_DARK, x1, y1, x2, y2);
+					g.DrawLine(B_DARK, x1, y1, x2, y2);
 					g.FillEllipse(DARK.Brush, x1 - 4, y1 - 4, 8, 8);
 					g.FillEllipse(DARK.Brush, x2 - 4, y2 - 4, 8, 8);
 				} else {
