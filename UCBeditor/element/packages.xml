@@ -147,6 +147,23 @@
 			<terminal x="32" y="12"/>
 			<terminal x="32" y="4"/>
 		</item>
+		<item name="SOP14" height="3" type="smd">
+			<offset x="8" y="0"/>
+			<terminal x="12" y="4"/>
+			<terminal x="12" y="12"/>
+			<terminal x="12" y="20"/>
+			<terminal x="12" y="28"/>
+			<terminal x="12" y="36"/>
+			<terminal x="12" y="44"/>
+			<terminal x="12" y="52"/>
+			<terminal x="44" y="52"/>
+			<terminal x="44" y="44"/>
+			<terminal x="44" y="36"/>
+			<terminal x="44" y="28"/>
+			<terminal x="44" y="20"/>
+			<terminal x="44" y="12"/>
+			<terminal x="44" y="4"/>
+		</item>
 		<item name="DIP4" height="5">
 			<offset x="8" y="8"/>
 			<terminal x="4" y="20"/>
