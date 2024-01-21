@@ -132,6 +132,13 @@
 			<terminal x="17" y="9"/>
 			<terminal x="17" y="1"/>
 		</item>
+		<item name="DIP4" height="5">
+			<offset x="8" y="8"/>
+			<terminal x="4" y="20"/>
+			<terminal x="4" y="36"/>
+			<terminal x="52" y="36"/>
+			<terminal x="52" y="20"/>
+		</item>
 		<item name="DIP8" height="5">
 			<offset x="8" y="8"/>
 			<terminal x="4" y="4"/>
