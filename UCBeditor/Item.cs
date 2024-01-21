@@ -76,7 +76,7 @@ namespace UCBeditor {
 	}
 
 	class Terminal : Item {
-		static readonly Pen COLOR = new Pen(Color.FromArgb(211, 211, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		protected Terminal() { }
 
