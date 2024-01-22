@@ -135,7 +135,7 @@ namespace UCBeditor {
 			End = pos;
 			Height = -0.01;
 			Parent = parts;
-			Foot = parts.GetFoot(pos);
+			Foot = parts.GetFoot(pos, true);
 		}
 
 		public override Item Clone() { return null; }
@@ -451,11 +451,11 @@ namespace UCBeditor {
 			}
 		}
 
-		public PointF[][] GetFoot(Point pos) {
+		public PointF[][] GetFoot(Point pos, bool round) {
 			if (null == mPackage.FootPrint) {
 				return null;
 			}
-			return mPackage.FootPrint.Get(pos, Rotate);
+			return mPackage.FootPrint.Get(pos, Rotate, round);
 		}
 
 		public override Item Clone() {

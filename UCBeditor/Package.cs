@@ -28,7 +28,7 @@ namespace UCBeditor {
             }
             public Dictionary<string, PointF[]> Polygon = new Dictionary<string, PointF[]>();
             public List<Pin> Pins = new List<Pin>();
-            public PointF[][] Get(Point pos, ROTATE rotate) {
+            public PointF[][] Get(Point pos, ROTATE rotate, bool round) {
                 double rx, ry;
                 switch (rotate) {
                 case ROTATE.DEG90:
@@ -57,12 +57,19 @@ namespace UCBeditor {
                     var points = new PointF[poly.Length];
                     for (var i = 0; i < poly.Length; i++) {
                         var p = poly[i];
-                        points[i] = new PointF(
-                            (float)(pos.X + p.X * rx - p.Y * ry),
-                            (float)(pos.Y + p.Y * rx + p.X * ry)
-                        );
+                        if (round) {
+                            points[i] = new PointF(
+                                (int)(pos.X + p.X * rx - p.Y * ry + 0.5),
+                                (int)(pos.Y + p.Y * rx + p.X * ry + 0.5)
+                            );
+                        } else {
+                            points[i] = new PointF(
+                                (float)(pos.X + p.X * rx - p.Y * ry),
+                                (float)(pos.Y + p.Y * rx + p.X * ry)
+                            );
+                        }
+                        ret.Add(points);
                     }
-                    ret.Add(points);
                 }
                 return ret.ToArray();
             }
