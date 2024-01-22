@@ -275,7 +275,7 @@ namespace UCBeditor {
 				break;
 			case EditMode.WLAP:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Wlap(mBeginPos, mEndPos, mWireColor));
+					AddItem(new Wrap(mBeginPos, mEndPos, mWireColor));
 				}
 				break;
 			case EditMode.PARTS:

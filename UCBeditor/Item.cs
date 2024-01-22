@@ -5,13 +5,7 @@ using System.IO;
 
 namespace UCBeditor {
 	abstract class Item {
-		public Point Begin;
-		public Point End;
-		public double Height { get; protected set; }
-
 		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
-		protected static readonly Pen DARK = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		protected static readonly Pen B_DARK = new Pen(DARK.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 
 		public static bool Reverse { get; set; }
 
@@ -22,8 +16,8 @@ namespace UCBeditor {
 				return new Tin(cols);
 			case "WIRE":
 				return new Wire(cols);
-			case "WLAP":
-				return new Wlap(cols);
+			case "WRAP":
+				return new Wrap(cols);
 			case "PARTS":
 				return new Parts(cols);
 			case "TERM":
@@ -31,6 +25,10 @@ namespace UCBeditor {
 				return new Terminal(cols);
 			}
 		}
+
+		public Point Begin;
+		public Point End;
+		public double Height { get; protected set; }
 
 		public bool IsSelected(Rectangle selectArea) {
 			return selectArea.Contains(Begin) || selectArea.Contains(End);
@@ -50,7 +48,7 @@ namespace UCBeditor {
 					return false;
 				}
 			} else {
-				if (GetType() == typeof(Wlap)) {
+				if (GetType() == typeof(Wrap)) {
 					return false;
 				}
 			}
@@ -58,7 +56,7 @@ namespace UCBeditor {
 				if (GetType() == typeof(Wire)) {
 					return false;
 				}
-				if (GetType() == typeof(Wlap)) {
+				if (GetType() == typeof(Wrap)) {
 					return false;
 				}
 			} else {
@@ -77,6 +75,7 @@ namespace UCBeditor {
 
 	class Terminal : Item {
 		static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		static readonly Pen REVERSE = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		protected Terminal() { }
 
@@ -101,20 +100,20 @@ namespace UCBeditor {
 		}
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			var x1 = Begin.X + dx - 4;
-			var y1 = Begin.Y + dy - 4;
+			var x1 = Begin.X + dx - 5;
+			var y1 = Begin.Y + dy - 5;
 			var x2 = Begin.X + dx - 2;
 			var y2 = Begin.Y + dy - 2;
 			if (selected) {
-				g.DrawArc(SELECT_COLOR, x1, y1, 8, 8, 0, 360);
+				g.DrawArc(SELECT_COLOR, x1, y1, 10, 10, 0, 360);
 				g.DrawArc(SELECT_COLOR, x2, y2, 4, 4, 0, 360);
 			} else {
 				if (Reverse) {
-					g.FillEllipse(COLOR.Brush, x1, y1, 8, 8);
+					g.FillEllipse(COLOR.Brush, x1, y1, 10, 10);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
-					g.FillEllipse(DARK.Brush, x1, y1, 8, 8);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+					g.DrawEllipse(REVERSE, x2, y2, 4, 4);
 				}
 			}
 		}
@@ -144,6 +143,21 @@ namespace UCBeditor {
 	}
 
 	class Wire : Item {
+		static readonly Pen REVERSE = new Pen(Color.FromArgb(211, 211, 211), 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+
+		static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen MAGENTA = new Pen(Color.FromArgb(167, 0, 167), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen BLACK_B = new Pen(BLACK.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen RED_B = new Pen(RED.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen GREEN_B = new Pen(GREEN.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen BLUE_B = new Pen(BLUE.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen MAGENTA_B = new Pen(MAGENTA.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen YELLOW_B = new Pen(YELLOW.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+
 		public enum Colors {
 			BLACK,
 			RED,
@@ -153,20 +167,6 @@ namespace UCBeditor {
 			YELLOW
 		}
 
-		static readonly Pen LIGHT = new Pen(Color.FromArgb(231, 231, 231), 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen BLUE = new Pen(Color.FromArgb(63, 63, 221), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen MAGENTA = new Pen(Color.FromArgb(167, 0, 167), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen YELLOW = new Pen(Color.FromArgb(191, 191, 0), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen B_BLACK = new Pen(BLACK.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen B_RED = new Pen(RED.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen B_GREEN = new Pen(GREEN.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen B_BLUE = new Pen(BLUE.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen B_MAGENTA = new Pen(MAGENTA.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen B_YELLOW = new Pen(YELLOW.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-
 		protected Colors mColor { get; private set; }
 		protected Pen mPen { get; private set; }
 		protected Pen mPenB { get; private set; }
@@ -175,27 +175,27 @@ namespace UCBeditor {
 			switch (mColor) {
 			case Colors.BLACK:
 				mPen = BLACK;
-				mPenB = B_BLACK;
+				mPenB = BLACK_B;
 				break;
 			case Colors.RED:
 				mPen = RED;
-				mPenB = B_RED;
+				mPenB = RED_B;
 				break;
 			case Colors.GREEN:
 				mPen = GREEN;
-				mPenB = B_GREEN;
+				mPenB = GREEN_B;
 				break;
 			case Colors.BLUE:
 				mPen = BLUE;
-				mPenB = B_BLUE;
+				mPenB = BLUE_B;
 				break;
 			case Colors.MAGENTA:
 				mPen = MAGENTA;
-				mPenB = B_MAGENTA;
+				mPenB = MAGENTA_B;
 				break;
 			case Colors.YELLOW:
 				mPen = YELLOW;
-				mPenB = B_YELLOW;
+				mPenB = YELLOW_B;
 				break;
 			default:
 				return;
@@ -280,7 +280,7 @@ namespace UCBeditor {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
 				if (Reverse) {
-					g.DrawLine(LIGHT, x1, y1, x2, y2);
+					g.DrawLine(REVERSE, x1, y1, x2, y2);
 				} else {
 					g.DrawLine(mPenB, x1, y1, x2, y2);
 				}
@@ -288,26 +288,26 @@ namespace UCBeditor {
 		}
 	}
 
-	class Wlap : Wire {
-		static readonly Pen LIGHT = new Pen(Color.FromArgb(211, 211, 211), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+	class Wrap : Wire {
+		static readonly Pen REVERSE = new Pen(Color.FromArgb(211, 211, 211), 2.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 
-		Wlap() { }
+		Wrap() { }
 
-		public Wlap(string[] cols) : base(cols) {
+		public Wrap(string[] cols) : base(cols) {
 			Height = -100;
 		}
 
-		public Wlap(Point begin, Point end, Colors color) : base(begin, end, color) {
+		public Wrap(Point begin, Point end, Colors color) : base(begin, end, color) {
 			Height = -100;
 		}
 
 		public override Item Clone() {
-			return new Wlap(Begin, End, mColor);
+			return new Wrap(Begin, End, mColor);
 		}
 
 		public override void Write(StreamWriter sw) {
 			sw.WriteLine(
-				"WLAP\t{0}\t{1}\t{2}\t{3}\t{4}",
+				"WRAP\t{0}\t{1}\t{2}\t{3}\t{4}",
 				Begin.X, Begin.Y,
 				End.X, End.Y,
 				mColor
@@ -325,13 +325,16 @@ namespace UCBeditor {
 				if (Reverse) {
 					g.DrawLine(mPen, x1, y1, x2, y2);
 				} else {
-					g.DrawLine(LIGHT, x1, y1, x2, y2);
+					g.DrawLine(REVERSE, x1, y1, x2, y2);
 				}
 			}
 		}
 	}
 
 	class Tin : Wire {
+		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen COLOR_B = new Pen(COLOR.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+
 		public static bool Enable { get; set; } = false;
 
 		public Tin(string[] cols) {
@@ -367,13 +370,13 @@ namespace UCBeditor {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
 				if (Enable) {
-					g.DrawLine(B_DARK, x1, y1, x2, y2);
-					g.FillEllipse(DARK.Brush, x1 - 4, y1 - 4, 8, 8);
-					g.FillEllipse(DARK.Brush, x2 - 4, y2 - 4, 8, 8);
+					g.DrawLine(COLOR_B, x1, y1, x2, y2);
+					g.FillEllipse(COLOR.Brush, x1 - 4, y1 - 4, 8, 8);
+					g.FillEllipse(COLOR.Brush, x2 - 4, y2 - 4, 8, 8);
 				} else {
-					g.DrawLine(DARK, x1, y1, x2, y2);
-					g.FillEllipse(DARK.Brush, x1 - 2, y1 - 2, 4, 4);
-					g.FillEllipse(DARK.Brush, x2 - 2, y2 - 2, 4, 4);
+					g.DrawLine(COLOR, x1, y1, x2, y2);
+					g.FillEllipse(COLOR.Brush, x1 - 2, y1 - 2, 4, 4);
+					g.FillEllipse(COLOR.Brush, x2 - 2, y2 - 2, 4, 4);
 				}
 			}
 		}
