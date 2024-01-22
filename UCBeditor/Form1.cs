@@ -24,7 +24,7 @@ namespace UCBeditor {
 		List<Item> mClipBoard = new List<Item>();
 		EditMode mEditMode = EditMode.WIRE;
 		Wire.Colors mWireColor = Wire.Colors.BLACK;
-		Parts.ROTATE mRotate = Parts.ROTATE.NONE;
+		ROTATE mRotate = ROTATE.NONE;
 		Package mSelectedParts;
 
 		bool mIsDrag;
@@ -156,17 +156,17 @@ namespace UCBeditor {
 
 		private void MenuEditRotL_Click(object sender, EventArgs e) {
 			switch (mRotate) {
-			case Parts.ROTATE.NONE:
-				mRotate = Parts.ROTATE.DEG270;
+			case ROTATE.NONE:
+				mRotate = ROTATE.DEG270;
 				break;
-			case Parts.ROTATE.DEG270:
-				mRotate = Parts.ROTATE.DEG180;
+			case ROTATE.DEG270:
+				mRotate = ROTATE.DEG180;
 				break;
-			case Parts.ROTATE.DEG180:
-				mRotate = Parts.ROTATE.DEG90;
+			case ROTATE.DEG180:
+				mRotate = ROTATE.DEG90;
 				break;
-			case Parts.ROTATE.DEG90:
-				mRotate = Parts.ROTATE.NONE;
+			case ROTATE.DEG90:
+				mRotate = ROTATE.NONE;
 				break;
 			}
 			SetPos();
@@ -174,17 +174,17 @@ namespace UCBeditor {
 
 		private void MenuEditRotR_Click(object sender, EventArgs e) {
 			switch (mRotate) {
-			case Parts.ROTATE.NONE:
-				mRotate = Parts.ROTATE.DEG90;
+			case ROTATE.NONE:
+				mRotate = ROTATE.DEG90;
 				break;
-			case Parts.ROTATE.DEG90:
-				mRotate = Parts.ROTATE.DEG180;
+			case ROTATE.DEG90:
+				mRotate = ROTATE.DEG180;
 				break;
-			case Parts.ROTATE.DEG180:
-				mRotate = Parts.ROTATE.DEG270;
+			case ROTATE.DEG180:
+				mRotate = ROTATE.DEG270;
 				break;
-			case Parts.ROTATE.DEG270:
-				mRotate = Parts.ROTATE.NONE;
+			case ROTATE.DEG270:
+				mRotate = ROTATE.NONE;
 				break;
 			}
 			SetPos();
@@ -398,8 +398,8 @@ namespace UCBeditor {
 		void SetPos() {
 			int ox, oy;
 			switch (mRotate) {
-			case Parts.ROTATE.DEG90:
-			case Parts.ROTATE.DEG270:
+			case ROTATE.DEG90:
+			case ROTATE.DEG270:
 				ox = mSelectedParts.Offset.X;
 				oy = mSelectedParts.Offset.Y;
 				break;
@@ -553,10 +553,15 @@ namespace UCBeditor {
 			mList.Add(newItem);
 			var terms = newItem.GetTerminals();
 			foreach (var term in terms) {
-				if (0 < term.X % GridWidth || 0 < term.Y % GridWidth) {
-					continue;
+				if (newItem is Parts parts) {
+					if (parts.HasFoot) {
+						mList.Add(new Land(term, newItem, parts.GetDispFoot(term)));
+					} else {
+						if (0 == term.X % GridWidth && 0 == term.Y % GridWidth) {
+							mList.Add(new Land(term, newItem));
+						}
+					}
 				}
-				mList.Add(new Land(term, newItem));
 			}
 		}
 

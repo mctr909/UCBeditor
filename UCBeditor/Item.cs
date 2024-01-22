@@ -4,6 +4,13 @@ using System.Drawing;
 using System.IO;
 
 namespace UCBeditor {
+	public enum ROTATE {
+		NONE,
+		DEG90,
+		DEG180,
+		DEG270
+	}
+
 	abstract class Item {
 		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
 
@@ -75,7 +82,7 @@ namespace UCBeditor {
 
 	class Terminal : Item {
 		static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		static readonly Pen REVERSE = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		static readonly Pen OUTLINE = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		protected Terminal() { }
 
@@ -113,20 +120,37 @@ namespace UCBeditor {
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-					g.DrawEllipse(REVERSE, x2, y2, 4, 4);
+					g.DrawEllipse(OUTLINE, x2, y2, 4, 4);
 				}
+			}
+		}
+
+		public void Draw(Graphics g, PointF[] polygon) {
+			if (Reverse) {
+				g.FillPolygon(COLOR.Brush, polygon);
+			} else {
+				g.DrawPolygon(OUTLINE, polygon);
 			}
 		}
 	}
 
 	class Land : Terminal {
 		public readonly Item Parent;
+		public readonly PointF[][] Foot;
 
 		public Land(Point pos, Item parent) {
 			Begin = pos;
 			End = pos;
 			Height = -0.01;
 			Parent = parent;
+		}
+
+		public Land(Point pos, Item parent, PointF[][] foot) {
+			Begin = pos;
+			End = pos;
+			Height = -0.01;
+			Parent = parent;
+			Foot = foot;
 		}
 
 		public override Item Clone() { return null; }
@@ -137,7 +161,13 @@ namespace UCBeditor {
 			if (Parent is Pattern) {
 				return;
 			} else {
-				base.Draw(g, dx, dy, selected);
+				if (null == Foot) {
+					base.Draw(g, dx, dy, selected);
+				} else {
+					foreach (var poly in Foot) {
+						Draw(g, poly);
+					}
+				}
 			}
 		}
 	}
@@ -379,12 +409,6 @@ namespace UCBeditor {
 	}
 
 	class Parts : Item {
-		public enum ROTATE {
-			NONE,
-			DEG90,
-			DEG180,
-			DEG270
-		}
 		public enum EDisplay {
 			INVISIBLE,
 			TRANSPARENT,
@@ -399,6 +423,8 @@ namespace UCBeditor {
 		public readonly string PackageName;
 
 		readonly Package mPackage;
+
+		public bool HasFoot { get { return mPackage.FootPrint != null; } }
 
 		public Parts(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
@@ -434,6 +460,13 @@ namespace UCBeditor {
 				Center = 0;
 				Height = 0;
 			}
+		}
+
+		public PointF[][] GetDispFoot(Point pos) {
+			if (null == mPackage.FootPrint) {
+				return null;
+			}
+			return mPackage.FootPrint.Get(pos, Rotate, 15 / 2.54);
 		}
 
 		public override Item Clone() {

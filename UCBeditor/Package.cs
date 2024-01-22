@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Xml;
@@ -16,9 +15,58 @@ namespace UCBeditor {
         public Bitmap[] Alpha { get; private set; } = new Bitmap[4];
 
         public List<Point> Terminals = new List<Point>();
+        public Foot FootPrint = null;
 
         public static string GroupPath { get; private set; }
         public static Dictionary<string, Dictionary<string, Package>> List = new Dictionary<string, Dictionary<string, Package>>();
+
+        public class Foot {
+            public class Pin {
+                public double X = 0.0;
+                public double Y = 0.0;
+                public string Polygon = "";
+            }
+            public Dictionary<string, PointF[]> Polygon = new Dictionary<string, PointF[]>();
+            public List<Pin> Pins = new List<Pin>();
+            public PointF[][] Get(Point pos, ROTATE rotate, double scale = 1) {
+                double rx, ry;
+                switch (rotate) {
+                case ROTATE.DEG90:
+                    rx = 0;
+                    ry = 1;
+                    break;
+                case ROTATE.DEG180:
+                    rx = -1;
+                    ry = 0;
+                    break;
+                case ROTATE.DEG270:
+                    rx = 0;
+                    ry = -1;
+                    break;
+                case ROTATE.NONE:
+                default:
+                    rx = 1;
+                    ry = 0;
+                    break;
+                }
+                rx *= scale;
+                ry *= scale;
+                var ret = new List<PointF[]>();
+                foreach (var pin in Pins) {
+                    var poly = Polygon[pin.Polygon];
+                    var points = new PointF[poly.Length];
+                    for (var i = 0; i < poly.Length; i++) {
+                        var p = poly[i];
+                        points[i] = new PointF(
+                            (float)(pos.X + (p.X * rx - p.Y * ry)),
+                            (float)(pos.Y + (p.Y * rx + p.X * ry))
+                        );
+                    }
+                    ret.Add(points);
+                }
+                return ret.ToArray();
+            }
+        }
 
         public static void LoadXML(string dir, string fileName) {
             GroupPath = dir + "group\\";
@@ -60,14 +108,31 @@ namespace UCBeditor {
                         );
                         break;
                     case "foot":
+                        currentPackage.FootPrint = new Foot();
                         break;
                     case "rect":
-                        xml.GetAttribute("width");
-                        xml.GetAttribute("height");
+                        if (null != currentPackage.FootPrint) {
+                            var w = float.Parse(xml.GetAttribute("width")) * 0.5f;
+                            var h = float.Parse(xml.GetAttribute("height")) * 0.5f;
+                            var n = xml.GetAttribute("name");
+                            n = null == n ? "" : n;
+                            currentPackage.FootPrint.Polygon.Add(n, new PointF[] {
+                                new PointF(w, h), new PointF(-w, h),
+                                new PointF(-w, -h), new PointF(w, -h)
+                            });
+                        }
                         break;
                     case "pin":
-                        xml.GetAttribute("x");
-                        xml.GetAttribute("y");
+                        if (null != currentPackage.FootPrint) {
+                            var x = double.Parse(xml.GetAttribute("x"));
+                            var y = double.Parse(xml.GetAttribute("y"));
+                            var n = xml.GetAttribute("name");
+                            n = null == n ? "" : n;
+                            currentPackage.FootPrint.Pins.Add(new Foot.Pin() {
+                                X = x,
+                                Y = y
+                            });
+                        }
                         break;
                     default:
                         break;

@@ -121,6 +121,12 @@
 			<terminal x="1" y="1"/>
 			<terminal x="1" y="17"/>
 			<terminal x="17" y="9"/>
+			<foot>
+				<rect width="0.7" height="0.6"/>
+				<pin x="0.27" y="-0.32"/>
+				<pin x="0.27" y="0.32"/>
+				<pin x="-0.27" y="0"/>
+			</foot>
 		</item>
 		<item name="DPAK(TO-252)" height="5" type="smd">
 			<terminal x="1" y="1"/>
@@ -150,6 +156,12 @@
 			<terminal x="1" y="1"/>
 			<terminal x="1" y="17"/>
 			<terminal x="17" y="9"/>
+			<foot>
+				<rect width="0.7" height="0.6"/>
+				<pin x="0.27" y="-0.32"/>
+				<pin x="0.27" y="0.32"/>
+				<pin x="-0.27" y="0"/>
+			</foot>
 		</item>
 		<item name="SOT-23-5" height="3" type="smd">
 			<offset x="8" y="8"/>
@@ -158,6 +170,14 @@
 			<terminal x="1" y="17"/>
 			<terminal x="17" y="17"/>
 			<terminal x="17" y="1"/>
+			<foot>
+				<rect width="0.7" height="0.6"/>
+				<pin x="0.27" y="-0.32"/>
+				<pin x="0.27" y="0"/>
+				<pin x="0.27" y="0.32"/>
+				<pin x="-0.27" y="0.32"/>
+				<pin x="-0.27" y="-0.32"/>
+			</foot>
 		</item>
 		<item name="SOT-23-6" height="3" type="smd">
 			<offset x="8" y="8"/>
@@ -167,6 +187,15 @@
 			<terminal x="17" y="17"/>
 			<terminal x="17" y="9"/>
 			<terminal x="17" y="1"/>
+			<foot>
+				<rect width="0.7" height="0.6"/>
+				<pin x="0.27" y="-0.32"/>
+				<pin x="0.27" y="0"/>
+				<pin x="0.27" y="0.32"/>
+				<pin x="-0.27" y="0.32"/>
+				<pin x="-0.27" y="0"/>
+				<pin x="-0.27" y="-0.32"/>
+			</foot>
 		</item>
 		<item name="SOP8" height="3" type="smd">
 			<offset x="4" y="0"/>
