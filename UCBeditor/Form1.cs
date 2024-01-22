@@ -265,7 +265,7 @@ namespace UCBeditor {
 				break;
 			case EditMode.TIN:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Pattern(mBeginPos, mEndPos));
+					AddItem(new Pattern(mBeginPos, mEndPos, tsbPatternThick.Checked));
 				}
 				break;
 			case EditMode.WIRE:
@@ -307,8 +307,8 @@ namespace UCBeditor {
 			if (tsbTerminal.Checked) {
 				mEditMode = EditMode.TERMINAL;
 			}
-			Pattern.Enable = tsbPattern.Checked || tsbPatternThick.Checked;
-			if (Pattern.Enable) {
+			Item.Pattern = tsbPattern.Checked || tsbPatternThick.Checked;
+			if (Item.Pattern) {
 				mEditMode = EditMode.TIN;
 			}
 
@@ -382,16 +382,7 @@ namespace UCBeditor {
 				mIsDrag = true;
 				break;
 			}
-			int snap;
-			switch (mEditMode) {
-			case EditMode.SELECT:
-			case EditMode.WLAP:
-				snap = GridWidth / 2;
-				break;
-			default:
-				snap = GridWidth;
-				break;
-			}
+			var snap = GridWidth / 2;
 			mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
 			mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
 		}
@@ -409,16 +400,7 @@ namespace UCBeditor {
 				oy = mSelectedParts.Offset.X;
 				break;
 			}
-			int snap;
-			switch (mEditMode) {
-			case EditMode.SELECT:
-			case EditMode.WLAP:
-				snap = GridWidth / 2;
-				break;
-			default:
-				snap = GridWidth;
-				break;
-			}
+			var snap = GridWidth / 2;
 			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / snap + 0.5) * snap;
 			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / snap + 0.5) * snap;
 		}
@@ -555,11 +537,18 @@ namespace UCBeditor {
 			if (newItem is Parts parts) {
 				var terms = parts.GetTerminals();
 				foreach (var term in terms) {
-					if (parts.HasFoot || (0 == term.X % GridWidth && 0 == term.Y % GridWidth)) {
-						mList.Add(new Land(term, parts));
-					}
+					mList.Add(new Land(term, parts));
 				}
 			}
+			//if (newItem is Wire || newItem is Wrap) {
+			//	var snap = GridWidth;
+			//	var terms = newItem.GetTerminals();
+			//	foreach (var term in terms) {
+			//		if (term.X % snap == 0 && term.Y % snap == 0) {
+			//			mList.Add(new Land(term, newItem));
+			//		}
+			//	}
+			//}
 		}
 
 		void SortItems() {

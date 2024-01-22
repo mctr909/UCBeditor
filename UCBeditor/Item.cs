@@ -15,6 +15,7 @@ namespace UCBeditor {
 		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
 
 		public static bool Reverse { get; set; }
+		public static bool Pattern { get; set; }
 
 		public static Item Construct(string line) {
 			var cols = line.Split('\t');
@@ -50,28 +51,26 @@ namespace UCBeditor {
 			return Math.Sqrt(apX * apX + apY * apY);
 		}
 		public virtual bool IsSelected(Point point) {
-			if (Reverse) {
-				if (GetType() == typeof(Wire)) {
-					return false;
+			if (Pattern) {
+				if (GetType() == typeof(Pattern)) {
+					return Distance(point) < 8.0;
 				}
-			} else {
-				if (GetType() == typeof(Wrap)) {
-					return false;
-				}
-			}
-			if (Pattern.Enable) {
-				if (GetType() == typeof(Wire)) {
-					return false;
-				}
-				if (GetType() == typeof(Wrap)) {
-					return false;
-				}
+				return false;
 			} else {
 				if (GetType() == typeof(Pattern)) {
 					return false;
 				}
+				if (Reverse) {
+					if (GetType() == typeof(Wire)) {
+						return false;
+					}
+				} else {
+					if (GetType() == typeof(Wrap)) {
+						return false;
+					}
+				}
+				return Distance(point) < 8.0;
 			}
-			return Distance(point) < 8.0;
 		}
 		public virtual Point[] GetTerminals() { return new Point[0]; }
 
@@ -130,12 +129,14 @@ namespace UCBeditor {
 		public readonly Item Parent;
 		public readonly PointF[][] Foot;
 
-		public Land(Point pos, Parts parts) {
+		public Land(Point pos, Item parent) {
 			Begin = pos;
 			End = pos;
 			Height = -0.01;
-			Parent = parts;
-			Foot = parts.GetFoot(pos, true);
+			Parent = parent;
+			if (parent is Parts parts) {
+				Foot = parts.GetFoot(pos, true);
+			}
 		}
 
 		public override Item Clone() { return null; }
@@ -351,10 +352,10 @@ namespace UCBeditor {
 	}
 
 	class Pattern : Wire {
-		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		static readonly Pen COLOR_B = new Pen(COLOR.Color, 5.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.27f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		static readonly Pen COLOR_B = new Pen(COLOR.Color, 5.08f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
-		public static bool Enable { get; set; } = false;
+		public bool Thick = false;
 
 		public Pattern(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
@@ -362,14 +363,15 @@ namespace UCBeditor {
 			Height = -0.02;
 		}
 
-		public Pattern(Point begin, Point end) {
+		public Pattern(Point begin, Point end, bool thick) {
 			Begin = begin;
 			End = end;
 			Height = -0.02;
+			Thick = thick;
 		}
 
 		public override Item Clone() {
-			return new Pattern(Begin, End);
+			return new Pattern(Begin, End, Thick);
 		}
 
 		public override void Write(StreamWriter sw) {
@@ -388,11 +390,16 @@ namespace UCBeditor {
 			if (selected) {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
-				if (Enable) {
-					g.DrawLine(COLOR_B, x1, y1, x2, y2);
+				Pen pen;
+				if (Thick) {
+					pen = COLOR_B;
 				} else {
-					g.DrawLine(COLOR, x1, y1, x2, y2);
+					pen = COLOR;
 				}
+				g.DrawLine(pen, x1, y1, x2, y2);
+				var r = pen.Width * 0.5f + 1;
+				g.FillEllipse(pen.Brush, x1 - r, y1 - r, r * 2, r * 2);
+				g.FillEllipse(pen.Brush, x2 - r, y2 - r, r * 2, r * 2);
 			}
 		}
 	}

@@ -151,9 +151,9 @@
   <data name="tsbPatternThick.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABxSURBVDhPpcy7DYAwEIPhG4SKjmkyQnZghrSwCA3TsM4h
-        U0QKeZ2TwpX1/eKCV2bXs+lxr3FU4I+pQAmbAzW8n0s/0ML4m4EexqoBC8aKASvGsgCDsSTAYiwGRjD2
-        BUYxJjMYkxmMZQEGY0mAxS54fQGG70Mb7wDZpAAAAABJRU5ErkJggg==
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABzSURBVDhPpcy7EYAgFERRCzEysxpKoAdrINVGTKzGdnCW
+        wBnkfRYMNtt7ppBiZnbea96vpRkFaDHmAlaMmYAXYyrAxJgIsPF2zC3QE+NfAb1xBYzELzAaF+BPXADp
+        /J0WYy5gxZgJeDGmAkyMiQAbhxTzAyB2SyF7BcLpAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="tsbWireBlack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

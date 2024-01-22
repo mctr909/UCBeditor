@@ -33,6 +33,7 @@
 			this.tsbSelect = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbTerminal = new System.Windows.Forms.ToolStripButton();
+			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.tsbPatternThick = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
@@ -68,7 +69,6 @@
 			this.MenuEditRotR = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -179,6 +179,16 @@
 			this.tsbTerminal.Size = new System.Drawing.Size(23, 22);
 			this.tsbTerminal.Text = "端子";
 			this.tsbTerminal.Click += new System.EventHandler(this.EditMode_Click);
+			// 
+			// tsbPattern
+			// 
+			this.tsbPattern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPattern.Image = ((System.Drawing.Image)(resources.GetObject("tsbPattern.Image")));
+			this.tsbPattern.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPattern.Name = "tsbPattern";
+			this.tsbPattern.Size = new System.Drawing.Size(23, 22);
+			this.tsbPattern.Text = "パターン(細)";
+			this.tsbPattern.Click += new System.EventHandler(this.EditMode_Click);
 			// 
 			// tsbPatternThick
 			// 
@@ -480,16 +490,6 @@
 			// openFileDialog1
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
-			// 
-			// tsbPattern
-			// 
-			this.tsbPattern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbPattern.Image = ((System.Drawing.Image)(resources.GetObject("tsbPattern.Image")));
-			this.tsbPattern.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbPattern.Name = "tsbPattern";
-			this.tsbPattern.Size = new System.Drawing.Size(23, 22);
-			this.tsbPattern.Text = "パターン(細)";
-			this.tsbPattern.Click += new System.EventHandler(this.EditMode_Click);
 			// 
 			// Form1
 			// 
