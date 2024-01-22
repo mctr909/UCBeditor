@@ -31,8 +31,10 @@
 			this.picBoard = new System.Windows.Forms.PictureBox();
 			this.tsBoard = new System.Windows.Forms.ToolStrip();
 			this.tsbSelect = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbTerminal = new System.Windows.Forms.ToolStripButton();
-			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
+			this.tsbPatternThick = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
@@ -66,6 +68,7 @@
 			this.MenuEditRotR = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -125,8 +128,11 @@
 			// 
 			this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbSelect,
+            this.toolStripSeparator2,
             this.tsbTerminal,
             this.tsbPattern,
+            this.tsbPatternThick,
+            this.toolStripSeparator1,
             this.tsbWireBlack,
             this.tsbWireRed,
             this.tsbWireGreen,
@@ -159,6 +165,11 @@
 			this.tsbSelect.Text = "選択";
 			this.tsbSelect.Click += new System.EventHandler(this.EditMode_Click);
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
 			// tsbTerminal
 			// 
 			this.tsbTerminal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -169,16 +180,21 @@
 			this.tsbTerminal.Text = "端子";
 			this.tsbTerminal.Click += new System.EventHandler(this.EditMode_Click);
 			// 
-			// tsbPattern
+			// tsbPatternThick
 			// 
-			this.tsbPattern.CheckOnClick = true;
-			this.tsbPattern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbPattern.Image = ((System.Drawing.Image)(resources.GetObject("tsbPattern.Image")));
-			this.tsbPattern.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbPattern.Name = "tsbPattern";
-			this.tsbPattern.Size = new System.Drawing.Size(23, 22);
-			this.tsbPattern.Text = "パターン";
-			this.tsbPattern.Click += new System.EventHandler(this.EditMode_Click);
+			this.tsbPatternThick.CheckOnClick = true;
+			this.tsbPatternThick.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPatternThick.Image = ((System.Drawing.Image)(resources.GetObject("tsbPatternThick.Image")));
+			this.tsbPatternThick.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPatternThick.Name = "tsbPatternThick";
+			this.tsbPatternThick.Size = new System.Drawing.Size(23, 22);
+			this.tsbPatternThick.Text = "パターン(太)";
+			this.tsbPatternThick.Click += new System.EventHandler(this.EditMode_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
 			// tsbWireBlack
 			// 
@@ -465,6 +481,16 @@
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
+			// tsbPattern
+			// 
+			this.tsbPattern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPattern.Image = ((System.Drawing.Image)(resources.GetObject("tsbPattern.Image")));
+			this.tsbPattern.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPattern.Name = "tsbPattern";
+			this.tsbPattern.Size = new System.Drawing.Size(23, 22);
+			this.tsbPattern.Text = "パターン(細)";
+			this.tsbPattern.Click += new System.EventHandler(this.EditMode_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -499,7 +525,7 @@
 		private System.Windows.Forms.ToolStrip tsParts;
 		private System.Windows.Forms.ToolStripButton tsbSelect;
 		private System.Windows.Forms.ToolStripButton tsbWireBlack;
-		private System.Windows.Forms.ToolStripButton tsbPattern;
+		private System.Windows.Forms.ToolStripButton tsbPatternThick;
 		private System.Windows.Forms.ToolStripButton tsbWireRed;
 		private System.Windows.Forms.ToolStripButton tsbWireGreen;
 		private System.Windows.Forms.ToolStripButton tsbWireBlue;
@@ -534,5 +560,8 @@
 		private System.Windows.Forms.ToolStripButton tsbBack;
 		private System.Windows.Forms.ToolStripSeparator tssDispPackage;
 		private System.Windows.Forms.ToolStripSeparator tssDispBoard;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripButton tsbPattern;
 	}
 }

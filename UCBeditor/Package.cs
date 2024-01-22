@@ -49,8 +49,8 @@ namespace UCBeditor {
                     ry = 0;
                     break;
                 }
-                rx *= 15 / 2.54;
-                ry *= 15 / 2.54;
+                rx *= Form1.GridWidth / 2.54;
+                ry *= Form1.GridWidth / 2.54;
                 var ret = new List<PointF[]>();
                 foreach (var pin in Pins) {
                     var poly = Polygon[pin.Polygon];
@@ -126,11 +126,12 @@ namespace UCBeditor {
                         if (null != currentPackage.FootPrint) {
                             var x = double.Parse(xml.GetAttribute("x"));
                             var y = double.Parse(xml.GetAttribute("y"));
-                            var n = xml.GetAttribute("name");
+                            var n = xml.GetAttribute("link");
                             n = null == n ? "" : n;
                             currentPackage.FootPrint.Pins.Add(new Foot.Pin() {
                                 X = x,
-                                Y = y
+                                Y = y,
+                                Polygon = n
                             });
                         }
                         break;

@@ -9,7 +9,7 @@ namespace UCBeditor {
 		readonly Pen BoardColor = new Pen(Color.FromArgb(235, 255, 235), 0.5f);
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
 		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
-		const int GridWidth = 16;
+		public const int GridWidth = 16;
 
 		enum EditMode {
 			SELECT,
@@ -300,16 +300,17 @@ namespace UCBeditor {
 			tsbSelect.Checked = tsbSelect == button;
 			tsbTerminal.Checked = tsbTerminal == button;
 			tsbPattern.Checked = tsbPattern == button;
+			tsbPatternThick.Checked = tsbPatternThick == button;
 			if (tsbSelect.Checked) {
 				mEditMode = EditMode.SELECT;
 			}
 			if (tsbTerminal.Checked) {
 				mEditMode = EditMode.TERMINAL;
 			}
-			if (tsbPattern.Checked) {
+			Pattern.Enable = tsbPattern.Checked || tsbPatternThick.Checked;
+			if (Pattern.Enable) {
 				mEditMode = EditMode.TIN;
 			}
-			Pattern.Enable = tsbPattern.Checked;
 
 			tsbWireBlack.Checked = tsbWireBlack == button;
 			tsbWireRed.Checked = tsbWireRed == button;

@@ -2,7 +2,6 @@
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
-using System.IO.Ports;
 
 namespace UCBeditor {
 	public enum ROTATE {
@@ -154,7 +153,7 @@ namespace UCBeditor {
 						if (Reverse) {
 							g.FillPolygon(COLOR.Brush, poly);
 						} else {
-							g.DrawPolygon(OUTLINE, poly);
+							g.FillPolygon(OUTLINE.Brush, poly);
 						}
 					}
 				}
@@ -352,8 +351,8 @@ namespace UCBeditor {
 	}
 
 	class Pattern : Wire {
-		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
-		static readonly Pen COLOR_B = new Pen(COLOR.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
+		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		static readonly Pen COLOR_B = new Pen(COLOR.Color, 5.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		public static bool Enable { get; set; } = false;
 
