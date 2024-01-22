@@ -23,7 +23,7 @@ namespace UCBeditor {
 		List<Item> mList = new List<Item>();
 		List<Item> mClipBoard = new List<Item>();
 		EditMode mEditMode = EditMode.WIRE;
-		Tin.Colors mWireColor = Tin.Colors.BLACK;
+		Wire.Colors mWireColor = Wire.Colors.BLACK;
 		Parts.ROTATE mRotate = Parts.ROTATE.NONE;
 		Package mSelectedParts;
 
@@ -299,17 +299,17 @@ namespace UCBeditor {
 		void SetEditMode(ToolStripButton button) {
 			tsbSelect.Checked = tsbSelect == button;
 			tsbTerminal.Checked = tsbTerminal == button;
-			tsbTin.Checked = tsbTin == button;
+			tsbPattern.Checked = tsbPattern == button;
 			if (tsbSelect.Checked) {
 				mEditMode = EditMode.SELECT;
 			}
 			if (tsbTerminal.Checked) {
 				mEditMode = EditMode.TERMINAL;
 			}
-			if (tsbTin.Checked) {
+			if (tsbPattern.Checked) {
 				mEditMode = EditMode.TIN;
 			}
-			Tin.Enable = tsbTin.Checked;
+			Tin.Enable = tsbPattern.Checked;
 
 			tsbWireBlack.Checked = tsbWireBlack == button;
 			tsbWireRed.Checked = tsbWireRed == button;
@@ -320,27 +320,27 @@ namespace UCBeditor {
 			var wireType = Item.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.BLACK;
+				mWireColor = Wire.Colors.BLACK;
 			}
 			if (tsbWireRed.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.RED;
+				mWireColor = Wire.Colors.RED;
 			}
 			if (tsbWireGreen.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.GREEN;
+				mWireColor = Wire.Colors.GREEN;
 			}
 			if (tsbWireBlue.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.BLUE;
+				mWireColor = Wire.Colors.BLUE;
 			}
 			if (tsbWireMagenta.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.MAGENTA;
+				mWireColor = Wire.Colors.MAGENTA;
 			}
 			if (tsbWireYellow.Checked) {
 				mEditMode = wireType;
-				mWireColor = Tin.Colors.YELLOW;
+				mWireColor = Wire.Colors.YELLOW;
 			}
 
 			mBeginPos = new Point();

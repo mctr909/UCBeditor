@@ -32,7 +32,7 @@
 			this.tsBoard = new System.Windows.Forms.ToolStrip();
 			this.tsbSelect = new System.Windows.Forms.ToolStripButton();
 			this.tsbTerminal = new System.Windows.Forms.ToolStripButton();
-			this.tsbTin = new System.Windows.Forms.ToolStripButton();
+			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
@@ -124,22 +124,22 @@
 			// tsBoard
 			// 
 			this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.tsbSelect,
-			this.tsbTerminal,
-			this.tsbTin,
-			this.tsbWireBlack,
-			this.tsbWireRed,
-			this.tsbWireGreen,
-			this.tsbWireBlue,
-			this.tsbWireMagenta,
-			this.tsbWireYellow,
-			this.tssDispPackage,
-			this.tsbSolid,
-			this.tsbTransparent,
-			this.tsbInvisible,
-			this.tssDispBoard,
-			this.tsbFront,
-			this.tsbBack});
+            this.tsbSelect,
+            this.tsbTerminal,
+            this.tsbPattern,
+            this.tsbWireBlack,
+            this.tsbWireRed,
+            this.tsbWireGreen,
+            this.tsbWireBlue,
+            this.tsbWireMagenta,
+            this.tsbWireYellow,
+            this.tssDispPackage,
+            this.tsbSolid,
+            this.tsbTransparent,
+            this.tsbInvisible,
+            this.tssDispBoard,
+            this.tsbFront,
+            this.tsbBack});
 			this.tsBoard.Location = new System.Drawing.Point(0, 0);
 			this.tsBoard.Name = "tsBoard";
 			this.tsBoard.Size = new System.Drawing.Size(800, 25);
@@ -169,16 +169,16 @@
 			this.tsbTerminal.Text = "端子";
 			this.tsbTerminal.Click += new System.EventHandler(this.EditMode_Click);
 			// 
-			// tsbTin
+			// tsbPattern
 			// 
-			this.tsbTin.CheckOnClick = true;
-			this.tsbTin.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbTin.Image = ((System.Drawing.Image)(resources.GetObject("tsbTin.Image")));
-			this.tsbTin.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbTin.Name = "tsbTin";
-			this.tsbTin.Size = new System.Drawing.Size(23, 22);
-			this.tsbTin.Text = "すずメッキ線";
-			this.tsbTin.Click += new System.EventHandler(this.EditMode_Click);
+			this.tsbPattern.CheckOnClick = true;
+			this.tsbPattern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPattern.Image = ((System.Drawing.Image)(resources.GetObject("tsbPattern.Image")));
+			this.tsbPattern.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPattern.Name = "tsbPattern";
+			this.tsbPattern.Size = new System.Drawing.Size(23, 22);
+			this.tsbPattern.Text = "パターン";
+			this.tsbPattern.Click += new System.EventHandler(this.EditMode_Click);
 			// 
 			// tsbWireBlack
 			// 
@@ -330,8 +330,8 @@
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.MenuFile,
-			this.MenuEdit});
+            this.MenuFile,
+            this.MenuEdit});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(1008, 24);
@@ -341,11 +341,11 @@
 			// MenuFile
 			// 
 			this.MenuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.MenuFileNew,
-			this.MenuFileOpen,
-			this.MenuFileSeparator1,
-			this.MenuFileSave,
-			this.MenuFileSaveAs});
+            this.MenuFileNew,
+            this.MenuFileOpen,
+            this.MenuFileSeparator1,
+            this.MenuFileSave,
+            this.MenuFileSaveAs});
 			this.MenuFile.Name = "MenuFile";
 			this.MenuFile.Size = new System.Drawing.Size(67, 20);
 			this.MenuFile.Text = "ファイル(F)";
@@ -388,14 +388,14 @@
 			// MenuEdit
 			// 
 			this.MenuEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.MenuEditSelect,
-			this.MenuEditCut,
-			this.MenuEditCopy,
-			this.MenuEditPaste,
-			this.MenuEditDelete,
-			this.MenuEditSeparator1,
-			this.MenuEditRotL,
-			this.MenuEditRotR});
+            this.MenuEditSelect,
+            this.MenuEditCut,
+            this.MenuEditCopy,
+            this.MenuEditPaste,
+            this.MenuEditDelete,
+            this.MenuEditSeparator1,
+            this.MenuEditRotL,
+            this.MenuEditRotR});
 			this.MenuEdit.Name = "MenuEdit";
 			this.MenuEdit.Size = new System.Drawing.Size(57, 20);
 			this.MenuEdit.Text = "編集(E)";
@@ -499,7 +499,7 @@
 		private System.Windows.Forms.ToolStrip tsParts;
 		private System.Windows.Forms.ToolStripButton tsbSelect;
 		private System.Windows.Forms.ToolStripButton tsbWireBlack;
-		private System.Windows.Forms.ToolStripButton tsbTin;
+		private System.Windows.Forms.ToolStripButton tsbPattern;
 		private System.Windows.Forms.ToolStripButton tsbWireRed;
 		private System.Windows.Forms.ToolStripButton tsbWireGreen;
 		private System.Windows.Forms.ToolStripButton tsbWireBlue;

@@ -371,12 +371,8 @@ namespace UCBeditor {
 			} else {
 				if (Enable) {
 					g.DrawLine(COLOR_B, x1, y1, x2, y2);
-					g.FillEllipse(COLOR.Brush, x1 - 4, y1 - 4, 8, 8);
-					g.FillEllipse(COLOR.Brush, x2 - 4, y2 - 4, 8, 8);
 				} else {
 					g.DrawLine(COLOR, x1, y1, x2, y2);
-					g.FillEllipse(COLOR.Brush, x1 - 2, y1 - 2, 4, 4);
-					g.FillEllipse(COLOR.Brush, x2 - 2, y2 - 2, 4, 4);
 				}
 			}
 		}
