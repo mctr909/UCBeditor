@@ -69,6 +69,7 @@
 			this.MenuEditRotR = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -133,6 +134,7 @@
             this.tsbPattern,
             this.tsbPatternThick,
             this.toolStripSeparator1,
+            this.tsbWireInvisible,
             this.tsbWireBlack,
             this.tsbWireRed,
             this.tsbWireGreen,
@@ -491,6 +493,16 @@
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
+			// tsbWireInvisible
+			// 
+			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
+			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireInvisible.Name = "tsbWireInvisible";
+			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireInvisible.Text = "導線(非表示)";
+			this.tsbWireInvisible.Click += new System.EventHandler(this.EditMode_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -563,5 +575,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripButton tsbPattern;
+		private System.Windows.Forms.ToolStripButton tsbWireInvisible;
 	}
 }
