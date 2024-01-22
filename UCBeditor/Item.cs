@@ -13,7 +13,7 @@ namespace UCBeditor {
 			var cols = line.Split('\t');
 			switch (cols[0]) {
 			case "TIN":
-				return new Tin(cols);
+				return new Pattern(cols);
 			case "WIRE":
 				return new Wire(cols);
 			case "WRAP":
@@ -52,7 +52,7 @@ namespace UCBeditor {
 					return false;
 				}
 			}
-			if (Tin.Enable) {
+			if (Pattern.Enable) {
 				if (GetType() == typeof(Wire)) {
 					return false;
 				}
@@ -60,7 +60,7 @@ namespace UCBeditor {
 					return false;
 				}
 			} else {
-				if (GetType() == typeof(Tin)) {
+				if (GetType() == typeof(Pattern)) {
 					return false;
 				}
 			}
@@ -134,7 +134,7 @@ namespace UCBeditor {
 		public override void Write(StreamWriter sw) { }
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (Parent is Tin) {
+			if (Parent is Pattern) {
 				return;
 			} else {
 				base.Draw(g, dx, dy, selected);
@@ -331,26 +331,26 @@ namespace UCBeditor {
 		}
 	}
 
-	class Tin : Wire {
+	class Pattern : Wire {
 		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 		static readonly Pen COLOR_B = new Pen(COLOR.Color, 4.0f) { StartCap = LineCap.Triangle, EndCap = LineCap.Triangle };
 
 		public static bool Enable { get; set; } = false;
 
-		public Tin(string[] cols) {
+		public Pattern(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
 			Height = -0.02;
 		}
 
-		public Tin(Point begin, Point end) {
+		public Pattern(Point begin, Point end) {
 			Begin = begin;
 			End = end;
 			Height = -0.02;
 		}
 
 		public override Item Clone() {
-			return new Tin(Begin, End);
+			return new Pattern(Begin, End);
 		}
 
 		public override void Write(StreamWriter sw) {

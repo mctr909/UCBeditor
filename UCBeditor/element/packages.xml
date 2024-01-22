@@ -4,6 +4,11 @@
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
+			<foot>
+				<rect width="1.2" height="1"/>
+				<pin x="0" y="-0.23"/>
+				<pin x="0" y="2.31"/>
+			</foot>
 		</item>
 		<item name="axial-carbon" height="3">
 			<terminal x="32" y="0"/>
@@ -24,11 +29,21 @@
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
+			<foot>
+				<rect width="1.2" height="1"/>
+				<pin x="0" y="-0.23"/>
+				<pin x="0" y="2.31"/>
+			</foot>
 		</item>
 		<item name="MLCC(2012)" height="1" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
+			<foot>
+				<rect width="1.65" height="1.4"/>
+				<pin x="0" y="-0.03"/>
+				<pin x="0" y="2.51"/>
+			</foot>
 		</item>
 		<item name="radial-ceramic1" height="10" >
 			<terminal x="1" y="1"/>
@@ -87,14 +102,25 @@
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
+			<foot>
+				<rect width="1.2" height="1"/>
+				<pin x="0" y="-0.23"/>
+				<pin x="0" y="2.31"/>
+			</foot>
 		</item>
 	</group>
 	<group name="TR">
-		<item name="SOT-23" height="3" type="smd">
+		<item name="SOT-23rot" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="3" y="3"/>
 			<terminal x="19" y="19"/>
 			<terminal x="19" y="3"/>
+		</item>
+		<item name="SOT-23" height="3" type="smd">
+			<offset x="8" y="8"/>
+			<terminal x="1" y="1"/>
+			<terminal x="1" y="17"/>
+			<terminal x="17" y="9"/>
 		</item>
 		<item name="DPAK(TO-252)" height="5" type="smd">
 			<terminal x="1" y="1"/>
@@ -113,11 +139,17 @@
 		</item>
 	</group>
 	<group name="IC">
-		<item name="SOT-23-3" height="3" type="smd">
+		<item name="SOT-23-3rot" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="3" y="3"/>
 			<terminal x="19" y="19"/>
 			<terminal x="19" y="3"/>
+		</item>
+		<item name="SOT-23-3" height="3" type="smd">
+			<offset x="8" y="8"/>
+			<terminal x="1" y="1"/>
+			<terminal x="1" y="17"/>
+			<terminal x="17" y="9"/>
 		</item>
 		<item name="SOT-23-5" height="3" type="smd">
 			<offset x="8" y="8"/>

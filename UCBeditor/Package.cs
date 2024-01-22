@@ -59,12 +59,24 @@ namespace UCBeditor {
                             int.Parse(xml.GetAttribute("y")))
                         );
                         break;
+                    case "foot":
+                        break;
+                    case "rect":
+                        xml.GetAttribute("width");
+                        xml.GetAttribute("height");
+                        break;
+                    case "pin":
+                        xml.GetAttribute("x");
+                        xml.GetAttribute("y");
+                        break;
                     default:
                         break;
                     }
                     break;
                 case XmlNodeType.EndElement:
                     switch (xml.Name) {
+                    case "foot":
+                        break;
                     case "item": {
                         var pathGroup = GroupPath + currentGroup + ".png";
                         if (!File.Exists(pathGroup)) {

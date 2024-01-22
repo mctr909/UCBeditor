@@ -265,7 +265,7 @@ namespace UCBeditor {
 				break;
 			case EditMode.TIN:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Tin(mBeginPos, mEndPos));
+					AddItem(new Pattern(mBeginPos, mEndPos));
 				}
 				break;
 			case EditMode.WIRE:
@@ -309,7 +309,7 @@ namespace UCBeditor {
 			if (tsbPattern.Checked) {
 				mEditMode = EditMode.TIN;
 			}
-			Tin.Enable = tsbPattern.Checked;
+			Pattern.Enable = tsbPattern.Checked;
 
 			tsbWireBlack.Checked = tsbWireBlack == button;
 			tsbWireRed.Checked = tsbWireRed == button;
@@ -563,8 +563,8 @@ namespace UCBeditor {
 		void SortItems() {
 			if (Item.Reverse) {
 				mList.Sort((a, b) => {
-					var aHeight = (a.GetType() == typeof(Tin)) ? 0 : a.Height;
-					var bHeight = (b.GetType() == typeof(Tin)) ? 0 : b.Height;
+					var aHeight = (a.GetType() == typeof(Pattern)) ? 0 : a.Height;
+					var bHeight = (b.GetType() == typeof(Pattern)) ? 0 : b.Height;
 					var diff = bHeight - aHeight;
 					return 0 == diff ? 0 : diff < 0 ? -1 : 1;
 				});
