@@ -551,15 +551,11 @@ namespace UCBeditor {
 
 		void AddItem(Item newItem) {
 			mList.Add(newItem);
-			var terms = newItem.GetTerminals();
-			foreach (var term in terms) {
-				if (newItem is Parts parts) {
-					if (parts.HasFoot) {
-						mList.Add(new Land(term, newItem, parts.GetDispFoot(term)));
-					} else {
-						if (0 == term.X % GridWidth && 0 == term.Y % GridWidth) {
-							mList.Add(new Land(term, newItem));
-						}
+			if (newItem is Parts parts) {
+				var terms = parts.GetTerminals();
+				foreach (var term in terms) {
+					if (parts.HasFoot || (0 == term.X % GridWidth && 0 == term.Y % GridWidth)) {
+						mList.Add(new Land(term, parts));
 					}
 				}
 			}

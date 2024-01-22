@@ -2,6 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
+using System.IO.Ports;
 
 namespace UCBeditor {
 	public enum ROTATE {
@@ -81,8 +82,8 @@ namespace UCBeditor {
 	}
 
 	class Terminal : Item {
-		static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		static readonly Pen OUTLINE = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen OUTLINE = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		protected Terminal() { }
 
@@ -124,33 +125,18 @@ namespace UCBeditor {
 				}
 			}
 		}
-
-		public void Draw(Graphics g, PointF[] polygon) {
-			if (Reverse) {
-				g.FillPolygon(COLOR.Brush, polygon);
-			} else {
-				g.DrawPolygon(OUTLINE, polygon);
-			}
-		}
 	}
 
 	class Land : Terminal {
 		public readonly Item Parent;
 		public readonly PointF[][] Foot;
 
-		public Land(Point pos, Item parent) {
+		public Land(Point pos, Parts parts) {
 			Begin = pos;
 			End = pos;
 			Height = -0.01;
-			Parent = parent;
-		}
-
-		public Land(Point pos, Item parent, PointF[][] foot) {
-			Begin = pos;
-			End = pos;
-			Height = -0.01;
-			Parent = parent;
-			Foot = foot;
+			Parent = parts;
+			Foot = parts.GetFoot(pos);
 		}
 
 		public override Item Clone() { return null; }
@@ -165,7 +151,11 @@ namespace UCBeditor {
 					base.Draw(g, dx, dy, selected);
 				} else {
 					foreach (var poly in Foot) {
-						Draw(g, poly);
+						if (Reverse) {
+							g.FillPolygon(COLOR.Brush, poly);
+						} else {
+							g.DrawPolygon(OUTLINE, poly);
+						}
 					}
 				}
 			}
@@ -462,11 +452,11 @@ namespace UCBeditor {
 			}
 		}
 
-		public PointF[][] GetDispFoot(Point pos) {
+		public PointF[][] GetFoot(Point pos) {
 			if (null == mPackage.FootPrint) {
 				return null;
 			}
-			return mPackage.FootPrint.Get(pos, Rotate, 15 / 2.54);
+			return mPackage.FootPrint.Get(pos, Rotate);
 		}
 
 		public override Item Clone() {
