@@ -175,7 +175,7 @@ namespace UCBeditor {
 	}
 
 	class Wire : Item {
-		protected static readonly Pen REVERSE = new Pen(Color.FromArgb(211, 211, 211), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen REVERSE = new Pen(Color.FromArgb(215, 215, 215), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		
 		static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -293,15 +293,20 @@ namespace UCBeditor {
 			var y1 = Begin.Y + dy;
 			var x2 = End.X + dx;
 			var y2 = End.Y + dy;
+			Pen pen;
 			if (selected) {
-				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
+				pen = SELECT_COLOR;
 			} else {
 				if (Reverse) {
-					g.DrawLine(REVERSE, x1, y1, x2, y2);
+					pen = REVERSE;
 				} else {
-					g.DrawLine(mPen, x1, y1, x2, y2);
+					pen = mPen;
 				}
 			}
+			var r = pen.Width * 0.5f + 1.5f;
+			g.DrawLine(pen, x1, y1, x2, y2);
+			g.FillEllipse(pen.Brush, x1 - r, y1 - r, r * 2, r * 2);
+			g.FillEllipse(pen.Brush, x2 - r, y2 - r, r * 2, r * 2);
 		}
 	}
 
@@ -337,15 +342,20 @@ namespace UCBeditor {
 			var y1 = Begin.Y + dy;
 			var x2 = End.X + dx;
 			var y2 = End.Y + dy;
+			Pen pen;
 			if (selected) {
-				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
+				pen = SELECT_COLOR;
 			} else {
 				if (Reverse) {
-					g.DrawLine(mPen, x1, y1, x2, y2);
+					pen = mPen;
 				} else {
-					g.DrawLine(REVERSE, x1, y1, x2, y2);
+					pen = REVERSE;
 				}
 			}
+			var r = pen.Width * 0.5f + 1.5f;
+			g.DrawLine(pen, x1, y1, x2, y2);
+			g.FillEllipse(pen.Brush, x1 - r, y1 - r, r * 2, r * 2);
+			g.FillEllipse(pen.Brush, x2 - r, y2 - r, r * 2, r * 2);
 		}
 	}
 

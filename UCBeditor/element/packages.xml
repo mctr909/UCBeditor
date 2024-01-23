@@ -187,6 +187,24 @@
 				<pin x="2.2" y="0"/>
 			</foot>
 		</item>
+		<item name="SSOP5-P-0.65" height="3" type="smd">
+			<offset x="8" y="8"/>
+			<terminal x="1" y="1"/>
+			<terminal x="1" y="9"/>
+			<terminal x="1" y="17"/>
+			<terminal x="17" y="17"/>
+			<terminal x="17" y="1"/>
+			<foot>
+				<rect width="1" height="0.5"/>
+				<rect width="1" height="0.3" name="center"/>
+				<offset x="1.1" y="0.95"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-0.95" link="center" />
+				<pin x="0" y="-1.9"/>
+				<pin x="2.2" y="-1.9"/>
+				<pin x="2.2" y="0"/>
+			</foot>
+		</item>
 		<item name="SOT-23-6" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="1" y="1"/>

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace UCBeditor {
 	public partial class Form1 : Form {
-		readonly Pen BoardColor = new Pen(Color.FromArgb(235, 255, 235), 0.5f);
+		readonly Pen BoardColor = new Pen(Color.FromArgb(225, 255, 225), 0.5f);
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
 		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
 		public const int GridWidth = 16;
