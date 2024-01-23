@@ -13,6 +13,8 @@ namespace UCBeditor {
 
 	abstract class Item {
 		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
+		protected static readonly Pen PATTERN = new Pen(Color.FromArgb(147, 147, 147), 0.762f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 5.08f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		public static bool Reverse { get; set; }
 		public static bool Pattern { get; set; }
@@ -88,7 +90,7 @@ namespace UCBeditor {
 
 	class Terminal : Item {
 		protected static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		protected static readonly Pen OUTLINE = new Pen(Color.FromArgb(191, 191, 191), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen OUTLINE = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		protected Terminal() { }
 
@@ -160,6 +162,13 @@ namespace UCBeditor {
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
 			if (Parent is Pattern) {
 				return;
+			} else if (Parent is Wire || Parent is Wrap) {
+				var r = 2;
+				var d = r * 2;
+				var px = Begin.X + dx - r;
+				var py = Begin.Y + dy - r;
+				g.FillEllipse(Brushes.White, px, py, d, d);
+				g.DrawEllipse(PATTERN, px, py, d, d);
 			} else {
 				if (null == Foot) {
 					base.Draw(g, dx, dy, selected);
@@ -176,7 +185,7 @@ namespace UCBeditor {
 
 	class Wire : Item {
 		protected static readonly Pen REVERSE = new Pen(Color.FromArgb(215, 215, 215), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		
+
 		static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -303,10 +312,7 @@ namespace UCBeditor {
 					pen = mPen;
 				}
 			}
-			var r = pen.Width * 0.5f + 1.5f;
 			g.DrawLine(pen, x1, y1, x2, y2);
-			g.FillEllipse(pen.Brush, x1 - r, y1 - r, r * 2, r * 2);
-			g.FillEllipse(pen.Brush, x2 - r, y2 - r, r * 2, r * 2);
 		}
 	}
 
@@ -352,17 +358,11 @@ namespace UCBeditor {
 					pen = REVERSE;
 				}
 			}
-			var r = pen.Width * 0.5f + 1.5f;
 			g.DrawLine(pen, x1, y1, x2, y2);
-			g.FillEllipse(pen.Brush, x1 - r, y1 - r, r * 2, r * 2);
-			g.FillEllipse(pen.Brush, x2 - r, y2 - r, r * 2, r * 2);
 		}
 	}
 
 	class Pattern : Wire {
-		static readonly Pen COLOR = new Pen(Color.FromArgb(147, 147, 147), 1.27f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		static readonly Pen COLOR_B = new Pen(COLOR.Color, 5.08f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-
 		public bool Thick = false;
 
 		public Pattern(string[] cols) {
@@ -400,14 +400,11 @@ namespace UCBeditor {
 			} else {
 				Pen pen;
 				if (Thick) {
-					pen = COLOR_B;
+					pen = PATTERN_B;
 				} else {
-					pen = COLOR;
+					pen = PATTERN;
 				}
 				g.DrawLine(pen, x1, y1, x2, y2);
-				var r = pen.Width * 0.5f + 1;
-				g.FillEllipse(pen.Brush, x1 - r, y1 - r, r * 2, r * 2);
-				g.FillEllipse(pen.Brush, x2 - r, y2 - r, r * 2, r * 2);
 			}
 		}
 	}

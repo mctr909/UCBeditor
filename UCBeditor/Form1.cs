@@ -47,8 +47,8 @@ namespace UCBeditor {
 			});
 
 			Panel_Resize();
-			picBoard.Width = GridWidth * 80;
-			picBoard.Height = GridWidth * 80;
+			picBoard.Width = GridWidth * 40;
+			picBoard.Height = GridWidth * 30;
 
 			Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			SetPackageList();
@@ -309,28 +309,44 @@ namespace UCBeditor {
 		#endregion
 
 		void SetEditMode(ToolStripButton button) {
+			mBeginPos = new Point();
+			mEndPos = new Point();
+			mSelectArea = new Rectangle();
+			mIsDrag = false;
+			mClipBoard.Clear();
+
 			tsbSelect.Checked = tsbSelect == button;
 			tsbTerminal.Checked = tsbTerminal == button;
 			tsbPattern.Checked = tsbPattern == button;
 			tsbPatternThick.Checked = tsbPatternThick == button;
-			if (tsbSelect.Checked) {
-				mEditMode = EditMode.SELECT;
-			}
-			if (tsbTerminal.Checked) {
-				mEditMode = EditMode.TERMINAL;
-			}
-			Item.Parts = tsbPartsSolid.Checked || tsbPartsTransparent.Checked;
-			Item.Pattern = tsbPattern.Checked || tsbPatternThick.Checked;
-			if (Item.Pattern) {
-				mEditMode = EditMode.TIN;
-			}
-
+			
 			tsbWireBlack.Checked = tsbWireBlack == button;
 			tsbWireRed.Checked = tsbWireRed == button;
 			tsbWireGreen.Checked = tsbWireGreen == button;
 			tsbWireBlue.Checked = tsbWireBlue == button;
 			tsbWireMagenta.Checked = tsbWireMagenta == button;
 			tsbWireYellow.Checked = tsbWireYellow == button;
+
+			if (tsbSelect.Checked) {
+				mEditMode = EditMode.SELECT;
+			}
+
+			if (tsbTerminal.Checked) {
+				tsbBack.PerformClick();
+				mEditMode = EditMode.TERMINAL;
+				Item.Pattern = false;
+				Item.Wire = false;
+				Item.Parts = false;
+				return;
+			}
+
+			Item.Pattern = tsbPattern.Checked || tsbPatternThick.Checked;
+			if (Item.Pattern) {
+				tsbBack.PerformClick();
+				mEditMode = EditMode.TIN;
+				return;
+			}
+
 			var wireType = Item.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
 				mEditMode = wireType;
@@ -356,15 +372,13 @@ namespace UCBeditor {
 				mEditMode = wireType;
 				mWireColor = Wire.Colors.YELLOW;
 			}
-
 			Item.Wire = mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE;
 			tsbWireInvisible.Checked = !Item.Wire;
+			if (Item.Wire) {
+				return;
+			}
 
-			mBeginPos = new Point();
-			mEndPos = new Point();
-			mSelectArea = new Rectangle();
-			mIsDrag = false;
-			mClipBoard.Clear();
+			Item.Parts = tsbPartsSolid.Checked || tsbPartsTransparent.Checked;
 			SetEditParts(new Package());
 		}
 
@@ -386,6 +400,11 @@ namespace UCBeditor {
 					panel.BackColor = BoardColor.Color;
 					panel.BorderStyle = BorderStyle.None;
 				}
+			}
+			if (mSelectedParts.IsSMD) {
+				tsbBack.PerformClick();
+			} else {
+				tsbFront.PerformClick();
 			}
 		}
 
@@ -556,15 +575,12 @@ namespace UCBeditor {
 					mList.Add(new Land(term, newItem.Begin, i, parts));
 				}
 			}
-			//if (newItem is Wire || newItem is Wrap) {
-			//	var snap = GridWidth;
-			//	var terms = newItem.GetTerminals();
-			//	foreach (var term in terms) {
-			//		if (term.X % snap == 0 && term.Y % snap == 0) {
-			//			mList.Add(new Land(term, newItem));
-			//		}
-			//	}
-			//}
+			if (newItem is Wire || newItem is Wrap) {
+				var terms = newItem.GetTerminals();
+				foreach (var term in terms) {
+					mList.Add(new Land(term, newItem));
+				}
+			}
 		}
 
 		void SortItems() {
@@ -617,6 +633,7 @@ namespace UCBeditor {
 							Height = package.Solid[0].Height
 						};
 						picture.MouseDown += new MouseEventHandler((s, ev) => {
+							SetEditMode(tsbSelect);
 							SetEditParts(package);
 						});
 
