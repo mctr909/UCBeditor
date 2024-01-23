@@ -47,8 +47,10 @@ namespace UCBeditor {
 			});
 
 			Panel_Resize();
-			picBoard.Width = GridWidth * 40;
-			picBoard.Height = GridWidth * 30;
+
+			var size = PDF.PAGE_SIZE.L_H.Size;
+			picBoard.Width = (int)(size.X * GridWidth / 2.54);
+			picBoard.Height = (int)(size.Y * GridWidth / 2.54);
 
 			Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			SetPackageList();
@@ -131,6 +133,24 @@ namespace UCBeditor {
 			}
 			SaveFile(filePath);
 			Text = filePath;
+		}
+
+		private void MenuFilePDF_Click(object sender, EventArgs e) {
+			saveFileDialog1.Filter = "PDFファイル(*.pdf)|*.pdf";
+			saveFileDialog1.FileName = Path.GetFileNameWithoutExtension(Text);
+			saveFileDialog1.ShowDialog();
+			var filePath = saveFileDialog1.FileName;
+			if (string.IsNullOrEmpty(filePath) || !Directory.Exists(Path.GetDirectoryName(filePath))) {
+				return;
+			}
+			var page = new PDF.Page(PDF.PAGE_SIZE.L_H);
+			var pdf = new PDF();
+			page.Scale = 2.54 / GridWidth;
+			foreach (var rec in mList) {
+				rec.DrawPDF(page);
+			}
+			pdf.AddPage(page);
+			pdf.Save(filePath);
 		}
 		#endregion
 
@@ -441,7 +461,7 @@ namespace UCBeditor {
 
 		void SaveFile(string filePath) {
 			try {
-				var fs = new FileStream(filePath, FileMode.Create);
+				var fs = new FileStream(filePath, FileMode.CreateNew);
 				var sw = new StreamWriter(fs);
 				foreach (var rec in mList) {
 					rec.Write(sw);

@@ -83,6 +83,8 @@ namespace UCBeditor {
 		}
 		public virtual Point[] GetTerminals() { return new Point[0]; }
 
+		public virtual void DrawPDF(PDF.Page page) { }
+
 		public abstract Item Clone();
 		public abstract void Write(StreamWriter sw);
 		public abstract void Draw(Graphics g, int dx, int dy, bool selected);
@@ -132,6 +134,13 @@ namespace UCBeditor {
 				}
 			}
 		}
+
+		public override void DrawPDF(PDF.Page page) {
+			page.DrawColor = Color.Black;
+			page.FillCircle(Begin, 0.35 * Form1.GridWidth);
+			page.DrawColor = Color.White;
+			page.FillCircle(Begin, 0.1 * Form1.GridWidth);
+		}
 	}
 
 	class Land : Terminal {
@@ -179,6 +188,20 @@ namespace UCBeditor {
 						g.FillPolygon(OUTLINE.Brush, Foot);
 					}
 				}
+			}
+		}
+
+		public override void DrawPDF(PDF.Page page) {
+			if (Parent is Pattern || Parent is Wire || Parent is Wrap) {
+				return;
+			} else if (null == Foot) {
+				page.DrawColor = Color.Black;
+				page.FillCircle(Begin, 0.35 * Form1.GridWidth);
+				page.DrawColor = Color.White;
+				page.FillCircle(Begin, 0.1 * Form1.GridWidth);
+			} else {
+				page.DrawColor = Color.Black;
+				page.FillPolygon(Foot);
 			}
 		}
 	}
@@ -406,6 +429,29 @@ namespace UCBeditor {
 				}
 				g.DrawLine(pen, x1, y1, x2, y2);
 			}
+		}
+
+		public override void DrawPDF(PDF.Page page) {
+			page.DrawColor = Color.Black;
+			double r;
+			if (Thick) {
+				r = 0.75 * Form1.GridWidth / 2;
+			} else {
+				r = 0.125 * Form1.GridWidth / 2;
+			}
+			var sx = End.X - Begin.X;
+			var sy = End.Y - Begin.Y;
+			var th = Math.Atan2(sy, sx) + Math.PI / 2;
+			var rx = (float)(Math.Cos(th) * r);
+			var ry = (float)(Math.Sin(th) * r);
+			page.FillPolygon(new PointF[] {
+				new PointF(Begin.X + rx, Begin.Y + ry),
+				new PointF(End.X + rx, End.Y + ry),
+				new PointF(End.X - rx, End.Y - ry),
+				new PointF(Begin.X - rx, Begin.Y - ry)
+			});
+			page.FillCircle(Begin, r);
+			page.FillCircle(End, r);
 		}
 	}
 

@@ -71,6 +71,8 @@
 			this.MenuEditRotR = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.MenuFilePDF = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -390,7 +392,9 @@
             this.MenuFileOpen,
             this.MenuFileSeparator1,
             this.MenuFileSave,
-            this.MenuFileSaveAs});
+            this.MenuFileSaveAs,
+            this.toolStripSeparator4,
+            this.MenuFilePDF});
 			this.MenuFile.Name = "MenuFile";
 			this.MenuFile.Size = new System.Drawing.Size(67, 20);
 			this.MenuFile.Text = "ファイル(F)";
@@ -510,6 +514,19 @@
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(181, 6);
+			// 
+			// MenuFilePDF
+			// 
+			this.MenuFilePDF.Name = "MenuFilePDF";
+			this.MenuFilePDF.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+			this.MenuFilePDF.Size = new System.Drawing.Size(184, 22);
+			this.MenuFilePDF.Text = "PDF出力";
+			this.MenuFilePDF.Click += new System.EventHandler(this.MenuFilePDF_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -584,5 +601,7 @@
 		private System.Windows.Forms.ToolStripButton tsbPattern;
 		private System.Windows.Forms.ToolStripButton tsbWireInvisible;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+		private System.Windows.Forms.ToolStripMenuItem MenuFilePDF;
 	}
 }
