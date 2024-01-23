@@ -6,8 +6,8 @@
 			<terminal x="8" y="16"/>
 			<foot>
 				<rect width="1.2" height="1"/>
-				<pin x="0" y="-0.23"/>
-				<pin x="0" y="2.31"/>
+				<pin x="0" y="0.8"/>
+				<pin x="0" y="-0.8"/>
 			</foot>
 		</item>
 		<item name="axial-carbon" height="3">
@@ -31,8 +31,8 @@
 			<terminal x="8" y="16"/>
 			<foot>
 				<rect width="1.2" height="1"/>
-				<pin x="0" y="-0.23"/>
-				<pin x="0" y="2.31"/>
+				<pin x="0" y="0.8"/>
+				<pin x="0" y="-0.8"/>
 			</foot>
 		</item>
 		<item name="MLCC(2012)" height="1" type="smd">
@@ -41,8 +41,8 @@
 			<terminal x="8" y="16"/>
 			<foot>
 				<rect width="1.65" height="1.4"/>
-				<pin x="0" y="-0.03"/>
-				<pin x="0" y="2.51"/>
+				<pin x="0" y="1"/>
+				<pin x="0" y="-1"/>
 			</foot>
 		</item>
 		<item name="radial-ceramic1" height="10" >
@@ -81,8 +81,8 @@
 			<terminal x="8" y="16"/>
 			<foot>
 				<rect width="0.6" height="0.8"/>
-				<pin x="0" y="-0.02"/>
-				<pin x="0" y="0.02"/>
+				<pin x="0" y="1.25"/>
+				<pin x="0" y="-1.25"/>
 			</foot>
 		</item>
 		<item name="DPAK(TO-252-2)" height="5" type="smd">
@@ -109,8 +109,8 @@
 			<terminal x="8" y="16"/>
 			<foot>
 				<rect width="1.2" height="1"/>
-				<pin x="0" y="-0.23"/>
-				<pin x="0" y="2.31"/>
+				<pin x="0" y="0.8"/>
+				<pin x="0" y="-0.8"/>
 			</foot>
 		</item>
 	</group>
@@ -128,9 +128,10 @@
 			<terminal x="17" y="9"/>
 			<foot>
 				<rect width="1" height="0.7"/>
-				<pin x="0.27" y="-0.32"/>
-				<pin x="0.27" y="0.32"/>
-				<pin x="-0.27" y="0"/>
+				<offset x="1.1" y="0.95"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-1.9"/>
+				<pin x="2.2" y="-0.95"/>
 			</foot>
 		</item>
 		<item name="DPAK(TO-252)" height="5" type="smd">
@@ -163,9 +164,10 @@
 			<terminal x="17" y="9"/>
 			<foot>
 				<rect width="1" height="0.7"/>
-				<pin x="0.27" y="-0.32"/>
-				<pin x="0.27" y="0.32"/>
-				<pin x="-0.27" y="0"/>
+				<offset x="1.1" y="0.95"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-1.9"/>
+				<pin x="2.2" y="-0.95"/>
 			</foot>
 		</item>
 		<item name="SOT-23-5" height="3" type="smd">
@@ -177,11 +179,12 @@
 			<terminal x="17" y="1"/>
 			<foot>
 				<rect width="1" height="0.7"/>
-				<pin x="0.27" y="-0.32"/>
-				<pin x="0.27" y="0"/>
-				<pin x="0.27" y="0.32"/>
-				<pin x="-0.27" y="0.32"/>
-				<pin x="-0.27" y="-0.32"/>
+				<offset x="1.1" y="0.95"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-0.95"/>
+				<pin x="0" y="-1.9"/>
+				<pin x="2.2" y="-1.9"/>
+				<pin x="2.2" y="0"/>
 			</foot>
 		</item>
 		<item name="SOT-23-6" height="3" type="smd">
@@ -194,12 +197,13 @@
 			<terminal x="17" y="1"/>
 			<foot>
 				<rect width="1" height="0.7"/>
-				<pin x="0.27" y="-0.32"/>
-				<pin x="0.27" y="0"/>
-				<pin x="0.27" y="0.32"/>
-				<pin x="-0.27" y="0.32"/>
-				<pin x="-0.27" y="0"/>
-				<pin x="-0.27" y="-0.32"/>
+				<offset x="1.1" y="0.95"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-0.95"/>
+				<pin x="0" y="-1.9"/>
+				<pin x="2.2" y="-1.9"/>
+				<pin x="2.2" y="-0.95"/>
+				<pin x="2.2" y="0"/>
 			</foot>
 		</item>
 		<item name="SOP8" height="3" type="smd">
@@ -213,15 +217,16 @@
 			<terminal x="32" y="12"/>
 			<terminal x="32" y="4"/>
 			<foot>
-				<rect width="1.5" height="0.55"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
+				<rect width="1.5" height="0.55" />
+				<offset x="2.425" y="1.905"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-1.27"/>
+				<pin x="0" y="-2.54"/>
+				<pin x="0" y="-3.81"/>
+				<pin x="4.85" y="-3.81"/>
+				<pin x="4.85" y="-2.54"/>
+				<pin x="4.85" y="-1.27"/>
+				<pin x="4.85" y="0"/>
 			</foot>
 		</item>
 		<item name="SOP14" height="3" type="smd">
@@ -242,22 +247,21 @@
 			<terminal x="44" y="4"/>
 			<foot>
 				<rect width="1.5" height="0.55"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="-0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
-				<pin x="0.21" y="0"/>
+				<offset x="2.425" y="3.81"/>
+				<pin x="0" y="0"/>
+				<pin x="0" y="-1.27"/>
+				<pin x="0" y="-2.54"/>
+				<pin x="0" y="-3.81"/>
+				<pin x="0" y="-5.08"/>
+				<pin x="0" y="-6.35"/>
+				<pin x="0" y="-7.62"/>
+				<pin x="4.85" y="-7.62"/>
+				<pin x="4.85" y="-6.35"/>
+				<pin x="4.85" y="-5.08"/>
+				<pin x="4.85" y="-3.81"/>
+				<pin x="4.85" y="-2.54"/>
+				<pin x="4.85" y="-1.27"/>
+				<pin x="4.85" y="0"/>
 			</foot>
 		</item>
 		<item name="DIP4" height="5">

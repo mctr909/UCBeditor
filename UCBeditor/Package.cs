@@ -28,7 +28,9 @@ namespace UCBeditor {
             }
             public Dictionary<string, PointF[]> Polygon = new Dictionary<string, PointF[]>();
             public List<Pin> Pins = new List<Pin>();
-            public PointF[][] Get(Point pos, ROTATE rotate, bool round) {
+            public PointF Offset = new PointF();
+
+            public PointF[] Get(Point pos, int index, ROTATE rotate, bool round) {
                 double rx, ry;
                 switch (rotate) {
                 case ROTATE.DEG90:
@@ -51,27 +53,26 @@ namespace UCBeditor {
                 }
                 rx *= Form1.GridWidth / 2.54;
                 ry *= Form1.GridWidth / 2.54;
-                var ret = new List<PointF[]>();
-                foreach (var pin in Pins) {
-                    var poly = Polygon[pin.Polygon];
-                    var points = new PointF[poly.Length];
-                    for (var i = 0; i < poly.Length; i++) {
-                        var p = poly[i];
-                        if (round) {
-                            points[i] = new PointF(
-                                (int)(pos.X + p.X * rx - p.Y * ry + 0.5),
-                                (int)(pos.Y + p.Y * rx + p.X * ry + 0.5)
-                            );
-                        } else {
-                            points[i] = new PointF(
-                                (float)(pos.X + p.X * rx - p.Y * ry),
-                                (float)(pos.Y + p.Y * rx + p.X * ry)
-                            );
-                        }
-                        ret.Add(points);
+                var pin = Pins[index];
+                var poly = Polygon[pin.Polygon];
+                var points = new PointF[poly.Length];
+                for (var i = 0; i < poly.Length; i++) {
+                    var p = poly[i];
+                    p.X += (float)pin.X - Offset.X;
+                    p.Y += (float)pin.Y + Offset.Y;
+                    if (round) {
+                        points[i] = new PointF(
+                            (int)(pos.X + p.X * rx - p.Y * ry + 0.5),
+                            (int)(pos.Y + p.Y * rx + p.X * ry + 0.5)
+                        );
+                    } else {
+                        points[i] = new PointF(
+                            (float)(pos.X + p.X * rx - p.Y * ry),
+                            (float)(pos.Y + p.Y * rx + p.X * ry)
+                        );
                     }
                 }
-                return ret.ToArray();
+                return points;
             }
         }
 
@@ -103,10 +104,17 @@ namespace UCBeditor {
                         };
                         break;
                     case "offset":
-                        currentPackage.Offset = new Point(
-                            int.Parse(xml.GetAttribute("x")),
-                            int.Parse(xml.GetAttribute("y"))
-                        );
+                        if (null == currentPackage.FootPrint) {
+                            currentPackage.Offset = new Point(
+                                int.Parse(xml.GetAttribute("x")),
+                                int.Parse(xml.GetAttribute("y"))
+                            );
+                        } else {
+                            currentPackage.FootPrint.Offset = new PointF(
+                                float.Parse(xml.GetAttribute("x")),
+                                float.Parse(xml.GetAttribute("y"))
+                            );
+                        }
                         break;
                     case "terminal":
                         currentPackage.Terminals.Add(new Point(

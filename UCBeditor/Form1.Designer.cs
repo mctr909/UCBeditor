@@ -35,6 +35,8 @@
 			this.tsbTerminal = new System.Windows.Forms.ToolStripButton();
 			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.tsbPatternThick = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
@@ -69,7 +71,6 @@
 			this.MenuEditRotR = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -133,14 +134,15 @@
             this.tsbTerminal,
             this.tsbPattern,
             this.tsbPatternThick,
-            this.toolStripSeparator1,
-            this.tsbWireInvisible,
+            this.toolStripSeparator3,
             this.tsbWireBlack,
             this.tsbWireRed,
             this.tsbWireGreen,
             this.tsbWireBlue,
             this.tsbWireMagenta,
             this.tsbWireYellow,
+            this.toolStripSeparator1,
+            this.tsbWireInvisible,
             this.tssDispPackage,
             this.tsbSolid,
             this.tsbTransparent,
@@ -202,6 +204,21 @@
 			this.tsbPatternThick.Size = new System.Drawing.Size(23, 22);
 			this.tsbPatternThick.Text = "パターン(太)";
 			this.tsbPatternThick.Click += new System.EventHandler(this.EditMode_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbWireInvisible
+			// 
+			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
+			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireInvisible.Name = "tsbWireInvisible";
+			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireInvisible.Text = "導線(非表示)";
+			this.tsbWireInvisible.Click += new System.EventHandler(this.tsbWireInvisible_Click);
 			// 
 			// toolStripSeparator1
 			// 
@@ -493,16 +510,6 @@
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
-			// tsbWireInvisible
-			// 
-			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
-			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbWireInvisible.Name = "tsbWireInvisible";
-			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
-			this.tsbWireInvisible.Text = "導線(非表示)";
-			this.tsbWireInvisible.Click += new System.EventHandler(this.EditMode_Click);
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -576,5 +583,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripButton tsbPattern;
 		private System.Windows.Forms.ToolStripButton tsbWireInvisible;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 	}
 }

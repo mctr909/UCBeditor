@@ -196,6 +196,15 @@ namespace UCBeditor {
 			SetEditMode((ToolStripButton)sender);
 		}
 
+		private void tsbWireInvisible_Click(object sender, EventArgs e) {
+			if (mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE) {
+				tsbWireInvisible.Checked = false;
+			} else {
+				tsbWireInvisible.Checked = !tsbWireInvisible.Checked;
+			}
+			Item.Wire = !tsbWireInvisible.Checked;
+		}
+
 		private void DispParts_Click(object sender, EventArgs e) {
 			tsbInvisible.Checked = false;
 			tsbTransparent.Checked = false;
@@ -342,6 +351,10 @@ namespace UCBeditor {
 			if (tsbWireYellow.Checked) {
 				mEditMode = wireType;
 				mWireColor = Wire.Colors.YELLOW;
+			}
+
+			if (mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE) {
+				tsbWireInvisible_Click(null, null);
 			}
 
 			mBeginPos = new Point();
@@ -536,8 +549,9 @@ namespace UCBeditor {
 			mList.Add(newItem);
 			if (newItem is Parts parts) {
 				var terms = parts.GetTerminals();
-				foreach (var term in terms) {
-					mList.Add(new Land(term, parts));
+				for (int i = 0; i < terms.Length; i++) {
+					var term = terms[i];
+					mList.Add(new Land(term, newItem.Begin, i, parts));
 				}
 			}
 			//if (newItem is Wire || newItem is Wrap) {

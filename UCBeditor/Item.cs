@@ -16,6 +16,7 @@ namespace UCBeditor {
 
 		public static bool Reverse { get; set; }
 		public static bool Pattern { get; set; }
+		public static bool Wire { get; set; } = true;
 
 		public static Item Construct(string line) {
 			var cols = line.Split('\t');
@@ -61,11 +62,11 @@ namespace UCBeditor {
 					return false;
 				}
 				if (Reverse) {
-					if (GetType() == typeof(Wire)) {
+					if (GetType() != typeof(Wrap)) {
 						return false;
 					}
 				} else {
-					if (GetType() == typeof(Wrap)) {
+					if (GetType() != typeof(Wire)) {
 						return false;
 					}
 				}
@@ -127,15 +128,22 @@ namespace UCBeditor {
 
 	class Land : Terminal {
 		public readonly Item Parent;
-		public readonly PointF[][] Foot;
+		public readonly PointF[] Foot;
 
 		public Land(Point pos, Item parent) {
 			Begin = pos;
 			End = pos;
 			Height = -0.01;
 			Parent = parent;
+		}
+
+		public Land(Point pos, Point origin, int index, Item parent) {
+			Begin = pos;
+			End = pos;
+			Height = -0.01;
+			Parent = parent;
 			if (parent is Parts parts) {
-				Foot = parts.GetFoot(pos, true);
+				Foot = parts.GetFoot(origin, index, true);
 			}
 		}
 
@@ -150,12 +158,10 @@ namespace UCBeditor {
 				if (null == Foot) {
 					base.Draw(g, dx, dy, selected);
 				} else {
-					foreach (var poly in Foot) {
-						if (Reverse) {
-							g.FillPolygon(COLOR.Brush, poly);
-						} else {
-							g.FillPolygon(OUTLINE.Brush, poly);
-						}
+					if (Reverse) {
+						g.FillPolygon(COLOR.Brush, Foot);
+					} else {
+						g.FillPolygon(OUTLINE.Brush, Foot);
 					}
 				}
 			}
@@ -287,6 +293,9 @@ namespace UCBeditor {
 		}
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
+			if (!Reverse && !Wire) {
+				return;
+			}
 			var nx = End.X - Begin.X;
 			var ny = End.Y - Begin.Y;
 			var r = Math.Sqrt(nx * nx + ny * ny);
@@ -335,6 +344,9 @@ namespace UCBeditor {
 		}
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
+			if (Reverse && !Wire) {
+				return;
+			}
 			var x1 = Begin.X + dx;
 			var y1 = Begin.Y + dy;
 			var x2 = End.X + dx;
@@ -458,11 +470,11 @@ namespace UCBeditor {
 			}
 		}
 
-		public PointF[][] GetFoot(Point pos, bool round) {
+		public PointF[] GetFoot(Point pos, int index, bool round) {
 			if (null == mPackage.FootPrint) {
 				return null;
 			}
-			return mPackage.FootPrint.Get(pos, Rotate, round);
+			return mPackage.FootPrint.Get(pos, index, Rotate, round);
 		}
 
 		public override Item Clone() {
