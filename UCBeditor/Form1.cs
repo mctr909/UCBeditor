@@ -10,6 +10,7 @@ namespace UCBeditor {
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
 		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
 		public const int GridWidth = 16;
+		const int SNAP = GridWidth / 2;
 
 		enum EditMode {
 			SELECT,
@@ -53,7 +54,7 @@ namespace UCBeditor {
 			SetPackageList();
 			SetEditMode(tsbSelect);
 
-			tsbSolid.PerformClick();
+			tsbPartsSolid.PerformClick();
 
 			drawTimer.Interval = 50;
 			drawTimer.Enabled = true;
@@ -199,28 +200,30 @@ namespace UCBeditor {
 		private void tsbWireInvisible_Click(object sender, EventArgs e) {
 			if (mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE) {
 				tsbWireInvisible.Checked = false;
+				Item.Wire = true;
 			} else {
 				tsbWireInvisible.Checked = !tsbWireInvisible.Checked;
+				Item.Wire = !tsbWireInvisible.Checked;
 			}
-			Item.Wire = !tsbWireInvisible.Checked;
 		}
 
 		private void DispParts_Click(object sender, EventArgs e) {
-			tsbInvisible.Checked = false;
-			tsbTransparent.Checked = false;
-			tsbSolid.Checked = false;
-			if (tsbInvisible == sender) {
-				tsbInvisible.Checked = true;
+			tsbPartsInvisible.Checked = false;
+			tsbPartsTransparent.Checked = false;
+			tsbPartsSolid.Checked = false;
+			if (tsbPartsInvisible == sender) {
+				tsbPartsInvisible.Checked = true;
 				Parts.Display = Parts.EDisplay.INVISIBLE;
 			}
-			if (tsbTransparent == sender) {
-				tsbTransparent.Checked = true;
+			if (tsbPartsTransparent == sender) {
+				tsbPartsTransparent.Checked = true;
 				Parts.Display = Parts.EDisplay.TRANSPARENT;
 			}
-			if (tsbSolid == sender) {
-				tsbSolid.Checked = true;
+			if (tsbPartsSolid == sender) {
+				tsbPartsSolid.Checked = true;
 				Parts.Display = Parts.EDisplay.SOLID;
 			}
+			Item.Parts = tsbPartsSolid.Checked || tsbPartsTransparent.Checked;
 		}
 
 		private void DispBoard_Click(object sender, EventArgs e) {
@@ -316,6 +319,7 @@ namespace UCBeditor {
 			if (tsbTerminal.Checked) {
 				mEditMode = EditMode.TERMINAL;
 			}
+			Item.Parts = tsbPartsSolid.Checked || tsbPartsTransparent.Checked;
 			Item.Pattern = tsbPattern.Checked || tsbPatternThick.Checked;
 			if (Item.Pattern) {
 				mEditMode = EditMode.TIN;
@@ -353,9 +357,8 @@ namespace UCBeditor {
 				mWireColor = Wire.Colors.YELLOW;
 			}
 
-			if (mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE) {
-				tsbWireInvisible_Click(null, null);
-			}
+			Item.Wire = mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE;
+			tsbWireInvisible.Checked = !Item.Wire;
 
 			mBeginPos = new Point();
 			mEndPos = new Point();
@@ -378,6 +381,7 @@ namespace UCBeditor {
 					panel.BackColor = SystemColors.ButtonHighlight;
 					panel.BorderStyle = BorderStyle.FixedSingle;
 					mEditMode = EditMode.PARTS;
+					Item.Parts = true;
 				} else {
 					panel.BackColor = BoardColor.Color;
 					panel.BorderStyle = BorderStyle.None;
@@ -395,9 +399,8 @@ namespace UCBeditor {
 				mIsDrag = true;
 				break;
 			}
-			var snap = GridWidth / 2;
-			mBeginPos.X = (int)((double)mMousePos.X / snap + 0.5) * snap;
-			mBeginPos.Y = (int)((double)mMousePos.Y / snap + 0.5) * snap;
+			mBeginPos.X = (int)((double)mMousePos.X / SNAP + 0.5) * SNAP;
+			mBeginPos.Y = (int)((double)mMousePos.Y / SNAP + 0.5) * SNAP;
 		}
 
 		void SetPos() {
@@ -413,9 +416,8 @@ namespace UCBeditor {
 				oy = mSelectedParts.Offset.X;
 				break;
 			}
-			var snap = GridWidth / 2;
-			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / snap + 0.5) * snap;
-			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / snap + 0.5) * snap;
+			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / SNAP + 0.5) * SNAP;
+			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / SNAP + 0.5) * SNAP;
 		}
 
 		void SaveFile(string filePath) {
@@ -516,8 +518,8 @@ namespace UCBeditor {
 					temp.Add(rec);
 				}
 			}
-			gripPos.X = gripPos.X / GridWidth * GridWidth;
-			gripPos.Y = gripPos.Y / GridWidth * GridWidth;
+			gripPos.X = gripPos.X / SNAP * SNAP;
+			gripPos.Y = gripPos.Y / SNAP * SNAP;
 			for (var i = 0; i < mClipBoard.Count; ++i) {
 				var p = mClipBoard[i];
 				p.Begin.X -= gripPos.X;
@@ -532,8 +534,8 @@ namespace UCBeditor {
 		}
 
 		void PasteItems() {
-			var ofsX = mEndPos.X / GridWidth * GridWidth;
-			var ofsY = mEndPos.Y / GridWidth * GridWidth;
+			var ofsX = mEndPos.X / SNAP * SNAP;
+			var ofsY = mEndPos.Y / SNAP * SNAP;
 			foreach (var rec in mClipBoard) {
 				var item = rec.Clone();
 				item.Begin.X += ofsX;
@@ -664,8 +666,8 @@ namespace UCBeditor {
 			}
 			foreach (var rec in mClipBoard) {
 				rec.Draw(g,
-					mEndPos.X / GridWidth * GridWidth,
-					mEndPos.Y / GridWidth * GridWidth,
+					mEndPos.X / SNAP * SNAP,
+					mEndPos.Y / SNAP * SNAP,
 					true
 				);
 			}

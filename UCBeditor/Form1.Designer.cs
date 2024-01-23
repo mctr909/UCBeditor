@@ -36,18 +36,18 @@
 			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.tsbPatternThick = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireBlue = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireMagenta = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireYellow = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
 			this.tssDispPackage = new System.Windows.Forms.ToolStripSeparator();
-			this.tsbSolid = new System.Windows.Forms.ToolStripButton();
-			this.tsbTransparent = new System.Windows.Forms.ToolStripButton();
-			this.tsbInvisible = new System.Windows.Forms.ToolStripButton();
+			this.tsbPartsSolid = new System.Windows.Forms.ToolStripButton();
+			this.tsbPartsTransparent = new System.Windows.Forms.ToolStripButton();
+			this.tsbPartsInvisible = new System.Windows.Forms.ToolStripButton();
 			this.tssDispBoard = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbFront = new System.Windows.Forms.ToolStripButton();
 			this.tsbBack = new System.Windows.Forms.ToolStripButton();
@@ -144,9 +144,9 @@
             this.toolStripSeparator1,
             this.tsbWireInvisible,
             this.tssDispPackage,
-            this.tsbSolid,
-            this.tsbTransparent,
-            this.tsbInvisible,
+            this.tsbPartsSolid,
+            this.tsbPartsTransparent,
+            this.tsbPartsInvisible,
             this.tssDispBoard,
             this.tsbFront,
             this.tsbBack});
@@ -209,21 +209,6 @@
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
 			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-			// 
-			// tsbWireInvisible
-			// 
-			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
-			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbWireInvisible.Name = "tsbWireInvisible";
-			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
-			this.tsbWireInvisible.Text = "導線(非表示)";
-			this.tsbWireInvisible.Click += new System.EventHandler(this.tsbWireInvisible_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
 			// tsbWireBlack
 			// 
@@ -291,42 +276,57 @@
 			this.tsbWireYellow.Text = "導線(黄)";
 			this.tsbWireYellow.Click += new System.EventHandler(this.EditMode_Click);
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbWireInvisible
+			// 
+			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
+			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireInvisible.Name = "tsbWireInvisible";
+			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireInvisible.Text = "導線(非表示)";
+			this.tsbWireInvisible.Click += new System.EventHandler(this.tsbWireInvisible_Click);
+			// 
 			// tssDispPackage
 			// 
 			this.tssDispPackage.Name = "tssDispPackage";
 			this.tssDispPackage.Size = new System.Drawing.Size(6, 25);
 			// 
-			// tsbSolid
+			// tsbPartsSolid
 			// 
-			this.tsbSolid.Checked = true;
-			this.tsbSolid.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.tsbSolid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbSolid.Image = ((System.Drawing.Image)(resources.GetObject("tsbSolid.Image")));
-			this.tsbSolid.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbSolid.Name = "tsbSolid";
-			this.tsbSolid.Size = new System.Drawing.Size(23, 22);
-			this.tsbSolid.Text = "部品を表示";
-			this.tsbSolid.Click += new System.EventHandler(this.DispParts_Click);
+			this.tsbPartsSolid.Checked = true;
+			this.tsbPartsSolid.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.tsbPartsSolid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPartsSolid.Image = ((System.Drawing.Image)(resources.GetObject("tsbPartsSolid.Image")));
+			this.tsbPartsSolid.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPartsSolid.Name = "tsbPartsSolid";
+			this.tsbPartsSolid.Size = new System.Drawing.Size(23, 22);
+			this.tsbPartsSolid.Text = "部品を表示";
+			this.tsbPartsSolid.Click += new System.EventHandler(this.DispParts_Click);
 			// 
-			// tsbTransparent
+			// tsbPartsTransparent
 			// 
-			this.tsbTransparent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbTransparent.Image = ((System.Drawing.Image)(resources.GetObject("tsbTransparent.Image")));
-			this.tsbTransparent.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbTransparent.Name = "tsbTransparent";
-			this.tsbTransparent.Size = new System.Drawing.Size(23, 22);
-			this.tsbTransparent.Text = "部品を透過";
-			this.tsbTransparent.Click += new System.EventHandler(this.DispParts_Click);
+			this.tsbPartsTransparent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPartsTransparent.Image = ((System.Drawing.Image)(resources.GetObject("tsbPartsTransparent.Image")));
+			this.tsbPartsTransparent.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPartsTransparent.Name = "tsbPartsTransparent";
+			this.tsbPartsTransparent.Size = new System.Drawing.Size(23, 22);
+			this.tsbPartsTransparent.Text = "部品を透過";
+			this.tsbPartsTransparent.Click += new System.EventHandler(this.DispParts_Click);
 			// 
-			// tsbInvisible
+			// tsbPartsInvisible
 			// 
-			this.tsbInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbInvisible.Image")));
-			this.tsbInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbInvisible.Name = "tsbInvisible";
-			this.tsbInvisible.Size = new System.Drawing.Size(23, 22);
-			this.tsbInvisible.Text = "部品を表示しない";
-			this.tsbInvisible.Click += new System.EventHandler(this.DispParts_Click);
+			this.tsbPartsInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPartsInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbPartsInvisible.Image")));
+			this.tsbPartsInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPartsInvisible.Name = "tsbPartsInvisible";
+			this.tsbPartsInvisible.Size = new System.Drawing.Size(23, 22);
+			this.tsbPartsInvisible.Text = "部品を表示しない";
+			this.tsbPartsInvisible.Click += new System.EventHandler(this.DispParts_Click);
 			// 
 			// tssDispBoard
 			// 
@@ -572,9 +572,9 @@
 		private System.Windows.Forms.ToolStripSeparator MenuEditSeparator1;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
-		private System.Windows.Forms.ToolStripButton tsbSolid;
-		private System.Windows.Forms.ToolStripButton tsbTransparent;
-		private System.Windows.Forms.ToolStripButton tsbInvisible;
+		private System.Windows.Forms.ToolStripButton tsbPartsSolid;
+		private System.Windows.Forms.ToolStripButton tsbPartsTransparent;
+		private System.Windows.Forms.ToolStripButton tsbPartsInvisible;
 		private System.Windows.Forms.ToolStripButton tsbFront;
 		private System.Windows.Forms.ToolStripButton tsbBack;
 		private System.Windows.Forms.ToolStripSeparator tssDispPackage;

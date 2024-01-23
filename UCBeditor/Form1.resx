@@ -205,7 +205,7 @@
         9lGbwWDUZgKAfJtBAE0DaZpBAGoAmVmTgQEARrxLAR17D8UAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="tsbSolid.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="tsbPartsSolid.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABTSURBVDhPrZLBCQAgDAOzU/cfqFNUKrSoCGps4MBgvJeo
@@ -213,14 +213,14 @@
         AABJRU5ErkJggg==
 </value>
   </data>
-  <data name="tsbTransparent.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="tsbPartsTransparent.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABESURBVDhPrY5bCgAgCAQ9ekePNYr8dNyB9UE4FC7WF9Hd
         y0O7q0xyCsQnoJLyAyLxCcixeAKKTzBJcgfac7gR3Z0SsQE8gy4B+FF0EAAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="tsbInvisible.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="tsbPartsInvisible.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABMSURBVDhPY6AaqK+v/w9lggFJfBiHLJooRThoMBsmMCAA
