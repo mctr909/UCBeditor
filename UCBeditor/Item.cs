@@ -12,7 +12,7 @@ namespace UCBeditor {
 	}
 
 	abstract class Item {
-		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
+		protected static readonly Pen SELECT_COLOR = Pens.Magenta;
 		protected static readonly Pen PATTERN = new Pen(Color.FromArgb(147, 147, 147), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 5) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		protected static readonly Pen LAND = new Pen(Color.FromArgb(191, 191, 0), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };

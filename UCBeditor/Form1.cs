@@ -631,14 +631,12 @@ namespace UCBeditor {
 			do {
 				continues = false;
 				for (int i = mList.Count - 1; 0 <= i; i--) {
-					if (mList[i] is Pattern item1) {
-						Item item2a = null;
-						Item item2b = null;
-						int countA = 0;
-						int countB = 0;
+					if (mList[i] is Pattern itemA) {
+						Item itemB = null;
+						int count = 0;
 						for (int j = mList.Count - 1; 0 <= j; j--) {
 							var item2 = mList[j];
-							if (item1 == item2) {
+							if (itemA == item2) {
 								continue;
 							}
 							int incStep;
@@ -648,60 +646,33 @@ namespace UCBeditor {
 								incStep = 2;
 							}
 							foreach (var term in item2.GetTerminals()) {
-								if (item1.Begin.Equals(term)) {
-									item2a = item2;
-									countA += incStep;
-								}
-								if (item1.End.Equals(term)) {
-									item2b = item2;
-									countB += incStep;
+								if (itemA.Begin.Equals(term)) {
+									itemB = item2;
+									count += incStep;
 								}
 							}
 						}
-						var x1 = item1.End.X - item1.Begin.X;
-						var y1 = item1.End.Y - item1.Begin.Y;
-						var posA = item1.Begin;
-						var posB = item1.End;
-						var joinA = false;
-						var joinB = false;
-						if (1 == countA && null != item2a) {
-							var x2 = item2a.End.X - item2a.Begin.X;
-							var y2 = item2a.End.Y - item2a.Begin.Y;
-							joinA = 0 == (x1 * y2 - y1 * x2);
-							if (item2a is Pattern pt2) {
-								joinA &= item1.Thick == pt2.Thick;
+						if (1 == count && null != itemB) {
+							var x1 = itemA.End.X - itemA.Begin.X;
+							var y1 = itemA.End.Y - itemA.Begin.Y;
+							var x2 = itemB.End.X - itemB.Begin.X;
+							var y2 = itemB.End.Y - itemB.Begin.Y;
+							var join = 0 == (x1 * y2 - y1 * x2);
+							if (itemB is Pattern pt2) {
+								join &= itemA.Thick == pt2.Thick;
 							}
-							if (item2a.Begin.Equals(item1.Begin)) {
-								posA = item2a.End;
-							} else {
-								posA = item2a.Begin;
+							if (join) {
+								Point pos;
+								if (itemA.Begin.Equals(itemB.Begin)) {
+									pos = itemB.End;
+								} else {
+									pos = itemB.Begin;
+								}
+								mList.Add(new Pattern(pos, itemA.End, itemA.Thick));
+								DeleteItems(new List<Item>() { itemA, itemB });
+								continues = true;
+								break;
 							}
-						}
-						if (1 == countB && null != item2b) {
-							var x2 = item2b.End.X - item2b.Begin.X;
-							var y2 = item2b.End.Y - item2b.Begin.Y;
-							joinB = 0 == (x1 * y2 - y1 * x2);
-							if (item2b is Pattern pt2) {
-								joinB &= item1.Thick == pt2.Thick;
-							}
-							if (item2b.End.Equals(item1.End)) {
-								posB = item2b.Begin;
-							} else {
-								posB = item2b.End;
-							}
-						}
-						if (joinA) {
-							DeleteItems(new List<Item>() { item2a });
-						}
-						if (joinB) {
-							DeleteItems(new List<Item>() { item2b });
-						}
-						if (joinA || joinB) {
-							var thick = item1.Thick;
-							DeleteItems(new List<Item>() { item1 });
-							mList.Add(new Pattern(posA, posB, thick));
-							continues = true;
-							break;
 						}
 					}
 				}

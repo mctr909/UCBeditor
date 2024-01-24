@@ -10,11 +10,11 @@
 				<pin x="0" y="-0.8"/>
 			</foot>
 		</item>
-		<item name="axial-carbon" height="3">
+		<item name="carbon-axial" height="3">
 			<terminal x="32" y="0"/>
 			<terminal x="32" y="64"/>
 		</item>
-		<item name="radial-carbon" height="10">
+		<item name="carbon-radial" height="10">
 			<terminal x="16" y="0"/>
 			<terminal x="16" y="16"/>
 		</item>
@@ -75,7 +75,7 @@
 		</item>
 	</group>
 	<group name="D">
-		<item name="UMD2(SOD-323)" height="2" type="smd">
+		<item name="SOD-323(UMD2)" height="2" type="smd">
 			<offset x="8" y="0"/>
 			<terminal x="8" y="0"/>
 			<terminal x="8" y="16"/>
@@ -165,12 +165,6 @@
 		</item>
 	</group>
 	<group name="IC">
-		<item name="SOT-23-3rot" height="3" type="smd">
-			<offset x="8" y="8"/>
-			<terminal x="3" y="3"/>
-			<terminal x="19" y="19"/>
-			<terminal x="19" y="3"/>
-		</item>
 		<item name="SOT-23-3" height="3" type="smd">
 			<offset x="8" y="8"/>
 			<terminal x="1" y="1"/>
