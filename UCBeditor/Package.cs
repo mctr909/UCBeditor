@@ -51,8 +51,8 @@ namespace UCBeditor {
                     ry = 0;
                     break;
                 }
-                rx *= Form1.GridWidth / 2.54;
-                ry *= Form1.GridWidth / 2.54;
+                rx *= Form1.GridScale;
+                ry *= Form1.GridScale;
                 var pin = Pins[index];
                 var poly = Polygon[pin.Polygon];
                 var points = new PointF[poly.Length];

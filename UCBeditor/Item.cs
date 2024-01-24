@@ -136,10 +136,10 @@ namespace UCBeditor {
 		}
 
 		public override void DrawPDF(PDF.Page page) {
-			page.DrawColor = Color.Black;
-			page.FillCircle(Begin, 0.35 * Form1.GridWidth);
-			page.DrawColor = Color.White;
-			page.FillCircle(Begin, 0.1 * Form1.GridWidth);
+			page.FillColor = Color.Black;
+			page.FillCircle(Begin, 1.7 * Form1.GridScale);
+			page.FillColor = Color.White;
+			page.FillCircle(Begin, 0.5 * Form1.GridScale);
 		}
 	}
 
@@ -169,9 +169,7 @@ namespace UCBeditor {
 		public override void Write(StreamWriter sw) { }
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (Parent is Pattern) {
-				return;
-			} else if (Parent is Wire || Parent is Wrap) {
+			if (Parent is Pattern || Parent is Wire || Parent is Wrap) {
 				var r = 2;
 				var d = r * 2;
 				var px = Begin.X + dx - r;
@@ -193,14 +191,17 @@ namespace UCBeditor {
 
 		public override void DrawPDF(PDF.Page page) {
 			if (Parent is Pattern || Parent is Wire || Parent is Wrap) {
-				return;
+				page.FillColor = Color.Black;
+				page.FillCircle(Begin, 0.6 * Form1.GridScale);
+				page.FillColor = Color.White;
+				page.FillCircle(Begin, 0.15 * Form1.GridScale);
 			} else if (null == Foot) {
-				page.DrawColor = Color.Black;
-				page.FillCircle(Begin, 0.35 * Form1.GridWidth);
-				page.DrawColor = Color.White;
-				page.FillCircle(Begin, 0.1 * Form1.GridWidth);
+				page.FillColor = Color.Black;
+				page.FillCircle(Begin, 1.7 * Form1.GridScale);
+				page.FillColor = Color.White;
+				page.FillCircle(Begin, 0.5 * Form1.GridScale);
 			} else {
-				page.DrawColor = Color.Black;
+				page.FillColor = Color.Black;
 				page.FillPolygon(Foot);
 			}
 		}
@@ -432,26 +433,26 @@ namespace UCBeditor {
 		}
 
 		public override void DrawPDF(PDF.Page page) {
-			page.DrawColor = Color.Black;
-			double r;
+			double d;
 			if (Thick) {
-				r = 0.75 * Form1.GridWidth / 2;
+				d = Form1.GridScale;
 			} else {
-				r = 0.125 * Form1.GridWidth / 2;
+				d = 0.3 * Form1.GridScale;
 			}
 			var sx = End.X - Begin.X;
 			var sy = End.Y - Begin.Y;
 			var th = Math.Atan2(sy, sx) + Math.PI / 2;
-			var rx = (float)(Math.Cos(th) * r);
-			var ry = (float)(Math.Sin(th) * r);
+			var rx = (float)(Math.Cos(th) * d * 0.5);
+			var ry = (float)(Math.Sin(th) * d * 0.5);
+			page.FillColor = Color.Black;
 			page.FillPolygon(new PointF[] {
 				new PointF(Begin.X + rx, Begin.Y + ry),
 				new PointF(End.X + rx, End.Y + ry),
 				new PointF(End.X - rx, End.Y - ry),
 				new PointF(Begin.X - rx, Begin.Y - ry)
 			});
-			page.FillCircle(Begin, r);
-			page.FillCircle(End, r);
+			page.FillCircle(Begin, d);
+			page.FillCircle(End, d);
 		}
 	}
 

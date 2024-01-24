@@ -10,6 +10,7 @@ namespace UCBeditor {
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
 		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
 		public const int GridWidth = 16;
+		public const float GridScale = GridWidth / 2.54f;
 		const int SNAP = GridWidth / 2;
 
 		enum EditMode {
@@ -48,9 +49,9 @@ namespace UCBeditor {
 
 			Panel_Resize();
 
-			var size = PDF.PAGE_SIZE.L_H.Size;
-			picBoard.Width = (int)(size.X * GridWidth / 2.54);
-			picBoard.Height = (int)(size.Y * GridWidth / 2.54);
+			var size = PDF.PAGE_SIZE.A4_H.Size;
+			picBoard.Width = (int)(size.X * GridScale);
+			picBoard.Height = (int)(size.Y * GridScale);
 
 			Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			SetPackageList();
@@ -595,10 +596,38 @@ namespace UCBeditor {
 					mList.Add(new Land(term, newItem.Begin, i, parts));
 				}
 			}
-			if (newItem is Wire || newItem is Wrap) {
+			if (newItem.GetType() == typeof(Pattern)) {
 				var terms = newItem.GetTerminals();
 				foreach (var term in terms) {
-					mList.Add(new Land(term, newItem));
+					foreach (var w in mList) {
+						if (w.GetType() == typeof(Wire) || w.GetType() == typeof(Wrap)) {
+							var wTerms = w.GetTerminals();
+							var found = false;
+							foreach (var wTerm in wTerms) {
+								var sx = wTerm.X - term.X;
+								var sy = wTerm.Y - term.Y;
+								if (0 == sx * sx + sy * sy) {
+									found = true;
+									break;
+								}
+							}
+							if (found) {
+								mList.Add(new Land(term, newItem));
+								break;
+							}
+						}
+					}
+				}
+			}
+			if (newItem.GetType() == typeof(Wire) || newItem.GetType() == typeof(Wrap)) {
+				var terms = newItem.GetTerminals();
+				foreach (var term in terms) {
+					foreach (var p in mList) {
+						if (p.GetType() == typeof(Pattern) && p.Distance(term) == 0) {
+							mList.Add(new Land(term, newItem));
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -682,7 +711,6 @@ namespace UCBeditor {
 		void Draw(object sender, EventArgs e) {
 			var bmp = new Bitmap(picBoard.Width, picBoard.Height);
 			var g = Graphics.FromImage(bmp);
-
 			g.FillRectangle(BoardColor.Brush, 0, 0, bmp.Width, bmp.Height);
 
 			for (int x = 0; x < bmp.Width; x += GridWidth * 5) {
@@ -712,6 +740,27 @@ namespace UCBeditor {
 			DrawEditItem(g);
 
 			g.DrawEllipse(Pens.Red, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
+
+			var pen = new Pen(Color.Gray) {
+				DashPattern = new float[] { 4, 2 }
+			};
+			g.DrawRectangle(pen, 0, 0,
+				PDF.PAGE_SIZE.L_H.Size.X * GridScale,
+				PDF.PAGE_SIZE.L_H.Size.Y * GridScale
+			);
+			g.DrawRectangle(pen, 0, 0,
+				PDF.PAGE_SIZE.POST_H.Size.X * GridScale,
+				PDF.PAGE_SIZE.POST_H.Size.Y * GridScale
+			);
+			g.DrawRectangle(pen, 0, 0,
+				PDF.PAGE_SIZE.A5_H.Size.X * GridScale,
+				PDF.PAGE_SIZE.A5_H.Size.Y * GridScale
+			);
+			g.DrawRectangle(pen, 0, 0,
+				PDF.PAGE_SIZE.A4_H.Size.X * GridScale,
+				PDF.PAGE_SIZE.A4_H.Size.Y * GridScale
+			);
+
 			picBoard.Image = bmp;
 		}
 

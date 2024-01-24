@@ -24,6 +24,8 @@ class PDF {
 		public static PAGE_SIZE A4_V = ToPix(72, 210, 297);
 		public static PAGE_SIZE A5_H = ToPix(72, 210, 148);
 		public static PAGE_SIZE A5_V = ToPix(72, 148, 210);
+		public static PAGE_SIZE POST_H = ToPix(72, 148, 100);
+		public static PAGE_SIZE POST_V = ToPix(72, 100, 148);
 		public static PAGE_SIZE L_H = ToPix(72, 127, 89);
 		public static PAGE_SIZE L_V = ToPix(72, 89, 127);
 	}
@@ -50,6 +52,10 @@ class PDF {
 					(value.G / 255.0).ToString("0.##"),
 					(value.B / 255.0).ToString("0.##")
 				);
+			}
+		}
+		public Color FillColor {
+			set {
 				mSw.WriteLine("{0} {1} {2} rg",
 					(value.R / 255.0).ToString("0.##"),
 					(value.G / 255.0).ToString("0.##"),
@@ -165,8 +171,8 @@ class PDF {
 			writeLS(p.X, p.Y);
 		}
 
-		public void DrawCircle(PointF c, double radius) {
-			var poly = polyCircle(c.X, c.Y, radius);
+		public void DrawCircle(PointF c, double diameter) {
+			var poly = polyCircle(c.X, c.Y, diameter);
 			var p = poly[0];
 			writeM(p.X, p.Y);
 			for (int i = 1; i < poly.Length; i++) {
@@ -178,7 +184,7 @@ class PDF {
 		}
 
 		public void DrawArc(PointF c, double diameter, double start, double sweep) {
-			var poly = polyCircle(c.X, c.Y, diameter * 0.5, start, sweep);
+			var poly = polyCircle(c.X, c.Y, diameter, start, sweep);
 			var p = poly[0];
 			writeM(p.X, p.Y);
 			for (int i = 1; i < poly.Length - 1; i++) {
@@ -200,16 +206,16 @@ class PDF {
 			writeLF(p);
 		}
 
-		public void FillCircle(PointF c, double radius) {
-			fillCircleF(c.X, c.Y, radius);
+		public void FillCircle(PointF c, double diameter) {
+			fillCircleF(c.X, c.Y, diameter);
 		}
 
-		public void FillCircle(double cx, double cy, double radius) {
-			fillCircleF(cx, cy, radius);
+		public void FillCircle(double cx, double cy, double diameter) {
+			fillCircleF(cx, cy, diameter);
 		}
 
-		void fillCircleF(double cx, double cy, double radius) {
-			var poly = polyCircle(cx, cy, radius);
+		void fillCircleF(double cx, double cy, double diameter) {
+			var poly = polyCircle(cx, cy, diameter);
 			var p = poly[0];
 			writeM(p.X, p.Y);
 			for (int i = 1; i < poly.Length; i++) {
@@ -220,10 +226,11 @@ class PDF {
 			writeLF(p);
 		}
 
-		PointF[] polyCircle(double cx, double cy, double radius, double start = 0, double sweep = 360) {
+		PointF[] polyCircle(double cx, double cy, double diameter, double start = 0, double sweep = 360) {
 			var poly = new PointF[16];
 			var sRad = Math.PI * start / 180;
 			var ssweep = sweep / 360.0;
+			var radius = diameter * 0.5;
 			for (int i = 0; i < poly.Length; i++) {
 				var th = 2 * Math.PI * (i + 0.5) * ssweep / poly.Length + sRad;
 				poly[i] = new PointF(
