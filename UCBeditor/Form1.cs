@@ -604,21 +604,24 @@ namespace UCBeditor {
 			var isWire = item.GetType() == typeof(Wire) || item.GetType() == typeof(Wrap);
 			var terms = item.GetTerminals();
 			foreach (var term in terms) {
-				var deleteList = new List<Item>();
-				foreach (var p in mList) {
-					if (p is Pattern pattern && pattern.Distance(term) == 0) {
-						if (isWire) {
-							mList.Add(new Land(term, item));
+				bool continues;
+				do {
+					continues = false;
+					for (int i = mList.Count - 1; 0 <= i; i--) {
+						if (mList[i] is Pattern pattern && pattern.Distance(term) == 0) {
+							if (isWire) {
+								mList.Add(new Land(term, item));
+							}
+							if (!pattern.OnTerm(term)) {
+								mList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
+								mList.Add(new Pattern(term, pattern.End, pattern.Thick));
+								DeleteItems(new List<Item>() { pattern });
+								continues = true;
+								break;
+							}
 						}
-						if (!pattern.OnTerm(term)) {
-							mList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
-							mList.Add(new Pattern(term, pattern.End, pattern.Thick));
-							deleteList.Add(pattern);
-						}
-						break;
 					}
-				}
-				DeleteItems(deleteList);
+				} while (continues);
 			}
 		}
 
@@ -627,9 +630,7 @@ namespace UCBeditor {
 				mList.Add(newItem);
 				var checkList = new List<Item>();
 				foreach (var item in mList) {
-					if (newItem != item) {
-						checkList.Add(item);
-					}
+					checkList.Add(item);
 				}
 				foreach (var item in checkList) {
 					DivPattern(item);

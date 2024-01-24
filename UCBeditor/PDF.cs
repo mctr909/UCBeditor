@@ -293,15 +293,15 @@ class PDF {
 
 		void writeM(double x, double y) {
 			mSw.WriteLine("{0} {1} m",
-				((x + mOfsX) * Size.Scale * Scale).ToString("0.00000"),
-				((y + mOfsY) * Size.Scale * Scale).ToString("0.00000")
+				((x + mOfsX) * Size.Scale * Scale).ToString("0.##"),
+				((y + mOfsY) * Size.Scale * Scale).ToString("0.##")
 			);
 		}
 
 		void writeL(double x, double y) {
 			mSw.WriteLine("{0} {1} l",
-				((x + mOfsX) * Size.Scale * Scale).ToString("0.00000"),
-				((y + mOfsY) * Size.Scale * Scale).ToString("0.00000")
+				((x + mOfsX) * Size.Scale * Scale).ToString("0.##"),
+				((y + mOfsY) * Size.Scale * Scale).ToString("0.##")
 			);
 		}
 
@@ -311,15 +311,15 @@ class PDF {
 
 		void writeLS(double x, double y) {
 			mSw.WriteLine("{0} {1} l S",
-				((x + mOfsX) * Size.Scale * Scale).ToString("0.00000"),
-				((y + mOfsY) * Size.Scale * Scale).ToString("0.00000")
+				((x + mOfsX) * Size.Scale * Scale).ToString("0.##"),
+				((y + mOfsY) * Size.Scale * Scale).ToString("0.##")
 			);
 		}
 
 		void writeLF(double x, double y) {
 			mSw.WriteLine("{0} {1} l f",
-				((x + mOfsX) * Size.Scale * Scale).ToString("0.00000"),
-				((y + mOfsY) * Size.Scale * Scale).ToString("0.00000")
+				((x + mOfsX) * Size.Scale * Scale).ToString("0.##"),
+				((y + mOfsY) * Size.Scale * Scale).ToString("0.##")
 			);
 		}
 
