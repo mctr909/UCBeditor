@@ -9,9 +9,7 @@ namespace UCBeditor {
 		readonly Pen BoardColor = new Pen(Color.FromArgb(225, 255, 225), 0.5f);
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
 		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
-		public const int GridWidth = 16;
-		public const float GridScale = GridWidth / 2.54f;
-		const int SNAP = GridWidth / 2;
+		const int SNAP = Item.GridWidth / 2;
 
 		enum EditMode {
 			SELECT,
@@ -50,8 +48,8 @@ namespace UCBeditor {
 			Panel_Resize();
 
 			var size = PDF.PAGE_SIZE.A4_H.Size;
-			picBoard.Width = (int)(size.X * GridScale);
-			picBoard.Height = (int)(size.Y * GridScale);
+			picBoard.Width = (int)(size.X * Item.GridScale);
+			picBoard.Height = (int)(size.Y * Item.GridScale);
 
 			Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			SetPackageList();
@@ -146,7 +144,7 @@ namespace UCBeditor {
 			}
 			var page = new PDF.Page(PDF.PAGE_SIZE.L_H);
 			var pdf = new PDF();
-			page.Scale = 2.54 / GridWidth;
+			page.Scale = 2.54 / Item.GridWidth;
 			foreach (var rec in mList) {
 				rec.DrawPDF(page);
 			}
@@ -298,7 +296,7 @@ namespace UCBeditor {
 				break;
 			case EditMode.TIN:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Pattern(mBeginPos, mEndPos, tsbPatternThick.Checked));
+					AddItem(new Pattern(mBeginPos, mEndPos, tsbPatternThick.Checked ? 1.8 : 0.3));
 				}
 				break;
 			case EditMode.WIRE:
@@ -525,6 +523,21 @@ namespace UCBeditor {
 			SortItems();
 		}
 
+		void DeleteItems(List<Item> deleteList) {
+			var temp = new List<Item>();
+			foreach (var rec in mList) {
+				if (deleteList.Contains(rec)) {
+					continue;
+				}
+				if (rec is Land land && deleteList.Contains(land.Parent)) {
+					continue;
+				}
+				temp.Add(rec);
+			}
+			mList = temp;
+			SortItems();
+		}
+
 		void CopyItems(bool enableCut = false) {
 			var temp = new List<Item>();
 			var gripPos = new Point(int.MaxValue, int.MaxValue);
@@ -587,49 +600,50 @@ namespace UCBeditor {
 			SortItems();
 		}
 
+		void DivPattern(Item item) {
+			var isWire = item.GetType() == typeof(Wire) || item.GetType() == typeof(Wrap);
+			var terms = item.GetTerminals();
+			foreach (var term in terms) {
+				var deleteList = new List<Item>();
+				foreach (var p in mList) {
+					if (p is Pattern pattern && pattern.Distance(term) == 0) {
+						if (isWire) {
+							mList.Add(new Land(term, item));
+						}
+						if (!pattern.OnTerm(term)) {
+							mList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
+							mList.Add(new Pattern(term, pattern.End, pattern.Thick));
+							deleteList.Add(pattern);
+						}
+						break;
+					}
+				}
+				DeleteItems(deleteList);
+			}
+		}
+
 		void AddItem(Item newItem) {
-			mList.Add(newItem);
+			if (newItem is Pattern) {
+				mList.Add(newItem);
+				var checkList = new List<Item>();
+				foreach (var item in mList) {
+					if (newItem != item) {
+						checkList.Add(item);
+					}
+				}
+				foreach (var item in checkList) {
+					DivPattern(item);
+				}
+				return;
+			}
 			if (newItem is Parts parts) {
 				var terms = parts.GetTerminals();
 				for (int i = 0; i < terms.Length; i++) {
-					var term = terms[i];
-					mList.Add(new Land(term, newItem.Begin, i, parts));
+					mList.Add(new Land(terms[i], parts, i));
 				}
 			}
-			if (newItem.GetType() == typeof(Pattern)) {
-				var terms = newItem.GetTerminals();
-				foreach (var term in terms) {
-					foreach (var w in mList) {
-						if (w.GetType() == typeof(Wire) || w.GetType() == typeof(Wrap)) {
-							var wTerms = w.GetTerminals();
-							var found = false;
-							foreach (var wTerm in wTerms) {
-								var sx = wTerm.X - term.X;
-								var sy = wTerm.Y - term.Y;
-								if (0 == sx * sx + sy * sy) {
-									found = true;
-									break;
-								}
-							}
-							if (found) {
-								mList.Add(new Land(term, newItem));
-								break;
-							}
-						}
-					}
-				}
-			}
-			if (newItem.GetType() == typeof(Wire) || newItem.GetType() == typeof(Wrap)) {
-				var terms = newItem.GetTerminals();
-				foreach (var term in terms) {
-					foreach (var p in mList) {
-						if (p.GetType() == typeof(Pattern) && p.Distance(term) == 0) {
-							mList.Add(new Land(term, newItem));
-							break;
-						}
-					}
-				}
-			}
+			DivPattern(newItem);
+			mList.Add(newItem);
 		}
 
 		void SortItems() {
@@ -713,14 +727,14 @@ namespace UCBeditor {
 			var g = Graphics.FromImage(bmp);
 			g.FillRectangle(BoardColor.Brush, 0, 0, bmp.Width, bmp.Height);
 
-			for (int x = 0; x < bmp.Width; x += GridWidth * 5) {
+			for (int x = 0; x < bmp.Width; x += Item.GridWidth * 5) {
 				g.DrawLine(BorderColor, x, 0, x, bmp.Height);
 			}
-			for (int y = 0; y < bmp.Height; y += GridWidth) {
-				if (0 == y % (GridWidth * 5)) {
+			for (int y = 0; y < bmp.Height; y += Item.GridWidth) {
+				if (0 == y % (Item.GridWidth * 5)) {
 					g.DrawLine(BorderColor, 0, y, bmp.Width, y);
 				}
-				for (int x = 0; x < bmp.Width; x += GridWidth) {
+				for (int x = 0; x < bmp.Width; x += Item.GridWidth) {
 					g.DrawRectangle(GridColor, x, y, 0.5f, 0.5f);
 				}
 			}
@@ -745,20 +759,20 @@ namespace UCBeditor {
 				DashPattern = new float[] { 4, 2 }
 			};
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.L_H.Size.X * GridScale,
-				PDF.PAGE_SIZE.L_H.Size.Y * GridScale
+				PDF.PAGE_SIZE.L_H.Size.X * Item.GridScale,
+				PDF.PAGE_SIZE.L_H.Size.Y * Item.GridScale
 			);
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.POST_H.Size.X * GridScale,
-				PDF.PAGE_SIZE.POST_H.Size.Y * GridScale
+				PDF.PAGE_SIZE.POST_H.Size.X * Item.GridScale,
+				PDF.PAGE_SIZE.POST_H.Size.Y * Item.GridScale
 			);
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.A5_H.Size.X * GridScale,
-				PDF.PAGE_SIZE.A5_H.Size.Y * GridScale
+				PDF.PAGE_SIZE.A5_H.Size.X * Item.GridScale,
+				PDF.PAGE_SIZE.A5_H.Size.Y * Item.GridScale
 			);
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.A4_H.Size.X * GridScale,
-				PDF.PAGE_SIZE.A4_H.Size.Y * GridScale
+				PDF.PAGE_SIZE.A4_H.Size.X * Item.GridScale,
+				PDF.PAGE_SIZE.A4_H.Size.Y * Item.GridScale
 			);
 
 			picBoard.Image = bmp;

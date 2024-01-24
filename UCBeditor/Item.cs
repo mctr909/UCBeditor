@@ -13,8 +13,12 @@ namespace UCBeditor {
 
 	abstract class Item {
 		protected static readonly Pen SELECT_COLOR = Pens.Turquoise;
-		protected static readonly Pen PATTERN = new Pen(Color.FromArgb(147, 147, 147), 0.762f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 5.08f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen PATTERN = new Pen(Color.FromArgb(147, 147, 147), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 5) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen LAND = new Pen(Color.FromArgb(191, 191, 0), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+
+		public const int GridWidth = 16;
+		public const float GridScale = GridWidth / 2.54f;
 
 		public static bool Reverse { get; set; }
 		public static bool Pattern { get; set; }
@@ -81,7 +85,7 @@ namespace UCBeditor {
 			}
 			return false;
 		}
-		public virtual Point[] GetTerminals() { return new Point[0]; }
+		public virtual Point[] GetTerminals() { return new Point[] { Begin }; }
 
 		public virtual void DrawPDF(PDF.Page page) { }
 
@@ -91,11 +95,6 @@ namespace UCBeditor {
 	}
 
 	class Terminal : Item {
-		protected static readonly Pen COLOR = new Pen(Color.FromArgb(191, 191, 0), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		protected static readonly Pen OUTLINE = new Pen(Color.FromArgb(147, 147, 147), 1.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-
-		protected Terminal() { }
-
 		public Terminal(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			End = Begin;
@@ -126,26 +125,27 @@ namespace UCBeditor {
 				g.DrawArc(SELECT_COLOR, x2, y2, 4, 4, 0, 360);
 			} else {
 				if (Reverse) {
-					g.FillEllipse(COLOR.Brush, x1, y1, 10, 10);
+					g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-					g.DrawEllipse(OUTLINE, x2, y2, 4, 4);
+					g.DrawEllipse(PATTERN, x2, y2, 4, 4);
 				}
 			}
 		}
 
 		public override void DrawPDF(PDF.Page page) {
 			page.FillColor = Color.Black;
-			page.FillCircle(Begin, 1.7 * Form1.GridScale);
+			page.FillCircle(Begin, 1.7 * GridScale);
 			page.FillColor = Color.White;
-			page.FillCircle(Begin, 0.5 * Form1.GridScale);
+			page.FillCircle(Begin, 0.5 * GridScale);
 		}
 	}
 
-	class Land : Terminal {
+	class Land : Item {
 		public readonly Item Parent;
-		public readonly PointF[] Foot;
+		readonly int mIndex;
+		readonly PointF[] mFoot;
 
 		public Land(Point pos, Item parent) {
 			Begin = pos;
@@ -154,13 +154,14 @@ namespace UCBeditor {
 			Parent = parent;
 		}
 
-		public Land(Point pos, Point origin, int index, Item parent) {
+		public Land(Point pos, Item parent, int index) {
 			Begin = pos;
 			End = pos;
 			Height = -0.01;
 			Parent = parent;
+			mIndex = index;
 			if (parent is Parts parts) {
-				Foot = parts.GetFoot(origin, index, true);
+				mFoot = parts.GetFoot(index, true);
 			}
 		}
 
@@ -177,13 +178,23 @@ namespace UCBeditor {
 				g.FillEllipse(Brushes.White, px, py, d, d);
 				g.DrawEllipse(PATTERN, px, py, d, d);
 			} else {
-				if (null == Foot) {
-					base.Draw(g, dx, dy, selected);
+				if (null == mFoot) {
+					var x1 = Begin.X + dx - 5;
+					var y1 = Begin.Y + dy - 5;
+					var x2 = Begin.X + dx - 2;
+					var y2 = Begin.Y + dy - 2;
+					if (Reverse) {
+						g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
+						g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+					} else {
+						g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+						g.DrawEllipse(PATTERN, x2, y2, 4, 4);
+					}
 				} else {
 					if (Reverse) {
-						g.FillPolygon(COLOR.Brush, Foot);
+						g.FillPolygon(LAND.Brush, mFoot);
 					} else {
-						g.FillPolygon(OUTLINE.Brush, Foot);
+						g.FillPolygon(PATTERN.Brush, mFoot);
 					}
 				}
 			}
@@ -192,17 +203,18 @@ namespace UCBeditor {
 		public override void DrawPDF(PDF.Page page) {
 			if (Parent is Pattern || Parent is Wire || Parent is Wrap) {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, 0.6 * Form1.GridScale);
+				page.FillCircle(Begin, 0.6 * GridScale);
 				page.FillColor = Color.White;
-				page.FillCircle(Begin, 0.15 * Form1.GridScale);
-			} else if (null == Foot) {
+				page.FillCircle(Begin, 0.15 * GridScale);
+			} else if (null != mFoot) {
+				var foot = ((Parts)Parent).GetFoot(mIndex, false);
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, 1.7 * Form1.GridScale);
-				page.FillColor = Color.White;
-				page.FillCircle(Begin, 0.5 * Form1.GridScale);
+				page.FillPolygon(foot);
 			} else {
 				page.FillColor = Color.Black;
-				page.FillPolygon(Foot);
+				page.FillCircle(Begin, 1.7 * GridScale);
+				page.FillColor = Color.White;
+				page.FillCircle(Begin, 0.5 * GridScale);
 			}
 		}
 	}
@@ -294,6 +306,19 @@ namespace UCBeditor {
 			SetColor();
 		}
 
+		public bool OnTerm(Point point) {
+			var abX = End.X - Begin.X;
+			var abY = End.Y - Begin.Y;
+			var apX = point.X - Begin.X;
+			var apY = point.Y - Begin.Y;
+			var abL2 = abX * abX + abY * abY;
+			if (0.0 == abL2) {
+				return false;
+			}
+			var r = (double)(abX * apX + abY * apY) / abL2;
+			return r == 0.0 || 1.0 == r;
+		}
+
 		public override Item Clone() {
 			return new Wire(Begin, End, mColor);
 		}
@@ -341,8 +366,6 @@ namespace UCBeditor {
 	}
 
 	class Wrap : Wire {
-		Wrap() { }
-
 		public Wrap(string[] cols) : base(cols) {
 			Height = -100;
 		}
@@ -387,19 +410,22 @@ namespace UCBeditor {
 	}
 
 	class Pattern : Wire {
-		public bool Thick = false;
+		public readonly float Thick = 0.3f;
 
 		public Pattern(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
+			if (6 <= cols.Length) {
+				Thick = float.Parse(cols[5]);
+			}
 			Height = -0.02;
 		}
 
-		public Pattern(Point begin, Point end, bool thick) {
+		public Pattern(Point begin, Point end, double thick) {
 			Begin = begin;
 			End = end;
 			Height = -0.02;
-			Thick = thick;
+			Thick = (float)thick;
 		}
 
 		public override Item Clone() {
@@ -408,9 +434,10 @@ namespace UCBeditor {
 
 		public override void Write(StreamWriter sw) {
 			sw.WriteLine(
-				"TIN\t{0}\t{1}\t{2}\t{3}",
+				"TIN\t{0}\t{1}\t{2}\t{3}\t{4}",
 				Begin.X, Begin.Y,
-				End.X, End.Y
+				End.X, End.Y,
+				Thick
 			);
 		}
 
@@ -422,23 +449,16 @@ namespace UCBeditor {
 			if (selected) {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
-				Pen pen;
-				if (Thick) {
-					pen = PATTERN_B;
+				if (0.5 < Thick) {
+					g.DrawLine(PATTERN_B, x1, y1, x2, y2);
 				} else {
-					pen = PATTERN;
+					g.DrawLine(PATTERN, x1, y1, x2, y2);
 				}
-				g.DrawLine(pen, x1, y1, x2, y2);
 			}
 		}
 
 		public override void DrawPDF(PDF.Page page) {
-			double d;
-			if (Thick) {
-				d = Form1.GridScale;
-			} else {
-				d = 0.3 * Form1.GridScale;
-			}
+			var d = Thick * GridScale;
 			var sx = End.X - Begin.X;
 			var sy = End.Y - Begin.Y;
 			var th = Math.Atan2(sy, sx) + Math.PI / 2;
@@ -471,8 +491,6 @@ namespace UCBeditor {
 		public readonly string PackageName;
 
 		readonly Package mPackage;
-
-		public bool HasFoot { get { return mPackage.FootPrint != null; } }
 
 		public Parts(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
@@ -510,11 +528,11 @@ namespace UCBeditor {
 			}
 		}
 
-		public PointF[] GetFoot(Point pos, int index, bool round) {
+		public PointF[] GetFoot(int index, bool round) {
 			if (null == mPackage.FootPrint) {
 				return null;
 			}
-			return mPackage.FootPrint.Get(pos, index, Rotate, round);
+			return mPackage.FootPrint.Get(Begin, Rotate, index, round);
 		}
 
 		public override Item Clone() {
