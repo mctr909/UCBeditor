@@ -28,6 +28,7 @@ namespace UCBeditor {
 			}
 			public Dictionary<string, PointF[]> PolygonList = new Dictionary<string, PointF[]>();
 			public List<Pin> PinList = new List<Pin>();
+			public List<Pin> MarkList = new List<Pin>();
 			public PointF Offset = new PointF();
 
 			public PointF[] Get(Point pos, ROTATE rotate, int index, bool round) {
@@ -71,6 +72,52 @@ namespace UCBeditor {
 					}
 				}
 				return points;
+			}
+
+			public List<PointF[]> GetMarks(Point pos, ROTATE rotate, bool round) {
+				double rotX, rotY;
+				switch (rotate) {
+				case ROTATE.DEG90:
+					rotX = 0;
+					rotY = Item.GridScale;
+					break;
+				case ROTATE.DEG180:
+					rotX = -Item.GridScale;
+					rotY = 0;
+					break;
+				case ROTATE.DEG270:
+					rotX = 0;
+					rotY = -Item.GridScale;
+					break;
+				case ROTATE.NONE:
+				default:
+					rotX = Item.GridScale;
+					rotY = 0;
+					break;
+				}
+				var ret = new List<PointF[]>();
+				foreach (var mark in MarkList) {
+					var poly = PolygonList[mark.Polygon];
+					var points = new PointF[poly.Length];
+					for (var i = 0; i < poly.Length; i++) {
+						var p = poly[i];
+						p.X += (float)mark.X - Offset.X;
+						p.Y += (float)mark.Y + Offset.Y;
+						if (round) {
+							points[i] = new PointF(
+								(int)(pos.X + p.X * rotX - p.Y * rotY + 0.5),
+								(int)(pos.Y + p.Y * rotX + p.X * rotY + 0.5)
+							);
+						} else {
+							points[i] = new PointF(
+								(float)(pos.X + p.X * rotX - p.Y * rotY),
+								(float)(pos.Y + p.Y * rotX + p.X * rotY)
+							);
+						}
+					}
+					ret.Add(points);
+				}
+				return ret;
 			}
 		}
 
@@ -135,6 +182,25 @@ namespace UCBeditor {
 							});
 						}
 						break;
+					case "polygon":
+						if (null != currentPackage.FootPrint) {
+							var n = xml.GetAttribute("name");
+							n = null == n ? "" : n;
+							var str = xml.ReadInnerXml().Replace("\t", "");
+							var lines = str.Split('\n');
+							var poly = new List<PointF>();
+							foreach (var line in lines) {
+								if ("" == line) {
+									continue;
+								}
+								var cols = line.Split(' ');
+								var x = float.Parse(cols[0]);
+								var y = float.Parse(cols[1]);
+								poly.Add(new PointF(x, y));
+							}
+							currentPackage.FootPrint.PolygonList.Add(n, poly.ToArray());
+						}
+						break;
 					case "pin":
 						if (null != currentPackage.FootPrint) {
 							var x = double.Parse(xml.GetAttribute("x"));
@@ -142,6 +208,19 @@ namespace UCBeditor {
 							var n = xml.GetAttribute("link");
 							n = null == n ? "" : n;
 							currentPackage.FootPrint.PinList.Add(new Foot.Pin() {
+								X = x,
+								Y = y,
+								Polygon = n
+							});
+						}
+						break;
+					case "mark":
+						if (null != currentPackage.FootPrint) {
+							var x = double.Parse(xml.GetAttribute("x"));
+							var y = double.Parse(xml.GetAttribute("y"));
+							var n = xml.GetAttribute("link");
+							n = null == n ? "" : n;
+							currentPackage.FootPrint.MarkList.Add(new Foot.Pin() {
 								X = x,
 								Y = y,
 								Polygon = n

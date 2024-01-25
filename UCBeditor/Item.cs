@@ -2,6 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
+using System.Collections.Generic;
 
 namespace UCBeditor {
 	public enum ROTATE {
@@ -535,6 +536,13 @@ namespace UCBeditor {
 			return mPackage.FootPrint.Get(Begin, Rotate, index, round);
 		}
 
+		public List<PointF[]> GetMarks(bool round) {
+			if (null == mPackage.FootPrint) {
+				return new List<PointF[]>();
+			}
+			return mPackage.FootPrint.GetMarks(Begin, Rotate, round);
+		}
+
 		public override Item Clone() {
 			return new Parts(Begin, Rotate, Group, PackageName);
 		}
@@ -603,6 +611,14 @@ namespace UCBeditor {
 			var x = Begin.X + dx;
 			var y = Begin.Y + dy;
 			g.DrawImage(bmp, new Point(x - Center, y - Center));
+		}
+
+		public override void DrawPDF(PDF.Page page) {
+			var marks = GetMarks(false);
+			page.FillColor = Color.Black;
+			foreach (var mark in marks) {
+				page.FillPolygon(mark);
+			}
 		}
 	}
 }
