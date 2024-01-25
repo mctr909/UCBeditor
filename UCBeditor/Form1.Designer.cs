@@ -32,10 +32,15 @@
 			this.tsBoard = new System.Windows.Forms.ToolStrip();
 			this.tsbSelect = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbFront = new System.Windows.Forms.ToolStripButton();
+			this.tsbBack = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbTerminal = new System.Windows.Forms.ToolStripButton();
 			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.tsbPatternThick = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
+			this.tssDispBoard = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbWireBlack = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireRed = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireGreen = new System.Windows.Forms.ToolStripButton();
@@ -43,14 +48,9 @@
 			this.tsbWireMagenta = new System.Windows.Forms.ToolStripButton();
 			this.tsbWireYellow = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.tsbWireInvisible = new System.Windows.Forms.ToolStripButton();
-			this.tssDispPackage = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbPartsSolid = new System.Windows.Forms.ToolStripButton();
 			this.tsbPartsTransparent = new System.Windows.Forms.ToolStripButton();
 			this.tsbPartsInvisible = new System.Windows.Forms.ToolStripButton();
-			this.tssDispBoard = new System.Windows.Forms.ToolStripSeparator();
-			this.tsbFront = new System.Windows.Forms.ToolStripButton();
-			this.tsbBack = new System.Windows.Forms.ToolStripButton();
 			this.pnlParts = new System.Windows.Forms.Panel();
 			this.tsParts = new System.Windows.Forms.ToolStrip();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -60,6 +60,8 @@
 			this.MenuFileSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.MenuFileSave = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.MenuFilePDF = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuEdit = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuEditSelect = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuEditCut = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,8 +73,7 @@
 			this.MenuEditRotR = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-			this.MenuFilePDF = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -133,10 +134,15 @@
 			this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbSelect,
             this.toolStripSeparator2,
-            this.tsbTerminal,
+            this.tsbFront,
+            this.tsbBack,
+            this.toolStripSeparator3,
             this.tsbPattern,
             this.tsbPatternThick,
-            this.toolStripSeparator3,
+            this.tsbTerminal,
+            this.toolStripSeparator5,
+            this.tsbWireInvisible,
+            this.tssDispBoard,
             this.tsbWireBlack,
             this.tsbWireRed,
             this.tsbWireGreen,
@@ -144,14 +150,9 @@
             this.tsbWireMagenta,
             this.tsbWireYellow,
             this.toolStripSeparator1,
-            this.tsbWireInvisible,
-            this.tssDispPackage,
             this.tsbPartsSolid,
             this.tsbPartsTransparent,
-            this.tsbPartsInvisible,
-            this.tssDispBoard,
-            this.tsbFront,
-            this.tsbBack});
+            this.tsbPartsInvisible});
 			this.tsBoard.Location = new System.Drawing.Point(0, 0);
 			this.tsBoard.Name = "tsBoard";
 			this.tsBoard.Size = new System.Drawing.Size(800, 25);
@@ -175,6 +176,33 @@
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbFront
+			// 
+			this.tsbFront.Checked = true;
+			this.tsbFront.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.tsbFront.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFront.Image = ((System.Drawing.Image)(resources.GetObject("tsbFront.Image")));
+			this.tsbFront.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFront.Name = "tsbFront";
+			this.tsbFront.Size = new System.Drawing.Size(23, 22);
+			this.tsbFront.Text = "正面";
+			this.tsbFront.Click += new System.EventHandler(this.DispBoard_Click);
+			// 
+			// tsbBack
+			// 
+			this.tsbBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbBack.Image = ((System.Drawing.Image)(resources.GetObject("tsbBack.Image")));
+			this.tsbBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbBack.Name = "tsbBack";
+			this.tsbBack.Size = new System.Drawing.Size(23, 22);
+			this.tsbBack.Text = "裏面";
+			this.tsbBack.Click += new System.EventHandler(this.DispBoard_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
 			// 
 			// tsbTerminal
 			// 
@@ -207,10 +235,25 @@
 			this.tsbPatternThick.Text = "パターン(太)";
 			this.tsbPatternThick.Click += new System.EventHandler(this.EditMode_Click);
 			// 
-			// toolStripSeparator3
+			// toolStripSeparator5
 			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbWireInvisible
+			// 
+			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
+			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWireInvisible.Name = "tsbWireInvisible";
+			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
+			this.tsbWireInvisible.Text = "導線(非表示)";
+			this.tsbWireInvisible.Click += new System.EventHandler(this.tsbWireInvisible_Click);
+			// 
+			// tssDispBoard
+			// 
+			this.tssDispBoard.Name = "tssDispBoard";
+			this.tssDispBoard.Size = new System.Drawing.Size(6, 25);
 			// 
 			// tsbWireBlack
 			// 
@@ -283,21 +326,6 @@
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
-			// tsbWireInvisible
-			// 
-			this.tsbWireInvisible.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbWireInvisible.Image = ((System.Drawing.Image)(resources.GetObject("tsbWireInvisible.Image")));
-			this.tsbWireInvisible.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbWireInvisible.Name = "tsbWireInvisible";
-			this.tsbWireInvisible.Size = new System.Drawing.Size(23, 22);
-			this.tsbWireInvisible.Text = "導線(非表示)";
-			this.tsbWireInvisible.Click += new System.EventHandler(this.tsbWireInvisible_Click);
-			// 
-			// tssDispPackage
-			// 
-			this.tssDispPackage.Name = "tssDispPackage";
-			this.tssDispPackage.Size = new System.Drawing.Size(6, 25);
-			// 
 			// tsbPartsSolid
 			// 
 			this.tsbPartsSolid.Checked = true;
@@ -329,33 +357,6 @@
 			this.tsbPartsInvisible.Size = new System.Drawing.Size(23, 22);
 			this.tsbPartsInvisible.Text = "部品を表示しない";
 			this.tsbPartsInvisible.Click += new System.EventHandler(this.DispParts_Click);
-			// 
-			// tssDispBoard
-			// 
-			this.tssDispBoard.Name = "tssDispBoard";
-			this.tssDispBoard.Size = new System.Drawing.Size(6, 25);
-			// 
-			// tsbFront
-			// 
-			this.tsbFront.Checked = true;
-			this.tsbFront.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.tsbFront.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbFront.Image = ((System.Drawing.Image)(resources.GetObject("tsbFront.Image")));
-			this.tsbFront.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbFront.Name = "tsbFront";
-			this.tsbFront.Size = new System.Drawing.Size(23, 22);
-			this.tsbFront.Text = "正面";
-			this.tsbFront.Click += new System.EventHandler(this.DispBoard_Click);
-			// 
-			// tsbBack
-			// 
-			this.tsbBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbBack.Image = ((System.Drawing.Image)(resources.GetObject("tsbBack.Image")));
-			this.tsbBack.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbBack.Name = "tsbBack";
-			this.tsbBack.Size = new System.Drawing.Size(23, 22);
-			this.tsbBack.Text = "裏面";
-			this.tsbBack.Click += new System.EventHandler(this.DispBoard_Click);
 			// 
 			// pnlParts
 			// 
@@ -434,10 +435,24 @@
 			this.MenuFileSaveAs.Text = "名前を付けて保存(A)";
 			this.MenuFileSaveAs.Click += new System.EventHandler(this.MenuFileSaveAs_Click);
 			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(181, 6);
+			// 
+			// MenuFilePDF
+			// 
+			this.MenuFilePDF.Name = "MenuFilePDF";
+			this.MenuFilePDF.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+			this.MenuFilePDF.Size = new System.Drawing.Size(184, 22);
+			this.MenuFilePDF.Text = "PDF出力";
+			this.MenuFilePDF.Click += new System.EventHandler(this.MenuFilePDF_Click);
+			// 
 			// MenuEdit
 			// 
 			this.MenuEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuEditSelect,
+            this.toolStripSeparator6,
             this.MenuEditCut,
             this.MenuEditCopy,
             this.MenuEditPaste,
@@ -514,18 +529,10 @@
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
-			// toolStripSeparator4
+			// toolStripSeparator6
 			// 
-			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(181, 6);
-			// 
-			// MenuFilePDF
-			// 
-			this.MenuFilePDF.Name = "MenuFilePDF";
-			this.MenuFilePDF.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.MenuFilePDF.Size = new System.Drawing.Size(184, 22);
-			this.MenuFilePDF.Text = "PDF出力";
-			this.MenuFilePDF.Click += new System.EventHandler(this.MenuFilePDF_Click);
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(183, 6);
 			// 
 			// Form1
 			// 
@@ -594,7 +601,6 @@
 		private System.Windows.Forms.ToolStripButton tsbPartsInvisible;
 		private System.Windows.Forms.ToolStripButton tsbFront;
 		private System.Windows.Forms.ToolStripButton tsbBack;
-		private System.Windows.Forms.ToolStripSeparator tssDispPackage;
 		private System.Windows.Forms.ToolStripSeparator tssDispBoard;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -603,5 +609,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem MenuFilePDF;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 	}
 }

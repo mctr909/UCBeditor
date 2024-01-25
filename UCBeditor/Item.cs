@@ -3,6 +3,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
+using UCBeditor.Properties;
 
 namespace UCBeditor {
 	public enum ROTATE {
@@ -13,9 +14,9 @@ namespace UCBeditor {
 	}
 
 	abstract class Item {
-		protected static readonly Pen SELECT_COLOR = Pens.Magenta;
+		protected static readonly Pen SELECT_COLOR = new Pen(Color.Magenta, 2);
 		protected static readonly Pen PATTERN = new Pen(Color.FromArgb(147, 147, 147), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 5) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 9) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		protected static readonly Pen LAND = new Pen(Color.FromArgb(191, 191, 0), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
 		public const int GridWidth = 16;
@@ -129,8 +130,7 @@ namespace UCBeditor {
 					g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
-					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-					g.DrawEllipse(PATTERN, x2, y2, 4, 4);
+					g.DrawImageUnscaled(Resources.pin, x1 - 3, y1 - 3);
 				}
 			}
 		}
@@ -318,6 +318,25 @@ namespace UCBeditor {
 			}
 			var r = (double)(abX * apX + abY * apY) / abL2;
 			return r == 0.0 || 1.0 == r;
+		}
+
+		public bool OnMiddle(Point point) {
+			var abX = End.X - Begin.X;
+			var abY = End.Y - Begin.Y;
+			var apX = point.X - Begin.X;
+			var apY = point.Y - Begin.Y;
+			var abL2 = abX * abX + abY * abY;
+			if (0.0 == abL2) {
+				return false;
+			}
+			var r = (double)(abX * apX + abY * apY) / abL2;
+			if (0.0 < r && r < 1.0) {
+				var px = point.X - (Begin.X + r * abX);
+				var py = point.Y - (Begin.Y + r * abY);
+				return 0 == (px * px + py * py);
+			} else {
+				return false;
+			}
 		}
 
 		public override Item Clone() {

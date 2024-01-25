@@ -93,7 +93,7 @@ namespace UCBeditor {
 			mList.Clear();
 			while (!sr.EndOfStream) {
 				var rec = Item.Construct(sr.ReadLine());
-				AddItem(rec);
+				AddItem(rec, false);
 			}
 			SortItems();
 			sr.Close();
@@ -351,7 +351,6 @@ namespace UCBeditor {
 			}
 
 			if (tsbTerminal.Checked) {
-				tsbBack.PerformClick();
 				mEditMode = EditMode.TERMINAL;
 				Item.Pattern = false;
 				Item.Wire = false;
@@ -361,8 +360,8 @@ namespace UCBeditor {
 
 			Item.Pattern = tsbPattern.Checked || tsbPatternThick.Checked;
 			if (Item.Pattern) {
-				tsbBack.PerformClick();
 				mEditMode = EditMode.TIN;
+				Item.Parts = false;
 				return;
 			}
 
@@ -398,12 +397,16 @@ namespace UCBeditor {
 			}
 
 			Item.Parts = tsbPartsSolid.Checked || tsbPartsTransparent.Checked;
-			SetEditParts(new Package());
+			SetEditParts(null);
 		}
 
 		void SetEditParts(Package parts) {
+			if (null == parts) {
+				mSelectedParts = new Package();
+			} else {
+				mSelectedParts = parts;
+			}
 			mIsDrag = false;
-			mSelectedParts = parts;
 			mSelectArea = new Rectangle();
 			foreach (var ctrl in pnlParts.Controls) {
 				if (!(ctrl is Panel)) {
@@ -420,10 +423,12 @@ namespace UCBeditor {
 					panel.BorderStyle = BorderStyle.None;
 				}
 			}
-			if (mSelectedParts.IsSMD) {
-				tsbBack.PerformClick();
-			} else {
-				tsbFront.PerformClick();
+			if (null != parts) {
+				if (mSelectedParts.IsSMD) {
+					tsbBack.PerformClick();
+				} else {
+					tsbFront.PerformClick();
+				}
 			}
 		}
 
@@ -596,32 +601,35 @@ namespace UCBeditor {
 				item.Begin.Y += ofsY;
 				item.End.X += ofsX;
 				item.End.Y += ofsY;
-				AddItem(item);
+				AddItem(item, false);
 			}
 			SortItems();
 		}
 
 		void DivPattern(Item item) {
-			var isWire = item.GetType() == typeof(Wire) || item.GetType() == typeof(Wrap);
 			foreach (var term in item.GetTerminals()) {
-				bool continues;
-				do {
+				for (bool continues = true; continues;) {
 					continues = false;
-					for (int i = mList.Count - 1; 0 <= i; i--) {
-						if (mList[i] is Pattern pattern && pattern.Distance(term) == 0) {
-							if (isWire) {
-								mList.Add(new Land(term, item));
-							}
-							if (!pattern.OnTerm(term)) {
-								mList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
-								mList.Add(new Pattern(term, pattern.End, pattern.Thick));
-								DeleteItems(new List<Item>() { pattern });
-								continues = true;
-								break;
-							}
+					foreach (var item2 in mList) {
+						if (item2 is Pattern pattern && pattern.OnMiddle(term)) {
+							mList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
+							mList.Add(new Pattern(term, pattern.End, pattern.Thick));
+							DeleteItems(new List<Item>() { pattern });
+							continues = true;
+							break;
 						}
 					}
-				} while (continues);
+				}
+			}
+			if (item.GetType() == typeof(Wire) || item.GetType() == typeof(Wrap)) {
+				foreach (var term in item.GetTerminals()) {
+					foreach (var item2 in mList) {
+						if (item2 is Pattern pattern && 0 == pattern.Distance(term)) {
+							mList.Add(new Land(term, item));
+							break;
+						}
+					}
+				}
 			}
 		}
 
@@ -713,17 +721,19 @@ namespace UCBeditor {
 			} while (continues);
 		}
 
-		void AddItem(Item newItem) {
+		void AddItem(Item newItem, bool divPattern = true) {
 			if (newItem is Pattern) {
 				mList.Add(newItem);
-				var checkList = new List<Item>();
-				foreach (var item in mList) {
-					checkList.Add(item);
+				if (divPattern) {
+					var checkList = new List<Item>();
+					foreach (var item in mList) {
+						checkList.Add(item);
+					}
+					foreach (var item in checkList) {
+						DivPattern(item);
+					}
+					JoinPattern();
 				}
-				foreach (var item in checkList) {
-					DivPattern(item);
-				}
-				JoinPattern();
 				return;
 			}
 			if (newItem is Parts parts) {
@@ -732,7 +742,9 @@ namespace UCBeditor {
 					mList.Add(new Land(terms[i], parts, i));
 				}
 			}
-			DivPattern(newItem);
+			if (divPattern) {
+				DivPattern(newItem);
+			}
 			mList.Add(newItem);
 		}
 
