@@ -93,7 +93,7 @@ namespace UCBeditor {
 			mList.Clear();
 			while (!sr.EndOfStream) {
 				var rec = Item.Construct(sr.ReadLine());
-				AddItem(rec, false);
+				AddItem(rec);
 			}
 			SortItems();
 			sr.Close();
@@ -529,21 +529,6 @@ namespace UCBeditor {
 			SortItems();
 		}
 
-		void DeleteItems(List<Item> deleteList) {
-			var temp = new List<Item>();
-			foreach (var rec in mList) {
-				if (deleteList.Contains(rec)) {
-					continue;
-				}
-				if (rec is Land land && deleteList.Contains(land.Parent)) {
-					continue;
-				}
-				temp.Add(rec);
-			}
-			mList = temp;
-			SortItems();
-		}
-
 		void CopyItems(bool enableCut = false) {
 			var temp = new List<Item>();
 			var gripPos = new Point(int.MaxValue, int.MaxValue);
@@ -608,18 +593,14 @@ namespace UCBeditor {
 
 		void DivPattern(Item item) {
 			foreach (var term in item.GetTerminals()) {
-				for (bool continues = true; continues;) {
-					continues = false;
-					foreach (var item2 in mList) {
-						if (item2 is Pattern pattern && pattern.OnMiddle(term)) {
-							mList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
-							mList.Add(new Pattern(term, pattern.End, pattern.Thick));
-							DeleteItems(new List<Item>() { pattern });
-							continues = true;
-							break;
-						}
+				var addList = new List<Item>();
+				foreach (var item2 in mList) {
+					if (item2 is Pattern pattern && pattern.OnMiddle(term)) {
+						addList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
+						pattern.Begin = term;
 					}
 				}
+				mList.AddRange(addList);
 			}
 			if (item.GetType() == typeof(Wire) || item.GetType() == typeof(Wrap)) {
 				foreach (var term in item.GetTerminals()) {
@@ -634,91 +615,93 @@ namespace UCBeditor {
 		}
 
 		void JoinPattern() {
-			bool continues;
-			do {
-				continues = false;
-				foreach (var pattern in mList) {
-					if (!(pattern is Pattern patternA)) {
-						continue;
-					}
-					Pattern patternB = null;
-					{
-						var connectedItemFound = false;
-						foreach (var item in mList) {
-							if (patternA == item) {
-								continue;
-							}
-							foreach (var term in item.GetTerminals()) {
-								if (patternA.Begin.Equals(term)) {
-									if (item is Pattern) {
-										if (connectedItemFound) {
-											patternB = null;
-											break;
-										}
-										patternB = (Pattern)item;
-										connectedItemFound = true;
-									} else {
+			foreach (var itemA in mList) {
+				if (!(itemA is Pattern patternA) || patternA.Removed) {
+					continue;
+				}
+				Pattern patternB = null;
+				{
+					var connectedItemFound = false;
+					foreach (var itemB in mList) {
+						if (patternA == itemB || itemB.Removed) {
+							continue;
+						}
+						foreach (var termB in itemB.GetTerminals()) {
+							if (patternA.Begin.Equals(termB)) {
+								if (itemB is Pattern) {
+									if (connectedItemFound) {
 										patternB = null;
-										connectedItemFound = true;
 										break;
 									}
+									patternB = (Pattern)itemB;
+									connectedItemFound = true;
+								} else {
+									patternB = null;
+									connectedItemFound = true;
+									break;
 								}
 							}
 						}
-					}
-					if (null == patternB) {
-						var connectedItemFound = false;
-						foreach (var item in mList) {
-							if (patternA == item) {
-								continue;
-							}
-							foreach (var term in item.GetTerminals()) {
-								if (patternA.End.Equals(term)) {
-									if (item is Pattern) {
-										if (connectedItemFound) {
-											patternB = null;
-											break;
-										}
-										patternB = (Pattern)item;
-										connectedItemFound = true;
-									} else {
-										patternB = null;
-										connectedItemFound = true;
-										break;
-									}
-								}
-							}
-						}
-					}
-					if (null != patternB) {
-						var ax = patternA.End.X - patternA.Begin.X;
-						var ay = patternA.End.Y - patternA.Begin.Y;
-						var bx = patternB.End.X - patternB.Begin.X;
-						var by = patternB.End.Y - patternB.Begin.Y;
-						var cross = ax * by - ay * bx;
-						if (0 == cross && (patternA.Thick == patternB.Thick)) {
-							Point posA, posB;
-							if (patternA.Begin.Equals(patternB.Begin)) {
-								posA = patternB.End;
-								posB = patternA.End;
-							} else if (patternA.Begin.Equals(patternB.End)) {
-								posA = patternB.Begin;
-								posB = patternA.End;
-							} else if (patternA.End.Equals(patternB.End)) {
-								posA = patternA.Begin;
-								posB = patternB.Begin;
-							} else {
-								posA = patternA.Begin;
-								posB = patternB.End;
-							}
-							mList.Add(new Pattern(posA, posB, patternA.Thick));
-							DeleteItems(new List<Item>() { patternA, patternB });
-							continues = true;
+						if (connectedItemFound && null == patternB) {
 							break;
 						}
 					}
 				}
-			} while (continues);
+				if (null == patternB) {
+					var connectedItemFound = false;
+					foreach (var itemB in mList) {
+						if (patternA == itemB || itemB.Removed) {
+							continue;
+						}
+						foreach (var termB in itemB.GetTerminals()) {
+							if (patternA.End.Equals(termB)) {
+								if (itemB is Pattern) {
+									if (connectedItemFound) {
+										patternB = null;
+										break;
+									}
+									patternB = (Pattern)itemB;
+									connectedItemFound = true;
+								} else {
+									patternB = null;
+									connectedItemFound = true;
+									break;
+								}
+							}
+						}
+						if (connectedItemFound && null == patternB) {
+							break;
+						}
+					}
+				}
+				if (null != patternB) {
+					var ax = patternA.End.X - patternA.Begin.X;
+					var ay = patternA.End.Y - patternA.Begin.Y;
+					var bx = patternB.End.X - patternB.Begin.X;
+					var by = patternB.End.Y - patternB.Begin.Y;
+					var cross = ax * by - ay * bx;
+					if (0 == cross && (patternA.Thick == patternB.Thick)) {
+						Point posA, posB;
+						if (patternA.Begin.Equals(patternB.Begin)) {
+							posA = patternB.End;
+							posB = patternA.End;
+						} else if (patternA.Begin.Equals(patternB.End)) {
+							posA = patternB.Begin;
+							posB = patternA.End;
+						} else if (patternA.End.Equals(patternB.End)) {
+							posA = patternA.Begin;
+							posB = patternB.Begin;
+						} else {
+							posA = patternA.Begin;
+							posB = patternB.End;
+						}
+						patternA.Begin = posA;
+						patternA.End = posB;
+						patternB.Removed = true;
+					}
+				}
+			}
+			mList.RemoveAll(p => p.Removed);
 		}
 
 		void AddItem(Item newItem, bool divPattern = true) {

@@ -47,6 +47,7 @@ namespace UCBeditor {
 		public Point Begin;
 		public Point End;
 		public double Height { get; protected set; }
+		public bool Removed { get; set; }
 
 		public bool IsSelected(Rectangle selectArea) {
 			return selectArea.Contains(Begin) || selectArea.Contains(End);
