@@ -277,7 +277,7 @@
 			<terminal x="32" y="12"/>
 			<terminal x="32" y="4"/>
 			<foot>
-				<rect width="1.5" height="0.55" />
+				<rect width="1.5" height="0.6" />
 				<offset x="2.7" y="1.905"/>
 				<pin x="0" y="0"/>
 				<pin x="0" y="-1.27"/>
@@ -306,7 +306,7 @@
 			<terminal x="44" y="12"/>
 			<terminal x="44" y="4"/>
 			<foot>
-				<rect width="1.5" height="0.55"/>
+				<rect width="1.5" height="0.6"/>
 				<offset x="2.7" y="3.81"/>
 				<pin x="0" y="0"/>
 				<pin x="0" y="-1.27"/>
