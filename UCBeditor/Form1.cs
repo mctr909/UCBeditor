@@ -515,7 +515,7 @@ namespace UCBeditor {
 			}
 			mSelectArea = new Rectangle();
 			mList = temp;
-			JoinPattern();
+			Pattern.Join(mList);
 			SortItems();
 		}
 
@@ -581,119 +581,6 @@ namespace UCBeditor {
 			SortItems();
 		}
 
-		void DivPattern(Item item) {
-			foreach (var term in item.GetTerminals()) {
-				var addList = new List<Item>();
-				foreach (var item2 in mList) {
-					if (item2 is Pattern pattern && pattern.OnMiddle(term)) {
-						addList.Add(new Pattern(pattern.Begin, term, pattern.Thick));
-						pattern.Begin = term;
-					}
-				}
-				mList.AddRange(addList);
-			}
-			if (item.GetType() == typeof(Wire)) {
-				foreach (var term in item.GetTerminals()) {
-					foreach (var item2 in mList) {
-						if (item2 is Pattern pattern && 0 == pattern.Distance(term)) {
-							mList.Add(new Land(term, item));
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		void JoinPattern() {
-			foreach (var itemA in mList) {
-				if (!(itemA is Pattern patternA) || patternA.Removed) {
-					continue;
-				}
-				Pattern patternB = null;
-				{
-					var connectedItemFound = false;
-					foreach (var itemB in mList) {
-						if (patternA == itemB || itemB.Removed) {
-							continue;
-						}
-						foreach (var termB in itemB.GetTerminals()) {
-							if (patternA.Begin.Equals(termB)) {
-								if (itemB is Pattern) {
-									if (connectedItemFound) {
-										patternB = null;
-										break;
-									}
-									patternB = (Pattern)itemB;
-									connectedItemFound = true;
-								} else {
-									patternB = null;
-									connectedItemFound = true;
-									break;
-								}
-							}
-						}
-						if (connectedItemFound && null == patternB) {
-							break;
-						}
-					}
-				}
-				if (null == patternB) {
-					var connectedItemFound = false;
-					foreach (var itemB in mList) {
-						if (patternA == itemB || itemB.Removed) {
-							continue;
-						}
-						foreach (var termB in itemB.GetTerminals()) {
-							if (patternA.End.Equals(termB)) {
-								if (itemB is Pattern) {
-									if (connectedItemFound) {
-										patternB = null;
-										break;
-									}
-									patternB = (Pattern)itemB;
-									connectedItemFound = true;
-								} else {
-									patternB = null;
-									connectedItemFound = true;
-									break;
-								}
-							}
-						}
-						if (connectedItemFound && null == patternB) {
-							break;
-						}
-					}
-				}
-				if (null != patternB) {
-					var ax = patternA.End.X - patternA.Begin.X;
-					var ay = patternA.End.Y - patternA.Begin.Y;
-					var bx = patternB.End.X - patternB.Begin.X;
-					var by = patternB.End.Y - patternB.Begin.Y;
-					var cross = ax * by - ay * bx;
-					if (0 == cross && (patternA.Thick == patternB.Thick)) {
-						Point posA, posB;
-						if (patternA.Begin.Equals(patternB.Begin)) {
-							posA = patternB.End;
-							posB = patternA.End;
-						} else if (patternA.Begin.Equals(patternB.End)) {
-							posA = patternB.Begin;
-							posB = patternA.End;
-						} else if (patternA.End.Equals(patternB.End)) {
-							posA = patternA.Begin;
-							posB = patternB.Begin;
-						} else {
-							posA = patternA.Begin;
-							posB = patternB.End;
-						}
-						patternA.Begin = posA;
-						patternA.End = posB;
-						patternB.Removed = true;
-					}
-				}
-			}
-			mList.RemoveAll(p => p.Removed);
-		}
-
 		void AddItem(Item newItem, bool divPattern = true) {
 			if (newItem is Pattern) {
 				mList.Add(newItem);
@@ -703,9 +590,9 @@ namespace UCBeditor {
 						checkList.Add(item);
 					}
 					foreach (var item in checkList) {
-						DivPattern(item);
+						Pattern.Divide(mList, item);
 					}
-					JoinPattern();
+					Pattern.Join(mList);
 				}
 				return;
 			}
@@ -716,7 +603,7 @@ namespace UCBeditor {
 				}
 			}
 			if (divPattern) {
-				DivPattern(newItem);
+				Pattern.Divide(mList, newItem);
 			}
 			mList.Add(newItem);
 		}

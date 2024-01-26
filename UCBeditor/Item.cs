@@ -360,6 +360,113 @@ namespace UCBeditor {
 	class Pattern : Wire {
 		public readonly float Thick = 0.3f;
 
+		public static void Divide(List<Item> list, Item dividerItem) {
+			var divTerms = dividerItem.GetTerminals();
+			foreach (var divTerm in divTerms) {
+				var addList = new List<Item>();
+				foreach (var item in list) {
+					if (item is Pattern pattern && pattern.OnMiddle(divTerm)) {
+						addList.Add(new Pattern(pattern.Begin, divTerm, pattern.Thick));
+						pattern.Begin = divTerm;
+					}
+				}
+				list.AddRange(addList);
+			}
+			if (dividerItem.GetType() == typeof(Wire)) {
+				foreach (var divTerm in divTerms) {
+					foreach (var item in list) {
+						if (item is Pattern pattern && 0 == pattern.Distance(divTerm)) {
+							list.Add(new Land(divTerm, dividerItem));
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		public static void Join(List<Item> list) {
+			foreach (var itemA in list) {
+				if (!(itemA is Pattern patternA) || patternA.Removed) {
+					continue;
+				}
+				Pattern patternB = null;
+				{
+					var connectedItemFound = false;
+					foreach (var itemB in list) {
+						if (patternA == itemB || itemB.Removed) {
+							continue;
+						}
+						foreach (var termB in itemB.GetTerminals()) {
+							if (patternA.Begin.Equals(termB)) {
+								if (itemB is Pattern) {
+									if (connectedItemFound) {
+										patternB = null;
+										break;
+									}
+									patternB = (Pattern)itemB;
+									connectedItemFound = true;
+								} else {
+									patternB = null;
+									connectedItemFound = true;
+									break;
+								}
+							}
+						}
+						if (connectedItemFound && null == patternB) {
+							break;
+						}
+					}
+				}
+				if (null == patternB) {
+					var connectedItemFound = false;
+					foreach (var itemB in list) {
+						if (patternA == itemB || itemB.Removed) {
+							continue;
+						}
+						foreach (var termB in itemB.GetTerminals()) {
+							if (patternA.End.Equals(termB)) {
+								if (itemB is Pattern) {
+									if (connectedItemFound) {
+										patternB = null;
+										break;
+									}
+									patternB = (Pattern)itemB;
+									connectedItemFound = true;
+								} else {
+									patternB = null;
+									connectedItemFound = true;
+									break;
+								}
+							}
+						}
+						if (connectedItemFound && null == patternB) {
+							break;
+						}
+					}
+				}
+				if (null != patternB) {
+					var ax = patternA.End.X - patternA.Begin.X;
+					var ay = patternA.End.Y - patternA.Begin.Y;
+					var bx = patternB.End.X - patternB.Begin.X;
+					var by = patternB.End.Y - patternB.Begin.Y;
+					var cross = ax * by - ay * bx;
+					if (0 == cross && (patternA.Thick == patternB.Thick)) {
+						patternB.Removed = true;
+						if (patternA.Begin.Equals(patternB.Begin)) {
+							patternA.Begin = patternB.End;
+						} else if (patternA.Begin.Equals(patternB.End)) {
+							patternA.Begin = patternB.Begin;
+						} else if (patternA.End.Equals(patternB.End)) {
+							patternA.End = patternB.Begin;
+						} else {
+							patternA.End = patternB.End;
+						}
+					}
+				}
+			}
+			list.RemoveAll(p => p.Removed);
+		}
+
 		public Pattern(string[] cols) {
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
