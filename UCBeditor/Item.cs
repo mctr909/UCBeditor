@@ -544,7 +544,7 @@ namespace UCBeditor {
 		public static EDisplay Display { get; set; }
 
 		public readonly ROTATE Rotate;
-		public readonly int Center;
+		public readonly Point Pivot;
 		public readonly string Group;
 		public readonly string Name;
 		public readonly string PackageName;
@@ -560,11 +560,11 @@ namespace UCBeditor {
 			PackageName = cols[5];
 			if (Package.Find(Group, PackageName)) {
 				mPackage = Package.Get(Group, PackageName);
-				Center = mPackage.Center;
+				Pivot = mPackage.BodyImage.Pivot;
 				Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
 			} else {
 				mPackage = null;
-				Center = 0;
+				Pivot = new Point();
 				Height = 0;
 			}
 		}
@@ -578,26 +578,20 @@ namespace UCBeditor {
 			PackageName = package;
 			if (Package.Find(group, package)) {
 				mPackage = Package.Get(group, package);
-				Center = mPackage.Center;
+				Pivot = mPackage.BodyImage.Pivot;
 				Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
 			} else {
 				mPackage = null;
-				Center = 0;
+				Pivot = new Point();
 				Height = 0;
 			}
 		}
 
 		public PointF[] GetFoot(int index, bool round) {
-			if (null == mPackage.FootPrint) {
-				return null;
-			}
 			return mPackage.FootPrint.Get(Begin, Rotate, index, round);
 		}
 
 		public List<PointF[]> GetMarks(bool round) {
-			if (null == mPackage.FootPrint) {
-				return new List<PointF[]>();
-			}
 			return mPackage.FootPrint.GetMarks(Begin, Rotate, round);
 		}
 
@@ -613,28 +607,28 @@ namespace UCBeditor {
 			if (null == mPackage) {
 				return new Point[0];
 			}
-			var terminals = mPackage.Terminals;
+			var terminals = mPackage.BodyImage.PinList;
 			var points = new Point[terminals.Count];
-			var ofs = Center - 1;
+			var ofsX = Pivot.X - 1;
 			for (int i = 0; i < terminals.Count; i++) {
 				var term = terminals[i];
 				points[i] = Begin;
 				switch (Rotate) {
 				case ROTATE.DEG90:
-					points[i].X += ofs - term.Y;
-					points[i].Y += term.X - ofs;
+					points[i].X += ofsX - term.Y;
+					points[i].Y += term.X - ofsX;
 					break;
 				case ROTATE.DEG180:
-					points[i].X += ofs - term.X;
-					points[i].Y += ofs - term.Y;
+					points[i].X += ofsX - term.X;
+					points[i].Y += ofsX - term.Y;
 					break;
 				case ROTATE.DEG270:
-					points[i].X += term.Y - ofs;
-					points[i].Y += ofs - term.X;
+					points[i].X += term.Y - ofsX;
+					points[i].Y += ofsX - term.X;
 					break;
 				default:
-					points[i].X += term.X - ofs;
-					points[i].Y += term.Y - ofs;
+					points[i].X += term.X - ofsX;
+					points[i].Y += term.Y - ofsX;
 					break;
 				}
 			}
@@ -668,7 +662,7 @@ namespace UCBeditor {
 			}
 			var x = Begin.X + dx;
 			var y = Begin.Y + dy;
-			g.DrawImage(bmp, new Point(x - Center, y - Center));
+			g.DrawImage(bmp, new Point(x - Pivot.X, y - Pivot.Y));
 		}
 
 		public override void DrawPDF(PDF.Page page) {

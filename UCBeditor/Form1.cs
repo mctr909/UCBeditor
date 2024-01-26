@@ -441,12 +441,12 @@ namespace UCBeditor {
 			switch (mRotate) {
 			case ROTATE.DEG90:
 			case ROTATE.DEG270:
-				ox = mSelectedParts.Offset.X;
-				oy = mSelectedParts.Offset.Y;
+				ox = mSelectedParts.BodyImage.Offset.X;
+				oy = mSelectedParts.BodyImage.Offset.Y;
 				break;
 			default:
-				ox = mSelectedParts.Offset.Y;
-				oy = mSelectedParts.Offset.X;
+				ox = mSelectedParts.BodyImage.Offset.Y;
+				oy = mSelectedParts.BodyImage.Offset.X;
 				break;
 			}
 			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / SNAP + 0.5) * SNAP;
@@ -528,14 +528,14 @@ namespace UCBeditor {
 						continue;
 					}
 					mClipBoard.Add(enableCut ? rec : rec.Clone());
-					int center;
+					Point center;
 					if (rec is Parts parts) {
-						center = parts.Center;
+						center = parts.Pivot;
 					} else {
-						center = 0;
+						center = new Point();
 					}
-					var begin = new Point(rec.Begin.X - center, rec.Begin.Y - center);
-					var end = new Point(rec.End.X - center, rec.End.Y - center);
+					var begin = new Point(rec.Begin.X - center.X, rec.Begin.Y - center.Y);
+					var end = new Point(rec.End.X - center.X, rec.End.Y - center.Y);
 					if (begin.X < gripPos.X) {
 						gripPos.X = begin.X;
 					}
@@ -776,8 +776,8 @@ namespace UCBeditor {
 			case EditMode.PARTS:
 				var bmp = mSelectedParts.Alpha[(int)mRotate];
 				g.DrawImage(bmp, new Point(
-					mEndPos.X - mSelectedParts.Center,
-					mEndPos.Y - mSelectedParts.Center
+					mEndPos.X - mSelectedParts.BodyImage.Pivot.X,
+					mEndPos.Y - mSelectedParts.BodyImage.Pivot.Y
 				));
 				break;
 			}

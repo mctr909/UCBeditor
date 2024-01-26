@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Xml;
@@ -9,17 +10,20 @@ namespace UCBeditor {
 		public string Name { get; private set; }
 		public bool IsSMD { get; private set; }
 		public double Height { get; private set; }
-		public Point Offset { get; private set; }
-		public int Center { get; private set; }
 		public Bitmap[] Solid { get; private set; } = new Bitmap[4];
 		public Bitmap[] Alpha { get; private set; } = new Bitmap[4];
 
-		public List<Point> Terminals = new List<Point>();
-		public Foot FootPrint = null;
+		public Image BodyImage = new Image();
+		public Foot FootPrint = new Foot();
 
 		public static string GroupPath { get; private set; }
 		public static Dictionary<string, Dictionary<string, Package>> List = new Dictionary<string, Dictionary<string, Package>>();
 
+		public class Image {
+			public List<Point> PinList = new List<Point>();
+			public Point Offset { get; set; } = new Point();
+			public Point Pivot { get; set; } = new Point();
+		}
 		public class Foot {
 			public class Pin {
 				public double X = 0.0;
@@ -32,6 +36,9 @@ namespace UCBeditor {
 			public PointF Offset = new PointF();
 
 			public PointF[] Get(Point pos, ROTATE rotate, int index, bool round) {
+				if (PinList.Count <= index) {
+					return null;
+				}
 				double rotX, rotY;
 				switch (rotate) {
 				case ROTATE.DEG90:
@@ -133,6 +140,9 @@ namespace UCBeditor {
 			var dirAlpha = dir + "alpha\\";
 			var currentGroup = "";
 			var currentPackage = new Package();
+			Image currentBodyImage = null;
+			Foot currentFootPrint = null;
+
 			while (xml.Read()) {
 				switch (xml.NodeType) {
 				case XmlNodeType.Element:
@@ -148,42 +158,57 @@ namespace UCBeditor {
 							IsSMD = xml.GetAttribute("type") == "smd"
 						};
 						break;
+					case "image":
+						currentBodyImage = new Image();
+						break;
+					case "foot":
+						currentFootPrint = new Foot();
+						break;
+
 					case "offset":
-						if (null == currentPackage.FootPrint) {
-							currentPackage.Offset = new Point(
+						if (null != currentBodyImage) {
+							currentBodyImage.Offset = new Point(
 								int.Parse(xml.GetAttribute("x")),
 								int.Parse(xml.GetAttribute("y"))
 							);
-						} else {
-							currentPackage.FootPrint.Offset = new PointF(
+						}
+						if (null != currentFootPrint) {
+							currentFootPrint.Offset = new PointF(
 								float.Parse(xml.GetAttribute("x")),
 								float.Parse(xml.GetAttribute("y"))
 							);
 						}
 						break;
-					case "terminal":
-						currentPackage.Terminals.Add(new Point(
-							int.Parse(xml.GetAttribute("x")),
-							int.Parse(xml.GetAttribute("y")))
-						);
-						break;
-					case "foot":
-						currentPackage.FootPrint = new Foot();
-						break;
 					case "rect":
-						if (null != currentPackage.FootPrint) {
+						if (null != currentFootPrint) {
 							var w = float.Parse(xml.GetAttribute("width")) * 0.5f;
 							var h = float.Parse(xml.GetAttribute("height")) * 0.5f;
 							var n = xml.GetAttribute("name");
 							n = null == n ? "" : n;
-							currentPackage.FootPrint.PolygonList.Add(n, new PointF[] {
+							currentFootPrint.PolygonList.Add(n, new PointF[] {
 								new PointF(w, h), new PointF(-w, h),
 								new PointF(-w, -h), new PointF(w, -h)
 							});
 						}
 						break;
+					case "circle":
+						if (null != currentFootPrint) {
+							var r = float.Parse(xml.GetAttribute("diameter")) * 0.5f;
+							var n = xml.GetAttribute("name");
+							n = null == n ? "" : n;
+							var poly = new PointF[16];
+							for (int i = 0; i < poly.Length; i++) {
+								var th = 2 * Math.PI * (i + 0.5) / poly.Length;
+								poly[i] = new PointF(
+									(float)(r * Math.Cos(th)),
+									(float)(r * Math.Sin(th))
+								);
+							}
+							currentFootPrint.PolygonList.Add(n, poly);
+						}
+						break;
 					case "polygon":
-						if (null != currentPackage.FootPrint) {
+						if (null != currentFootPrint) {
 							var n = xml.GetAttribute("name");
 							n = null == n ? "" : n;
 							var str = xml.ReadInnerXml().Replace("\t", "");
@@ -198,16 +223,22 @@ namespace UCBeditor {
 								var y = float.Parse(cols[1]);
 								poly.Add(new PointF(x, y));
 							}
-							currentPackage.FootPrint.PolygonList.Add(n, poly.ToArray());
+							currentFootPrint.PolygonList.Add(n, poly.ToArray());
 						}
 						break;
 					case "pin":
-						if (null != currentPackage.FootPrint) {
+						if (null != currentBodyImage) {
+							currentBodyImage.PinList.Add(new Point(
+								int.Parse(xml.GetAttribute("x")),
+								int.Parse(xml.GetAttribute("y")))
+							);
+						}
+						if (null != currentFootPrint) {
 							var x = double.Parse(xml.GetAttribute("x"));
 							var y = double.Parse(xml.GetAttribute("y"));
 							var n = xml.GetAttribute("link");
 							n = null == n ? "" : n;
-							currentPackage.FootPrint.PinList.Add(new Foot.Pin() {
+							currentFootPrint.PinList.Add(new Foot.Pin() {
 								X = x,
 								Y = y,
 								Polygon = n
@@ -215,12 +246,12 @@ namespace UCBeditor {
 						}
 						break;
 					case "mark":
-						if (null != currentPackage.FootPrint) {
+						if (null != currentFootPrint) {
 							var x = double.Parse(xml.GetAttribute("x"));
 							var y = double.Parse(xml.GetAttribute("y"));
 							var n = xml.GetAttribute("link");
 							n = null == n ? "" : n;
-							currentPackage.FootPrint.MarkList.Add(new Foot.Pin() {
+							currentFootPrint.MarkList.Add(new Foot.Pin() {
 								X = x,
 								Y = y,
 								Polygon = n
@@ -233,7 +264,17 @@ namespace UCBeditor {
 					break;
 				case XmlNodeType.EndElement:
 					switch (xml.Name) {
+					case "image":
+						if (null != currentBodyImage) {
+							currentPackage.BodyImage = currentBodyImage;
+							currentBodyImage = null;
+						}
+						break;
 					case "foot":
+						if (null != currentFootPrint) {
+							currentPackage.FootPrint = currentFootPrint;
+							currentFootPrint = null;
+						}
 						break;
 					case "item": {
 						var pathGroup = GroupPath + currentGroup + ".png";
@@ -256,7 +297,7 @@ namespace UCBeditor {
 						if (solid.Width != solid.Height) {
 							break;
 						}
-						currentPackage.Center = solid.Width / 2;
+						currentPackage.BodyImage.Pivot = new Point(solid.Width / 2, solid.Height / 2);
 						currentPackage.Solid[0] = (Bitmap)solid.Clone();
 						currentPackage.Solid[1] = (Bitmap)solid.Clone();
 						currentPackage.Solid[2] = (Bitmap)solid.Clone();
