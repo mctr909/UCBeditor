@@ -3,7 +3,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
-using UCBeditor.Properties;
 
 namespace UCBeditor {
 	public enum ROTATE {
@@ -33,9 +32,8 @@ namespace UCBeditor {
 			case "TIN":
 				return new Pattern(cols);
 			case "WIRE":
-				return new Wire(cols);
 			case "WRAP":
-				return new Wrap(cols);
+				return new Wire(cols);
 			case "PARTS":
 				return new Parts(cols);
 			case "TERM":
@@ -62,28 +60,10 @@ namespace UCBeditor {
 			return Math.Sqrt(apX * apX + apY * apY);
 		}
 		public virtual bool IsSelected(Point point) {
-			if (Pattern) {
-				if (GetType() == typeof(Pattern)) {
-					return Distance(point) < 8.0;
-				}
-				return false;
-			}
-			if (Wire) {
-				if (Reverse) {
-					if (GetType() == typeof(Wrap)) {
-						return Distance(point) < 8.0;
-					}
-				} else {
-					if (GetType() == typeof(Wire)) {
-						return Distance(point) < 8.0;
-					}
-				}
-				return false;
-			}
-			if (GetType() == typeof(Parts)) {
+			if (GetType() == typeof(Terminal)) {
 				return Distance(point) < 8.0;
 			}
-			if (GetType() == typeof(Terminal)) {
+			if (GetType() == typeof(Parts)) {
 				return Distance(point) < 8.0;
 			}
 			return false;
@@ -131,7 +111,8 @@ namespace UCBeditor {
 					g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
-					g.DrawImageUnscaled(Resources.pin, x1 - 3, y1 - 3);
+					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+					g.DrawEllipse(Pens.Black, x2, y2, 4, 4);
 				}
 			}
 		}
@@ -172,38 +153,36 @@ namespace UCBeditor {
 		public override void Write(StreamWriter sw) { }
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (Parent is Pattern || Parent is Wire || Parent is Wrap) {
+			if (Parent is Wire) {
 				var r = 2;
 				var d = r * 2;
 				var px = Begin.X + dx - r;
 				var py = Begin.Y + dy - r;
 				g.FillEllipse(Brushes.White, px, py, d, d);
-				g.DrawEllipse(PATTERN, px, py, d, d);
-			} else {
-				if (null == mFoot) {
-					var x1 = Begin.X + dx - 5;
-					var y1 = Begin.Y + dy - 5;
-					var x2 = Begin.X + dx - 2;
-					var y2 = Begin.Y + dy - 2;
-					if (Reverse) {
-						g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
-						g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-					} else {
-						g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-						g.DrawEllipse(PATTERN, x2, y2, 4, 4);
-					}
+				g.DrawEllipse(Pens.Black, px, py, d, d);
+			} else if (null == mFoot) {
+				var x1 = Begin.X + dx - 5;
+				var y1 = Begin.Y + dy - 5;
+				var x2 = Begin.X + dx - 2;
+				var y2 = Begin.Y + dy - 2;
+				if (Reverse) {
+					g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
+					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
-					if (Reverse) {
-						g.FillPolygon(LAND.Brush, mFoot);
-					} else {
-						g.FillPolygon(PATTERN.Brush, mFoot);
-					}
+					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
+					g.DrawEllipse(PATTERN, x2, y2, 4, 4);
+				}
+			} else {
+				if (Reverse) {
+					g.FillPolygon(LAND.Brush, mFoot);
+				} else {
+					g.FillPolygon(PATTERN.Brush, mFoot);
 				}
 			}
 		}
 
 		public override void DrawPDF(PDF.Page page) {
-			if (Parent is Pattern || Parent is Wire || Parent is Wrap) {
+			if (Parent is Wire) {
 				page.FillColor = Color.Black;
 				page.FillCircle(Begin, 0.6 * GridScale);
 				page.FillColor = Color.White;
@@ -222,8 +201,7 @@ namespace UCBeditor {
 	}
 
 	class Wire : Item {
-		protected static readonly Pen REVERSE = new Pen(Color.FromArgb(215, 215, 215), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-
+		static readonly Pen REVERSE = new Pen(Color.FromArgb(215, 215, 215), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		static readonly Pen BLACK = new Pen(Color.FromArgb(71, 71, 71), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		static readonly Pen RED = new Pen(Color.FromArgb(211, 63, 63), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		static readonly Pen GREEN = new Pen(Color.FromArgb(47, 167, 47), 2.0f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -240,8 +218,9 @@ namespace UCBeditor {
 			YELLOW
 		}
 
-		protected Colors mColor { get; private set; }
-		protected Pen mPen { get; private set; }
+		Pen mPen;
+		readonly Colors mColor;
+		readonly bool mReverse;
 
 		void SetColor() {
 			switch (mColor) {
@@ -268,7 +247,7 @@ namespace UCBeditor {
 			}
 		}
 
-		protected PointF NeerPoint(Point point) {
+		PointF NeerPoint(Point point) {
 			var abX = End.X - Begin.X;
 			var abY = End.Y - Begin.Y;
 			var apX = point.X - Begin.X;
@@ -293,32 +272,21 @@ namespace UCBeditor {
 		protected Wire() { }
 
 		public Wire(string[] cols) {
-			Height = 100;
+			mReverse = "WRAP" == cols[0];
+			Height = mReverse ? -100 : 100;
 			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
 			mColor = (Colors)Enum.Parse(typeof(Colors), cols[5]);
 			SetColor();
 		}
 
-		public Wire(Point begin, Point end, Colors color) {
-			Height = 100;
+		public Wire(Point begin, Point end, Colors color, bool reverse) {
+			mReverse = reverse;
+			Height = mReverse ? -100 : 100;
 			Begin = begin;
 			End = end;
 			mColor = color;
 			SetColor();
-		}
-
-		public bool OnTerm(Point point) {
-			var abX = End.X - Begin.X;
-			var abY = End.Y - Begin.Y;
-			var apX = point.X - Begin.X;
-			var apY = point.Y - Begin.Y;
-			var abL2 = abX * abX + abY * abY;
-			if (0.0 == abL2) {
-				return false;
-			}
-			var r = (double)(abX * apX + abY * apY) / abL2;
-			return r == 0.0 || 1.0 == r;
 		}
 
 		public bool OnMiddle(Point point) {
@@ -327,13 +295,13 @@ namespace UCBeditor {
 			var apX = point.X - Begin.X;
 			var apY = point.Y - Begin.Y;
 			var abL2 = abX * abX + abY * abY;
-			if (0.0 == abL2) {
+			if (0 == abL2) {
 				return false;
 			}
 			var r = (double)(abX * apX + abY * apY) / abL2;
 			if (0.0 < r && r < 1.0) {
-				var px = point.X - (Begin.X + r * abX);
-				var py = point.Y - (Begin.Y + r * abY);
+				var px = apX - r * abX;
+				var py = apY - r * abY;
 				return 0 == (px * px + py * py);
 			} else {
 				return false;
@@ -341,11 +309,15 @@ namespace UCBeditor {
 		}
 
 		public override Item Clone() {
-			return new Wire(Begin, End, mColor);
+			return new Wire(Begin, End, mColor, mReverse);
 		}
 
 		public override Point[] GetTerminals() {
 			return new Point[] { Begin, End };
+		}
+
+		public override bool IsSelected(Point point) {
+			return Wire && mReverse == Reverse && Distance(point) < 8.0;
 		}
 
 		public override double Distance(Point point) {
@@ -357,7 +329,8 @@ namespace UCBeditor {
 
 		public override void Write(StreamWriter sw) {
 			sw.WriteLine(
-				"WIRE\t{0}\t{1}\t{2}\t{3}\t{4}",
+				"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+				mReverse ? "WRAP" : "WIRE",
 				Begin.X, Begin.Y,
 				End.X, End.Y,
 				mColor
@@ -365,68 +338,22 @@ namespace UCBeditor {
 		}
 
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (!Reverse && !Wire) {
+			if (mReverse == Reverse && !Wire) {
 				return;
 			}
 			var x1 = Begin.X + dx;
 			var y1 = Begin.Y + dy;
 			var x2 = End.X + dx;
 			var y2 = End.Y + dy;
-			Pen pen;
 			if (selected) {
-				pen = SELECT_COLOR;
+				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
-				if (Reverse) {
-					pen = REVERSE;
+				if (mReverse == Reverse) {
+					g.DrawLine(mPen, x1, y1, x2, y2);
 				} else {
-					pen = mPen;
+					g.DrawLine(REVERSE, x1, y1, x2, y2);
 				}
 			}
-			g.DrawLine(pen, x1, y1, x2, y2);
-		}
-	}
-
-	class Wrap : Wire {
-		public Wrap(string[] cols) : base(cols) {
-			Height = -100;
-		}
-
-		public Wrap(Point begin, Point end, Colors color) : base(begin, end, color) {
-			Height = -100;
-		}
-
-		public override Item Clone() {
-			return new Wrap(Begin, End, mColor);
-		}
-
-		public override void Write(StreamWriter sw) {
-			sw.WriteLine(
-				"WRAP\t{0}\t{1}\t{2}\t{3}\t{4}",
-				Begin.X, Begin.Y,
-				End.X, End.Y,
-				mColor
-			);
-		}
-
-		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (Reverse && !Wire) {
-				return;
-			}
-			var x1 = Begin.X + dx;
-			var y1 = Begin.Y + dy;
-			var x2 = End.X + dx;
-			var y2 = End.Y + dy;
-			Pen pen;
-			if (selected) {
-				pen = SELECT_COLOR;
-			} else {
-				if (Reverse) {
-					pen = mPen;
-				} else {
-					pen = REVERSE;
-				}
-			}
-			g.DrawLine(pen, x1, y1, x2, y2);
 		}
 	}
 
@@ -451,6 +378,10 @@ namespace UCBeditor {
 
 		public override Item Clone() {
 			return new Pattern(Begin, End, Thick);
+		}
+
+		public override bool IsSelected(Point point) {
+			return Pattern && Distance(point) < 8.0;
 		}
 
 		public override void Write(StreamWriter sw) {

@@ -13,10 +13,9 @@ namespace UCBeditor {
 
 		enum EditMode {
 			SELECT,
-			TERMINAL,
-			TIN,
+			PATTERN,
 			WIRE,
-			WLAP,
+			TERMINAL,
 			PARTS
 		}
 
@@ -217,7 +216,7 @@ namespace UCBeditor {
 		}
 
 		private void tsbWireInvisible_Click(object sender, EventArgs e) {
-			if (mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE) {
+			if (mEditMode == EditMode.WIRE) {
 				tsbWireInvisible.Checked = false;
 				Item.Wire = true;
 			} else {
@@ -256,9 +255,6 @@ namespace UCBeditor {
 				tsbBack.Checked = true;
 				Item.Reverse = true;
 			}
-			if (mEditMode == EditMode.WIRE || mEditMode == EditMode.WLAP) {
-				mEditMode = Item.Reverse ? EditMode.WLAP : EditMode.WIRE;
-			}
 			SortItems();
 		}
 		#endregion
@@ -291,23 +287,18 @@ namespace UCBeditor {
 					Math.Abs(mEndPos.Y - mBeginPos.Y) + 1
 				);
 				break;
-			case EditMode.TERMINAL:
-				AddItem(new Terminal(mEndPos));
-				break;
-			case EditMode.TIN:
+			case EditMode.PATTERN:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
 					AddItem(new Pattern(mBeginPos, mEndPos, tsbPatternThick.Checked ? 1.8 : 0.3));
 				}
 				break;
 			case EditMode.WIRE:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Wire(mBeginPos, mEndPos, mWireColor));
+					AddItem(new Wire(mBeginPos, mEndPos, mWireColor, Item.Reverse));
 				}
 				break;
-			case EditMode.WLAP:
-				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Wrap(mBeginPos, mEndPos, mWireColor));
-				}
+			case EditMode.TERMINAL:
+				AddItem(new Terminal(mEndPos));
 				break;
 			case EditMode.PARTS:
 				AddItem(new Parts(
@@ -360,37 +351,37 @@ namespace UCBeditor {
 
 			Item.Pattern = tsbPattern.Checked || tsbPatternThick.Checked;
 			if (Item.Pattern) {
-				mEditMode = EditMode.TIN;
+				mEditMode = EditMode.PATTERN;
 				Item.Parts = false;
 				return;
 			}
 
-			var wireType = Item.Reverse ? EditMode.WLAP : EditMode.WIRE;
 			if (tsbWireBlack.Checked) {
-				mEditMode = wireType;
+				mEditMode = EditMode.WIRE;
 				mWireColor = Wire.Colors.BLACK;
 			}
 			if (tsbWireRed.Checked) {
-				mEditMode = wireType;
+				mEditMode = EditMode.WIRE;
 				mWireColor = Wire.Colors.RED;
 			}
 			if (tsbWireGreen.Checked) {
-				mEditMode = wireType;
+				mEditMode = EditMode.WIRE;
 				mWireColor = Wire.Colors.GREEN;
 			}
 			if (tsbWireBlue.Checked) {
-				mEditMode = wireType;
+				mEditMode = EditMode.WIRE;
 				mWireColor = Wire.Colors.BLUE;
 			}
 			if (tsbWireMagenta.Checked) {
-				mEditMode = wireType;
+				mEditMode = EditMode.WIRE;
 				mWireColor = Wire.Colors.MAGENTA;
 			}
 			if (tsbWireYellow.Checked) {
-				mEditMode = wireType;
+				mEditMode = EditMode.WIRE;
 				mWireColor = Wire.Colors.YELLOW;
 			}
-			Item.Wire = mEditMode == EditMode.WLAP || mEditMode == EditMode.WIRE;
+
+			Item.Wire = mEditMode == EditMode.WIRE;
 			tsbWireInvisible.Checked = !Item.Wire;
 			if (Item.Wire) {
 				return;
@@ -435,9 +426,8 @@ namespace UCBeditor {
 		void SetBeginPos() {
 			switch (mEditMode) {
 			case EditMode.SELECT:
+			case EditMode.PATTERN:
 			case EditMode.WIRE:
-			case EditMode.WLAP:
-			case EditMode.TIN:
 				mSelectArea = new Rectangle();
 				mIsDrag = true;
 				break;
@@ -602,7 +592,7 @@ namespace UCBeditor {
 				}
 				mList.AddRange(addList);
 			}
-			if (item.GetType() == typeof(Wire) || item.GetType() == typeof(Wrap)) {
+			if (item.GetType() == typeof(Wire)) {
 				foreach (var term in item.GetTerminals()) {
 					foreach (var item2 in mList) {
 						if (item2 is Pattern pattern && 0 == pattern.Distance(term)) {
@@ -877,7 +867,12 @@ namespace UCBeditor {
 					);
 				}
 				break;
-
+			case EditMode.PATTERN:
+			case EditMode.WIRE:
+				if (mIsDrag) {
+					g.DrawLine(Pens.Magenta, mBeginPos, mEndPos);
+				}
+				break;
 			case EditMode.TERMINAL:
 				g.DrawArc(
 					Pens.Gray,
@@ -890,13 +885,6 @@ namespace UCBeditor {
 					mEndPos.X - 2, mEndPos.Y - 2,
 					4, 4
 				);
-				break;
-			case EditMode.TIN:
-			case EditMode.WIRE:
-			case EditMode.WLAP:
-				if (mIsDrag) {
-					g.DrawLine(Pens.Turquoise, mBeginPos, mEndPos);
-				}
 				break;
 			case EditMode.PARTS:
 				var bmp = mSelectedParts.Alpha[(int)mRotate];
