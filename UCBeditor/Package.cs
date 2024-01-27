@@ -151,18 +151,24 @@ namespace UCBeditor {
 						currentGroup = xml.GetAttribute("name").ToUpper();
 						break;
 					case "item":
-						currentPackage = new Package() {
-							Group = currentGroup,
-							Name = xml.GetAttribute("name"),
-							Height = double.Parse(xml.GetAttribute("height")),
-							IsSMD = xml.GetAttribute("type") == "smd"
-						};
+						if (null != currentGroup) {
+							currentPackage = new Package() {
+								Group = currentGroup,
+								Name = xml.GetAttribute("name"),
+								Height = double.Parse(xml.GetAttribute("height")),
+								IsSMD = xml.GetAttribute("type") == "smd"
+							};
+						}
 						break;
 					case "image":
-						currentBodyImage = new Image();
+						if (null != currentPackage) {
+							currentBodyImage = new Image();
+						}
 						break;
 					case "foot":
-						currentFootPrint = new Foot();
+						if (null != currentPackage) {
+							currentFootPrint = new Foot();
+						}
 						break;
 
 					case "offset":
