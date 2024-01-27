@@ -133,14 +133,22 @@ namespace UCBeditor {
 		public Land(Point pos, Item parent) {
 			Begin = pos;
 			End = pos;
-			Height = -0.01;
+			if (parent is Parts) {
+				Height = -0.015;
+			} else {
+				Height = -0.01;
+			}
 			Parent = parent;
 		}
 
 		public Land(Point pos, Item parent, int index) {
 			Begin = pos;
 			End = pos;
-			Height = -0.01;
+			if (parent is Parts) {
+				Height = -0.015;
+			} else {
+				Height = -0.01;
+			}
 			Parent = parent;
 			mIndex = index;
 			if (parent is Parts parts) {

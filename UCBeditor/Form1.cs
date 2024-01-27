@@ -602,6 +602,23 @@ namespace UCBeditor {
 					mList.Add(new Land(terms[i], parts, i));
 				}
 			}
+			if (newItem is Wire wire) {
+				var terms = wire.GetTerminals();
+				for (int i = 0; i < terms.Length; i++) {
+					var addList = new List<Item>();
+					foreach (var itemB in mList) {
+						if (itemB is Parts p) {
+							var pTerms = p.GetTerminals();
+							foreach (var pTerm in pTerms) {
+								if (pTerm.Equals(terms[i])) {
+									addList.Add(new Land(terms[i], wire, i));
+								}
+							}
+						}
+					}
+					mList.AddRange(addList);
+				}
+			}
 			if (divPattern) {
 				Pattern.Divide(mList, newItem);
 			}
