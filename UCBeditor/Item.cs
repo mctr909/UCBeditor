@@ -18,6 +18,12 @@ namespace UCBeditor {
 		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 9) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		protected static readonly Pen LAND = new Pen(Color.FromArgb(191, 191, 0), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
+		protected const double TermLandDiameter = 1.7;
+		protected const double TermHoleDiameter = 0.5;
+		protected const double WireLandDiameter = 0.6;
+		protected const double WireHoleDiameter = 0.15;
+		protected const double ResistMaskClearance = 0.05;
+
 		public const int GridWidth = 16;
 		public const float GridScale = GridWidth / 2.54f;
 
@@ -70,7 +76,8 @@ namespace UCBeditor {
 		}
 		public virtual Point[] GetTerminals() { return new Point[] { Begin }; }
 
-		public virtual void DrawPDF(PDF.Page page) { }
+		public virtual void DrawPattern(PDF.Page page) { }
+		public virtual void DrawSolderMask(PDF.Page page) { }
 
 		public abstract Item Clone();
 		public abstract void Write(StreamWriter sw);
@@ -117,11 +124,16 @@ namespace UCBeditor {
 			}
 		}
 
-		public override void DrawPDF(PDF.Page page) {
+		public override void DrawPattern(PDF.Page page) {
 			page.FillColor = Color.Black;
-			page.FillCircle(Begin, 1.7 * GridScale);
+			page.FillCircle(Begin, TermLandDiameter * GridScale);
 			page.FillColor = Color.White;
-			page.FillCircle(Begin, 0.5 * GridScale);
+			page.FillCircle(Begin, TermHoleDiameter * GridScale);
+		}
+
+		public override void DrawSolderMask(PDF.Page page) {
+			page.FillColor = Color.Black;
+			page.FillCircle(Begin, (TermLandDiameter + ResistMaskClearance) * GridScale);
 		}
 	}
 
@@ -189,21 +201,35 @@ namespace UCBeditor {
 			}
 		}
 
-		public override void DrawPDF(PDF.Page page) {
+		public override void DrawPattern(PDF.Page page) {
 			if (Parent is Wire) {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, 0.6 * GridScale);
+				page.FillCircle(Begin, WireLandDiameter * GridScale);
 				page.FillColor = Color.White;
-				page.FillCircle(Begin, 0.15 * GridScale);
+				page.FillCircle(Begin, WireHoleDiameter * GridScale);
 			} else if (null != mFoot) {
 				var foot = ((Parts)Parent).GetFoot(mIndex, false);
 				page.FillColor = Color.Black;
 				page.FillPolygon(foot);
 			} else {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, 1.7 * GridScale);
+				page.FillCircle(Begin, TermLandDiameter * GridScale);
 				page.FillColor = Color.White;
-				page.FillCircle(Begin, 0.5 * GridScale);
+				page.FillCircle(Begin, TermHoleDiameter * GridScale);
+			}
+		}
+
+		public override void DrawSolderMask(PDF.Page page) {
+			if (Parent is Wire) {
+				page.FillColor = Color.Black;
+				page.FillCircle(Begin, (WireLandDiameter + ResistMaskClearance) * GridScale);
+			} else if (null != mFoot) {
+				var foot = ((Parts)Parent).GetFoot(mIndex, false);
+				page.FillColor = Color.Black;
+				page.FillPolygon(foot);
+			} else {
+				page.FillColor = Color.Black;
+				page.FillCircle(Begin, (TermLandDiameter + ResistMaskClearance) * GridScale);
 			}
 		}
 	}
@@ -524,7 +550,7 @@ namespace UCBeditor {
 			}
 		}
 
-		public override void DrawPDF(PDF.Page page) {
+		public override void DrawPattern(PDF.Page page) {
 			var d = Thick * GridScale;
 			var sx = End.X - Begin.X;
 			var sy = End.Y - Begin.Y;
@@ -673,7 +699,7 @@ namespace UCBeditor {
 			g.DrawImage(bmp, new Point(x - Pivot.X, y - Pivot.Y));
 		}
 
-		public override void DrawPDF(PDF.Page page) {
+		public override void DrawPattern(PDF.Page page) {
 			var marks = GetMarks(false);
 			page.FillColor = Color.Black;
 			foreach (var mark in marks) {

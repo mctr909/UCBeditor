@@ -53,24 +53,24 @@
 			// rbPrintPost
 			// 
 			this.rbPrintPost.AutoSize = true;
+			this.rbPrintPost.Checked = true;
 			this.rbPrintPost.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.rbPrintPost.Location = new System.Drawing.Point(100, 17);
 			this.rbPrintPost.Name = "rbPrintPost";
 			this.rbPrintPost.Size = new System.Drawing.Size(62, 22);
 			this.rbPrintPost.TabIndex = 3;
+			this.rbPrintPost.TabStop = true;
 			this.rbPrintPost.Text = "はがき";
 			this.rbPrintPost.UseVisualStyleBackColor = true;
 			// 
 			// rbPrintL
 			// 
 			this.rbPrintL.AutoSize = true;
-			this.rbPrintL.Checked = true;
 			this.rbPrintL.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.rbPrintL.Location = new System.Drawing.Point(168, 17);
 			this.rbPrintL.Name = "rbPrintL";
 			this.rbPrintL.Size = new System.Drawing.Size(45, 22);
 			this.rbPrintL.TabIndex = 2;
-			this.rbPrintL.TabStop = true;
 			this.rbPrintL.Text = "L判";
 			this.rbPrintL.UseVisualStyleBackColor = true;
 			// 
@@ -102,20 +102,22 @@
 			this.chkReverse.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.chkReverse.Location = new System.Drawing.Point(8, 62);
 			this.chkReverse.Name = "chkReverse";
-			this.chkReverse.Size = new System.Drawing.Size(75, 22);
+			this.chkReverse.Size = new System.Drawing.Size(123, 22);
 			this.chkReverse.TabIndex = 1;
-			this.chkReverse.Text = "左右反転";
+			this.chkReverse.Text = "パターン左右反転";
 			this.chkReverse.UseVisualStyleBackColor = true;
 			// 
 			// chkResistMask
 			// 
 			this.chkResistMask.AutoSize = true;
+			this.chkResistMask.Checked = true;
+			this.chkResistMask.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkResistMask.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.chkResistMask.Location = new System.Drawing.Point(8, 90);
 			this.chkResistMask.Name = "chkResistMask";
-			this.chkResistMask.Size = new System.Drawing.Size(159, 22);
+			this.chkResistMask.Size = new System.Drawing.Size(123, 22);
 			this.chkResistMask.TabIndex = 2;
-			this.chkResistMask.Text = "ソルダーレジストマスク";
+			this.chkResistMask.Text = "ソルダーレジスト";
 			this.chkResistMask.UseVisualStyleBackColor = true;
 			// 
 			// chkDrill

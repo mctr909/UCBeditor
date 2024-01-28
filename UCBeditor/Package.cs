@@ -64,17 +64,19 @@ namespace UCBeditor {
 				var points = new PointF[poly.Length];
 				for (var i = 0; i < poly.Length; i++) {
 					var p = poly[i];
-					p.X += (float)pin.X - Offset.X;
-					p.Y += (float)pin.Y + Offset.Y;
+					var px = p.X;
+					var py = p.Y;
+					px += (float)pin.X - Offset.X;
+					py += (float)pin.Y + Offset.Y;
 					if (round) {
 						points[i] = new PointF(
-							(int)(pos.X + p.X * rotX - p.Y * rotY + 0.5),
-							(int)(pos.Y + p.Y * rotX + p.X * rotY + 0.5)
+							(int)(pos.X + px * rotX - py * rotY + 0.5),
+							(int)(pos.Y + py * rotX + px * rotY + 0.5)
 						);
 					} else {
 						points[i] = new PointF(
-							(float)(pos.X + p.X * rotX - p.Y * rotY),
-							(float)(pos.Y + p.Y * rotX + p.X * rotY)
+							(float)(pos.X + px * rotX - py * rotY),
+							(float)(pos.Y + py * rotX + px * rotY)
 						);
 					}
 				}

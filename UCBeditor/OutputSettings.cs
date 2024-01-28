@@ -32,13 +32,23 @@ namespace UCBeditor {
 			if (rbPrintPost.Checked) {
 				size = PDF.PAGE_SIZE.POST_H;
 			}
-			var page = new PDF.Page(size);
 			var pdf = new PDF();
-			page.Scale = 2.54 / Item.GridWidth;
-			foreach (var rec in mList) {
-				rec.DrawPDF(page);
+			{
+				var page = new PDF.Page(size);
+				page.Scale = 2.54 / Item.GridWidth;
+				foreach (var rec in mList) {
+					rec.DrawPattern(page);
+				}
+				pdf.AddPage(page);
 			}
-			pdf.AddPage(page);
+			if (chkResistMask.Checked) {
+				var page = new PDF.Page(size);
+				page.Scale = 2.54 / Item.GridWidth;
+				foreach (var rec in mList) {
+					rec.DrawSolderMask(page);
+				}
+				pdf.AddPage(page);
+			}
 			pdf.Save(filePath);
 			Close();
 		}
