@@ -12,7 +12,7 @@ namespace UCBeditor {
 		DEG270
 	}
 
-	abstract class Item {
+	public abstract class Item {
 		protected static readonly Pen SELECT_COLOR = new Pen(Color.Magenta, 2);
 		protected static readonly Pen PATTERN = new Pen(Color.FromArgb(147, 147, 147), 1) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 		protected static readonly Pen PATTERN_B = new Pen(PATTERN.Color, 9) { StartCap = LineCap.Round, EndCap = LineCap.Round };
@@ -133,8 +133,8 @@ namespace UCBeditor {
 		public Land(Point pos, Item parent) {
 			Begin = pos;
 			End = pos;
-			if (parent is Parts) {
-				Height = -0.015;
+			if (parent is Wire) {
+				Height = -0.005;
 			} else {
 				Height = -0.01;
 			}
@@ -144,8 +144,8 @@ namespace UCBeditor {
 		public Land(Point pos, Item parent, int index) {
 			Begin = pos;
 			End = pos;
-			if (parent is Parts) {
-				Height = -0.015;
+			if (parent is Wire) {
+				Height = -0.005;
 			} else {
 				Height = -0.01;
 			}

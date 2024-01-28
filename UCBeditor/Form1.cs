@@ -134,21 +134,10 @@ namespace UCBeditor {
 		}
 
 		private void MenuFilePDF_Click(object sender, EventArgs e) {
-			saveFileDialog1.Filter = "PDFファイル(*.pdf)|*.pdf";
-			saveFileDialog1.FileName = Path.GetFileNameWithoutExtension(Text);
-			saveFileDialog1.ShowDialog();
-			var filePath = saveFileDialog1.FileName;
-			if (string.IsNullOrEmpty(filePath) || !Directory.Exists(Path.GetDirectoryName(filePath))) {
-				return;
-			}
-			var page = new PDF.Page(PDF.PAGE_SIZE.L_H);
-			var pdf = new PDF();
-			page.Scale = 2.54 / Item.GridWidth;
-			foreach (var rec in mList) {
-				rec.DrawPDF(page);
-			}
-			pdf.AddPage(page);
-			pdf.Save(filePath);
+			var fm = new OutputSettings(mList, Text);
+			fm.StartPosition = FormStartPosition.CenterParent;
+			fm.ShowDialog();
+			
 		}
 		#endregion
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-class PDF {
+public class PDF {
 	const string FontName = "Arial";
 
 	public struct PAGE_SIZE {
@@ -227,7 +227,7 @@ class PDF {
 		}
 
 		PointF[] polyCircle(double cx, double cy, double diameter, double start = 0, double sweep = 360) {
-			var poly = new PointF[16];
+			var poly = new PointF[24];
 			var sRad = Math.PI * start / 180;
 			var ssweep = sweep / 360.0;
 			var radius = diameter * 0.5;
