@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace UCBeditor {
+namespace UCB {
 	public partial class OutputSettings : Form {
 		List<Item> mList;
 		string mPath;

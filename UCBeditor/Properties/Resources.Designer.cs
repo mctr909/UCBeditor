@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UCBeditor.Properties {
+namespace UCB.Properties {
     using System;
     
     

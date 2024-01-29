@@ -1,4 +1,4 @@
-﻿namespace UCBeditor {
+﻿namespace UCB {
 	partial class OutputSettings {
 		/// <summary>
 		/// Required designer variable.

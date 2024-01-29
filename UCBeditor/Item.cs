@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 
-namespace UCBeditor {
+namespace UCB {
 	public enum ROTATE {
 		NONE,
 		DEG90,
@@ -164,7 +164,7 @@ namespace UCBeditor {
 			Parent = parent;
 			mIndex = index;
 			if (parent is Parts parts) {
-				mFoot = parts.GetFoot(index, true);
+				mFoot = parts.GetFoot(index, true, false);
 			}
 		}
 
@@ -208,7 +208,7 @@ namespace UCBeditor {
 				page.FillColor = Color.White;
 				page.FillCircle(Begin, WireHoleDiameter * GridScale);
 			} else if (null != mFoot) {
-				var foot = ((Parts)Parent).GetFoot(mIndex, false);
+				var foot = ((Parts)Parent).GetFoot(mIndex, false, false);
 				page.FillColor = Color.Black;
 				page.FillPolygon(foot);
 			} else {
@@ -224,7 +224,7 @@ namespace UCBeditor {
 				page.FillColor = Color.Black;
 				page.FillCircle(Begin, (WireLandDiameter + ResistMaskClearance) * GridScale);
 			} else if (null != mFoot) {
-				var foot = ((Parts)Parent).GetFoot(mIndex, false);
+				var foot = ((Parts)Parent).GetFoot(mIndex, false, true);
 				page.FillColor = Color.Black;
 				page.FillPolygon(foot);
 			} else {
@@ -281,7 +281,7 @@ namespace UCBeditor {
 			}
 		}
 
-		PointF NeerPoint(Point point) {
+		PointF NearPoint(Point point) {
 			var abX = End.X - Begin.X;
 			var abY = End.Y - Begin.Y;
 			var apX = point.X - Begin.X;
@@ -355,7 +355,7 @@ namespace UCBeditor {
 		}
 
 		public override double Distance(Point point) {
-			var n = NeerPoint(point);
+			var n = NearPoint(point);
 			var sx = point.X - n.X;
 			var sy = point.Y - n.Y;
 			return Math.Sqrt(sx * sx + sy * sy);
@@ -432,12 +432,12 @@ namespace UCBeditor {
 						}
 						foreach (var termB in itemB.GetTerminals()) {
 							if (patternA.Begin.Equals(termB)) {
-								if (itemB is Pattern) {
+								if (itemB is Pattern pB) {
 									if (connectedItemFound) {
 										patternB = null;
 										break;
 									}
-									patternB = (Pattern)itemB;
+									patternB = pB;
 									connectedItemFound = true;
 								} else {
 									patternB = null;
@@ -459,12 +459,12 @@ namespace UCBeditor {
 						}
 						foreach (var termB in itemB.GetTerminals()) {
 							if (patternA.End.Equals(termB)) {
-								if (itemB is Pattern) {
+								if (itemB is Pattern pB) {
 									if (connectedItemFound) {
 										patternB = null;
 										break;
 									}
-									patternB = (Pattern)itemB;
+									patternB = pB;
 									connectedItemFound = true;
 								} else {
 									patternB = null;
@@ -621,8 +621,8 @@ namespace UCBeditor {
 			}
 		}
 
-		public PointF[] GetFoot(int index, bool round) {
-			return mPackage.FootPrint.Get(Begin, Rotate, index, round);
+		public PointF[] GetFoot(int index, bool round, bool solder) {
+			return mPackage.FootPrint.Get(Begin, Rotate, index, round, solder);
 		}
 
 		public List<PointF[]> GetMarks(bool round) {
@@ -644,25 +644,26 @@ namespace UCBeditor {
 			var terminals = mPackage.BodyImage.PinList;
 			var points = new Point[terminals.Count];
 			var ofsX = Pivot.X - 1;
+			var ofsY = Pivot.Y - 1;
 			for (int i = 0; i < terminals.Count; i++) {
 				var term = terminals[i];
 				points[i] = Begin;
 				switch (Rotate) {
 				case ROTATE.DEG90:
-					points[i].X += ofsX - term.Y;
+					points[i].X += ofsY - term.Y;
 					points[i].Y += term.X - ofsX;
 					break;
 				case ROTATE.DEG180:
 					points[i].X += ofsX - term.X;
-					points[i].Y += ofsX - term.Y;
+					points[i].Y += ofsY - term.Y;
 					break;
 				case ROTATE.DEG270:
-					points[i].X += term.Y - ofsX;
+					points[i].X += term.Y - ofsY;
 					points[i].Y += ofsX - term.X;
 					break;
 				default:
 					points[i].X += term.X - ofsX;
-					points[i].Y += term.Y - ofsX;
+					points[i].Y += term.Y - ofsY;
 					break;
 				}
 			}

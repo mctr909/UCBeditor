@@ -1,4 +1,4 @@
-﻿namespace UCBeditor.Properties {
+﻿namespace UCB.Properties {
     
     
     // このクラスでは設定クラスでの特定のイベントを処理することができます:

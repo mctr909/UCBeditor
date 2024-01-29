@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 
-namespace UCBeditor {
+namespace UCB {
 	public partial class Form1 : Form {
 		readonly Pen BoardColor = new Pen(Color.FromArgb(225, 255, 225), 0.5f);
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
@@ -76,7 +76,7 @@ namespace UCBeditor {
 		}
 
 		private void MenuFileOpen_Click(object sender, EventArgs e) {
-			openFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
+			openFileDialog1.Filter = "UCBファイル(*.ucb)|*.ucb";
 			openFileDialog1.FileName = "";
 			openFileDialog1.ShowDialog();
 			var filePath = openFileDialog1.FileName;
@@ -106,7 +106,7 @@ namespace UCBeditor {
 		private void MenuFileSave_Click(object sender, EventArgs e) {
 			string filePath;
 			if (string.IsNullOrEmpty(Text) || !File.Exists(Text)) {
-				saveFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
+				saveFileDialog1.Filter = "UCBファイル(*.ucb)|*.ucb";
 				saveFileDialog1.FileName = "";
 				saveFileDialog1.ShowDialog();
 				filePath = saveFileDialog1.FileName;
@@ -122,7 +122,7 @@ namespace UCBeditor {
 		}
 
 		private void MenuFileSaveAs_Click(object sender, EventArgs e) {
-			saveFileDialog1.Filter = "UCBeditorファイル(*.ucb)|*.ucb";
+			saveFileDialog1.Filter = "UCBファイル(*.ucb)|*.ucb";
 			saveFileDialog1.FileName = "";
 			saveFileDialog1.ShowDialog();
 			var filePath = saveFileDialog1.FileName;
@@ -134,10 +134,10 @@ namespace UCBeditor {
 		}
 
 		private void MenuFilePDF_Click(object sender, EventArgs e) {
-			var fm = new OutputSettings(mList, Text);
-			fm.StartPosition = FormStartPosition.CenterParent;
+			var fm = new OutputSettings(mList, Text) {
+				StartPosition = FormStartPosition.CenterParent
+			};
 			fm.ShowDialog();
-			
 		}
 		#endregion
 
@@ -427,16 +427,21 @@ namespace UCBeditor {
 
 		void SetPos() {
 			int ox, oy;
-			switch (mRotate) {
-			case ROTATE.DEG90:
-			case ROTATE.DEG270:
-				ox = mSelectedParts.BodyImage.Offset.X;
-				oy = mSelectedParts.BodyImage.Offset.Y;
-				break;
-			default:
-				ox = mSelectedParts.BodyImage.Offset.Y;
-				oy = mSelectedParts.BodyImage.Offset.X;
-				break;
+			if (mEditMode == EditMode.PARTS) {
+				switch (mRotate) {
+				case ROTATE.DEG90:
+				case ROTATE.DEG270:
+					ox = mSelectedParts.BodyImage.Offset.X;
+					oy = mSelectedParts.BodyImage.Offset.Y;
+					break;
+				default:
+					ox = mSelectedParts.BodyImage.Offset.Y;
+					oy = mSelectedParts.BodyImage.Offset.X;
+					break;
+				}
+			} else {
+				ox = 0;
+				oy = 0;
 			}
 			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / SNAP + 0.5) * SNAP;
 			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / SNAP + 0.5) * SNAP;
@@ -459,15 +464,15 @@ namespace UCBeditor {
 		}
 
 		Item GetNearestItem() {
-			var nearestDist = double.MaxValue;
+			var nearest = double.MaxValue;
 			Item nearestItem = null;
 			foreach (var rec in mList) {
 				if (rec is Land) {
 					continue;
 				}
-				var dist = rec.Distance(mMousePos);
-				if (dist < nearestDist && rec.IsSelected(mMousePos)) {
-					nearestDist = dist;
+				var distance = rec.Distance(mMousePos);
+				if (distance < nearest && rec.IsSelected(mMousePos)) {
+					nearest = distance;
 					nearestItem = rec;
 				}
 			}

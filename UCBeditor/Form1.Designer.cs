@@ -1,4 +1,4 @@
-﻿namespace UCBeditor {
+﻿namespace UCB {
 	partial class Form1 {
 		/// <summary>
 		/// 必要なデザイナ変数です。
