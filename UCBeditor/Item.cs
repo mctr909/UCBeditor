@@ -649,26 +649,23 @@ namespace UCB {
 				float px, py;
 				switch (Rotate) {
 				case ROTATE.DEG90:
-					px = Pivot.Y - term.Y - 0.5f;
-					py = term.X - Pivot.X + 0.5f;
+					px = Pivot.Y - term.Y + 1;
+					py = term.X - Pivot.X;
 					break;
 				case ROTATE.DEG180:
-					px = Pivot.X - term.X - 0.5f;
-					py = Pivot.Y - term.Y - 0.5f;
+					px = Pivot.X - term.X;
+					py = Pivot.Y - term.Y + 1;
 					break;
 				case ROTATE.DEG270:
-					px = term.Y - Pivot.Y + 0.5f;
-					py = Pivot.X - term.X - 0.5f;
+					px = term.Y - Pivot.Y - 1;
+					py = Pivot.X - term.X;
 					break;
 				default:
-					px = term.X - Pivot.X + 0.5f;
-					py = term.Y - Pivot.Y + 0.5f;
+					px = term.X - Pivot.X;
+					py = term.Y - Pivot.Y - 1;
 					break;
 				}
-				points[i] = new Point(
-					(int)(Begin.X + px),
-					(int)(Begin.Y + py)
-				);
+				points[i] = new Point((int)px + Begin.X, (int)py + Begin.Y);
 			}
 			return points;
 		}
@@ -703,12 +700,12 @@ namespace UCB {
 			switch (Rotate) {
 			case ROTATE.DEG90:
 			case ROTATE.DEG270:
-				x -= Pivot.Y;
+				x -= Pivot.Y + 1;
 				y -= Pivot.X;
 				break;
 			default:
 				x -= Pivot.X;
-				y -= Pivot.Y;
+				y -= Pivot.Y + 1;
 				break;
 			}
 			g.DrawImage(bmp, new Point((int)(x + 0.5), (int)(y + 0.5)));

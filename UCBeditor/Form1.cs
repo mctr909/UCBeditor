@@ -426,27 +426,8 @@ namespace UCB {
 		}
 
 		void SetPos() {
-			float ox, oy;
-			if (mEditMode == EditMode.PARTS) {
-				var img = mSelectedParts.BodyImage;
-				switch (mRotate) {
-				case ROTATE.DEG90:
-				case ROTATE.DEG270:
-					ox = img.Offset.Y;
-					oy = img.Offset.X;
-					break;
-				case ROTATE.DEG180:
-				default:
-					ox = img.Offset.X;
-					oy = img.Offset.Y;
-					break;
-				}
-			} else {
-				ox = 0;
-				oy = 0;
-			}
-			mEndPos.X = (int)ox + (int)((mMousePos.X - ox) / Item.SNAP) * Item.SNAP;
-			mEndPos.Y = (int)oy + (int)((mMousePos.Y - oy) / Item.SNAP) * Item.SNAP;
+			mEndPos.X = (int)((double)mMousePos.X / Item.SNAP + 0.5) * Item.SNAP;
+			mEndPos.Y = (int)((double)mMousePos.Y / Item.SNAP + 0.5) * Item.SNAP;
 		}
 
 		void SaveFile(string filePath) {
@@ -818,15 +799,16 @@ namespace UCB {
 				switch (mRotate) {
 				case ROTATE.DEG90:
 				case ROTATE.DEG270:
-					x -= img.Pivot.Y;
+					x -= img.Pivot.Y + 1;
 					y -= img.Pivot.X;
 					break;
+				case ROTATE.DEG180:
 				default:
 					x -= img.Pivot.X;
-					y -= img.Pivot.Y;
+					y -= img.Pivot.Y + 1;
 					break;
 				}
-				g.DrawImage(bmp, new Point((int)(x + 0.5), (int)(y + 0.5)));
+				g.DrawImage(bmp, new Point((int)x, (int)y));
 				break;
 			}
 			}

@@ -167,7 +167,7 @@
 		</item>
 		<item name="SOT-23" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="17"/>
 				<pin x="17" y="9"/>
@@ -182,7 +182,7 @@
 		</item>
 		<item name="SOT-323" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="17"/>
 				<pin x="17" y="9"/>
@@ -205,6 +205,7 @@
 		</item>
 		<item name="TO-92" height="15">
 			<image>
+				<pivot x="17" y="16"/>
 				<pin x="17" y="33"/>
 				<pin x="17" y="17"/>
 				<pin x="17" y="1"/>
@@ -212,7 +213,7 @@
 		</item>
 		<item name="TO-220" height="15">
 			<image>
-				<offset x="1" y="1"/>
+				<pivot x="13" y="28"/>
 				<pin x="13" y="13"/>
 				<pin x="13" y="29"/>
 				<pin x="13" y="45"/>
@@ -222,7 +223,7 @@
 	<group name="IC">
 		<item name="SOT-23-3" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="17"/>
 				<pin x="17" y="9"/>
@@ -237,7 +238,7 @@
 		</item>
 		<item name="SOT-23-5" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="9"/>
 				<pin x="1" y="17"/>
@@ -256,7 +257,7 @@
 		</item>
 		<item name="SOT-23-6" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="9"/>
 				<pin x="1" y="17"/>
@@ -277,7 +278,7 @@
 		</item>
 		<item name="SOT-323" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="17"/>
 				<pin x="17" y="9"/>
@@ -293,7 +294,7 @@
 		</item>
 		<item name="SOT-353" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="9"/>
 				<pin x="1" y="17"/>
@@ -313,7 +314,7 @@
 		</item>
 		<item name="SOT-363" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<pivot x="10" y="9"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="9"/>
 				<pin x="1" y="17"/>
@@ -335,7 +336,7 @@
 		</item>
 		<item name="SOP8" height="3" type="smd">
 			<image>
-				<offset x="0" y="4"/>
+				<pivot x="16" y="16"/>
 				<pin x="0" y="4"/>
 				<pin x="0" y="12"/>
 				<pin x="0" y="20"/>
@@ -360,7 +361,7 @@
 		</item>
 		<item name="SOP14" height="3" type="smd">
 			<image>
-				<offset x="0" y="0"/>
+				<pivot x="16" y="28"/>
 				<pin x="0" y="4"/>
 				<pin x="0" y="12"/>
 				<pin x="0" y="20"/>
@@ -397,6 +398,7 @@
 		</item>
 		<item name="DIP4" height="5">
 			<image>
+				<pivot x="24" y="12"/>
 				<pin x="0" y="5"/>
 				<pin x="0" y="21"/>
 				<pin x="48" y="21"/>
@@ -405,6 +407,7 @@
 		</item>
 		<item name="DIP8" height="5">
 			<image>
+				<pivot x="24" y="28"/>
 				<pin x="0" y="5"/>
 				<pin x="0" y="21"/>
 				<pin x="0" y="37"/>
