@@ -9,7 +9,7 @@ namespace UCB {
 		readonly Pen BoardColor = new Pen(Color.FromArgb(225, 255, 225), 0.5f);
 		readonly Pen BorderColor = new Pen(Color.FromArgb(235, 235, 211), 0.5f);
 		readonly Pen GridColor = new Pen(Color.FromArgb(95, 95, 95), 0.5f);
-		const int SNAP = Item.GridWidth / 2;
+
 
 		enum EditMode {
 			SELECT,
@@ -421,30 +421,32 @@ namespace UCB {
 				mIsDrag = true;
 				break;
 			}
-			mBeginPos.X = (int)((double)mMousePos.X / SNAP + 0.5) * SNAP;
-			mBeginPos.Y = (int)((double)mMousePos.Y / SNAP + 0.5) * SNAP;
+			mBeginPos.X = (int)((double)mMousePos.X / Item.SNAP + 0.5) * Item.SNAP;
+			mBeginPos.Y = (int)((double)mMousePos.Y / Item.SNAP + 0.5) * Item.SNAP;
 		}
 
 		void SetPos() {
-			int ox, oy;
+			float ox, oy;
 			if (mEditMode == EditMode.PARTS) {
+				var img = mSelectedParts.BodyImage;
 				switch (mRotate) {
 				case ROTATE.DEG90:
 				case ROTATE.DEG270:
-					ox = mSelectedParts.BodyImage.Offset.X;
-					oy = mSelectedParts.BodyImage.Offset.Y;
+					ox = img.Offset.Y;
+					oy = img.Offset.X;
 					break;
+				case ROTATE.DEG180:
 				default:
-					ox = mSelectedParts.BodyImage.Offset.Y;
-					oy = mSelectedParts.BodyImage.Offset.X;
+					ox = img.Offset.X;
+					oy = img.Offset.Y;
 					break;
 				}
 			} else {
 				ox = 0;
 				oy = 0;
 			}
-			mEndPos.X = ox + (int)((double)(mMousePos.X - ox) / SNAP + 0.5) * SNAP;
-			mEndPos.Y = oy + (int)((double)(mMousePos.Y - oy) / SNAP + 0.5) * SNAP;
+			mEndPos.X = (int)ox + (int)((mMousePos.X - ox) / Item.SNAP) * Item.SNAP;
+			mEndPos.Y = (int)oy + (int)((mMousePos.Y - oy) / Item.SNAP) * Item.SNAP;
 		}
 
 		void SaveFile(string filePath) {
@@ -522,14 +524,38 @@ namespace UCB {
 						continue;
 					}
 					mClipBoard.Add(enableCut ? rec : rec.Clone());
-					Point center;
+					Point begin;
+					Point end;
 					if (rec is Parts parts) {
-						center = parts.Pivot;
+						var pivot = parts.Pivot;
+						switch (mRotate) {
+						case ROTATE.DEG90:
+						case ROTATE.DEG270:
+							begin = new Point(
+								(int)(rec.Begin.X - pivot.X - 0.5),
+								(int)(rec.Begin.Y - pivot.Y - 0.5)
+							);
+							end = new Point(
+								(int)(rec.End.X - pivot.X - 0.5),
+								(int)(rec.End.Y - pivot.Y - 0.5)
+							);
+							break;
+						default:
+							begin = new Point(
+								(int)(rec.Begin.X - pivot.X + 0.5),
+								(int)(rec.Begin.Y - pivot.Y + 0.5)
+							);
+							end = new Point(
+								(int)(rec.End.X - pivot.X + 0.5),
+								(int)(rec.End.Y - pivot.Y + 0.5)
+							);
+							break;
+						}
 					} else {
-						center = new Point();
+						begin = rec.Begin;
+						end = rec.End;
 					}
-					var begin = new Point(rec.Begin.X - center.X, rec.Begin.Y - center.Y);
-					var end = new Point(rec.End.X - center.X, rec.End.Y - center.Y);
+
 					if (begin.X < gripPos.X) {
 						gripPos.X = begin.X;
 					}
@@ -546,8 +572,8 @@ namespace UCB {
 					temp.Add(rec);
 				}
 			}
-			gripPos.X = gripPos.X / SNAP * SNAP;
-			gripPos.Y = gripPos.Y / SNAP * SNAP;
+			gripPos.X = gripPos.X / Item.SNAP * Item.SNAP;
+			gripPos.Y = gripPos.Y / Item.SNAP * Item.SNAP;
 			for (var i = 0; i < mClipBoard.Count; ++i) {
 				var p = mClipBoard[i];
 				p.Begin.X -= gripPos.X;
@@ -562,8 +588,8 @@ namespace UCB {
 		}
 
 		void PasteItems() {
-			var ofsX = mEndPos.X / SNAP * SNAP;
-			var ofsY = mEndPos.Y / SNAP * SNAP;
+			var ofsX = mEndPos.X / Item.SNAP * Item.SNAP;
+			var ofsY = mEndPos.Y / Item.SNAP * Item.SNAP;
 			foreach (var rec in mClipBoard) {
 				var item = rec.Clone();
 				item.Begin.X += ofsX;
@@ -718,8 +744,8 @@ namespace UCB {
 			}
 			foreach (var rec in mClipBoard) {
 				rec.Draw(g,
-					mEndPos.X / SNAP * SNAP,
-					mEndPos.Y / SNAP * SNAP,
+					mEndPos.X / Item.SNAP * Item.SNAP,
+					mEndPos.Y / Item.SNAP * Item.SNAP,
 					true
 				);
 			}
@@ -784,13 +810,25 @@ namespace UCB {
 					4, 4
 				);
 				break;
-			case EditMode.PARTS:
+			case EditMode.PARTS: {
 				var bmp = mSelectedParts.Alpha[(int)mRotate];
-				g.DrawImage(bmp, new Point(
-					mEndPos.X - mSelectedParts.BodyImage.Pivot.X,
-					mEndPos.Y - mSelectedParts.BodyImage.Pivot.Y
-				));
+				var img = mSelectedParts.BodyImage;
+				float x = mEndPos.X;
+				float y = mEndPos.Y;
+				switch (mRotate) {
+				case ROTATE.DEG90:
+				case ROTATE.DEG270:
+					x -= img.Pivot.Y;
+					y -= img.Pivot.X;
+					break;
+				default:
+					x -= img.Pivot.X;
+					y -= img.Pivot.Y;
+					break;
+				}
+				g.DrawImage(bmp, new Point((int)(x + 0.5), (int)(y + 0.5)));
 				break;
+			}
 			}
 		}
 	}

@@ -22,8 +22,8 @@ namespace UCB {
 
 		public class Image {
 			public List<Point> PinList = new List<Point>();
-			public Point Offset { get; set; } = new Point();
-			public Point Pivot { get; set; } = new Point();
+			public PointF Offset { get; set; } = new PointF();
+			public PointF Pivot { get; set; } = new PointF();
 		}
 		public class Foot {
 			public class Pin {
@@ -40,7 +40,7 @@ namespace UCB {
 			public List<Pin> MarkList = new List<Pin>();
 			public PointF Offset = new PointF();
 
-			public PointF[] Get(Point pos, ROTATE rotate, int index, bool round, bool solder) {
+			public PointF[] Get(PointF pos, ROTATE rotate, int index, bool round, bool solder) {
 				if (PinList.Count <= index) {
 					return null;
 				}
@@ -191,9 +191,9 @@ namespace UCB {
 
 					case "offset":
 						if (null != currentBodyImage) {
-							currentBodyImage.Offset = new Point(
-								int.Parse(xml.GetAttribute("x")),
-								int.Parse(xml.GetAttribute("y"))
+							currentBodyImage.Offset = new PointF(
+								float.Parse(xml.GetAttribute("x")),
+								float.Parse(xml.GetAttribute("y"))
 							);
 						}
 						if (null != currentFootPrint) {
@@ -330,7 +330,7 @@ namespace UCB {
 						if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
 							break;
 						}
-						currentPackage.BodyImage.Pivot = new Point(solid.Width / 2, solid.Height / 2);
+						currentPackage.BodyImage.Pivot = new PointF(solid.Width / 2f, solid.Height / 2f);
 						currentPackage.Solid[0] = (Bitmap)solid.Clone();
 						currentPackage.Solid[1] = (Bitmap)solid.Clone();
 						currentPackage.Solid[2] = (Bitmap)solid.Clone();

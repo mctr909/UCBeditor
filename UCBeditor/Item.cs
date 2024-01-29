@@ -26,6 +26,7 @@ namespace UCB {
 
 		public const int GridWidth = 16;
 		public const float GridScale = GridWidth / 2.54f;
+		public const int SNAP = GridWidth / 2;
 
 		public static bool Reverse { get; set; }
 		public static bool Pattern { get; set; }
@@ -578,7 +579,7 @@ namespace UCB {
 		public static EDisplay Display { get; set; }
 
 		public readonly ROTATE Rotate;
-		public readonly Point Pivot;
+		public readonly PointF Pivot;
 		public readonly string Group;
 		public readonly string Name;
 		public readonly string PackageName;
@@ -598,7 +599,7 @@ namespace UCB {
 				Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
 			} else {
 				mPackage = null;
-				Pivot = new Point();
+				Pivot = new PointF();
 				Height = 0;
 			}
 		}
@@ -616,7 +617,7 @@ namespace UCB {
 				Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
 			} else {
 				mPackage = null;
-				Pivot = new Point();
+				Pivot = new PointF();
 				Height = 0;
 			}
 		}
@@ -643,29 +644,31 @@ namespace UCB {
 			}
 			var terminals = mPackage.BodyImage.PinList;
 			var points = new Point[terminals.Count];
-			var ofsX = Pivot.X - 1;
-			var ofsY = Pivot.Y - 1;
 			for (int i = 0; i < terminals.Count; i++) {
 				var term = terminals[i];
-				points[i] = Begin;
+				float px, py;
 				switch (Rotate) {
 				case ROTATE.DEG90:
-					points[i].X += ofsY - term.Y;
-					points[i].Y += term.X - ofsX;
+					px = Pivot.Y - term.Y - 0.5f;
+					py = term.X - Pivot.X + 0.5f;
 					break;
 				case ROTATE.DEG180:
-					points[i].X += ofsX - term.X;
-					points[i].Y += ofsY - term.Y;
+					px = Pivot.X - term.X - 0.5f;
+					py = Pivot.Y - term.Y - 0.5f;
 					break;
 				case ROTATE.DEG270:
-					points[i].X += term.Y - ofsY;
-					points[i].Y += ofsX - term.X;
+					px = term.Y - Pivot.Y + 0.5f;
+					py = Pivot.X - term.X - 0.5f;
 					break;
 				default:
-					points[i].X += term.X - ofsX;
-					points[i].Y += term.Y - ofsY;
+					px = term.X - Pivot.X + 0.5f;
+					py = term.Y - Pivot.Y + 0.5f;
 					break;
 				}
+				points[i] = new Point(
+					(int)(Begin.X + px),
+					(int)(Begin.Y + py)
+				);
 			}
 			return points;
 		}
@@ -695,9 +698,20 @@ namespace UCB {
 			} else {
 				bmp = mPackage.Solid[(int)Rotate];
 			}
-			var x = Begin.X + dx;
-			var y = Begin.Y + dy;
-			g.DrawImage(bmp, new Point(x - Pivot.X, y - Pivot.Y));
+			float x = Begin.X + dx;
+			float y = Begin.Y + dy;
+			switch (Rotate) {
+			case ROTATE.DEG90:
+			case ROTATE.DEG270:
+				x -= Pivot.Y;
+				y -= Pivot.X;
+				break;
+			default:
+				x -= Pivot.X;
+				y -= Pivot.Y;
+				break;
+			}
+			g.DrawImage(bmp, new Point((int)(x + 0.5), (int)(y + 0.5)));
 		}
 
 		public override void DrawPattern(PDF.Page page) {
