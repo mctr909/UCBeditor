@@ -22,7 +22,8 @@ namespace UCB {
 
 		public class Image {
 			public List<Point> PinList = new List<Point>();
-			public PointF Pivot { get; set; } = new PointF();
+			public Point Offset = new Point();
+			public PointF Pivot = new PointF();
 		}
 		public class Foot {
 			public class Pin {
@@ -197,6 +198,12 @@ namespace UCB {
 						}
 						break;
 					case "offset":
+						if (null != currentBodyImage) {
+							currentBodyImage.Offset = new Point(
+								int.Parse(xml.GetAttribute("x")),
+								int.Parse(xml.GetAttribute("y"))
+							);
+						}
 						if (null != currentFootPrint) {
 							currentFootPrint.Offset = new PointF(
 								float.Parse(xml.GetAttribute("x")),

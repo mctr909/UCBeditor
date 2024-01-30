@@ -123,9 +123,6 @@
   <metadata name="tsBoard.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>126, 17</value>
   </metadata>
-  <metadata name="tsParts.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>220, 17</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tsbSelect.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -133,14 +130,6 @@
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABvSURBVDhPnYwBDoAwCAP3/+fygbk6MLgVxF1yMZO2bdDV
         Y7qI2Mjx2D1i4u0s8Rrw4uYMoeVV5JwbtBSJvPpAg6vIqRu0YOKuptAyxG1GcmjZxH3GYliB/Uth4V8j
         Uag8kgXqI/plfJZBehzovbULNP1il75lUN0AAAAASUVORK5CYII=
-</value>
-  </data>
-  <data name="tsbFront.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABRSURBVDhPY3Drif5PCaauAQwMDGCMLEYIww0AaYQBUgyh
-        ngFgDlAjKZpBmLqBSA4eYgZgC2SiDQBphAFkQ+hnAAiDNCJrBoshc8jBFBoQ/R8A5fEnz3+JfAUAAAAA
-        SUVORK5CYII=
 </value>
   </data>
   <data name="tsbBack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -151,12 +140,12 @@
         Qu+JwwCWMb2pI4mBoDsW9/4LMMHXkeRhieX6zV/ugeng7KeyA9YSFYcOEl6qAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="tsbTerminal.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="tsbFront.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACBSURBVDhPzYzBEYAwCASpxUb8+bKDtGQz1pKComEkQziI
-        5icz+wDulrYjFQsRAV6u0gkknPMKRKImiIoWK2HB17KgJaGg3gTv1wRRQM9IAgJblvFyPxXIU0+UYcFj
-        cQOC96u9oWAECGYkutwJeHmR2DJ34HCHlnMHvDLn4TAlSOUC6klcoqjaZtQAAAAASUVORK5CYII=
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABRSURBVDhPY3Drif5PCaauAQwMDGCMLEYIww0AaYQBUgyh
+        ngFgDlAjKZpBmLqBSA4eYgZgC2SiDQBphAFkQ+hnAAiDNCJrBoshc8jBFBoQ/R8A5fEnz3+JfAUAAAAA
+        SUVORK5CYII=
 </value>
   </data>
   <data name="tsbPattern.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -173,6 +162,14 @@
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABzSURBVDhPpcy7EYAgFERRCzEysxpKoAdrINVGTKzGdnCW
         wBnkfRYMNtt7ppBiZnbea96vpRkFaDHmAlaMmYAXYyrAxJgIsPF2zC3QE+NfAb1xBYzELzAaF+BPXADp
         /J0WYy5gxZgJeDGmAkyMiQAbhxTzAyB2SyF7BcLpAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="tsbTerminal.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACBSURBVDhPzYzBEYAwCASpxUb8+bKDtGQz1pKComEkQziI
+        5icz+wDulrYjFQsRAV6u0gkknPMKRKImiIoWK2HB17KgJaGg3gTv1wRRQM9IAgJblvFyPxXIU0+UYcFj
+        cQOC96u9oWAECGYkutwJeHmR2DJ34HCHlnMHvDLn4TAlSOUC6klcoqjaZtQAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="tsbWireInvisible.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -247,6 +244,9 @@
         QmCC
 </value>
   </data>
+  <metadata name="tsParts.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>220, 17</value>
+  </metadata>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>309, 17</value>
   </metadata>

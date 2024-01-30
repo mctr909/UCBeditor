@@ -418,11 +418,14 @@ namespace UCB {
 			case EditMode.PATTERN:
 			case EditMode.WIRE:
 				mSelectArea = new Rectangle();
+				mBeginPos.X = (int)((double)mMousePos.X / Item.SNAP + 0.5) * Item.SNAP;
+				mBeginPos.Y = (int)((double)mMousePos.Y / Item.SNAP + 0.5) * Item.SNAP;
 				mIsDrag = true;
 				break;
+			default:
+				mIsDrag = false;
+				break;
 			}
-			mBeginPos.X = (int)((double)mMousePos.X / Item.SNAP + 0.5) * Item.SNAP;
-			mBeginPos.Y = (int)((double)mMousePos.Y / Item.SNAP + 0.5) * Item.SNAP;
 		}
 
 		void SetPos() {
@@ -432,7 +435,7 @@ namespace UCB {
 
 		void SaveFile(string filePath) {
 			try {
-				var fs = new FileStream(filePath, FileMode.CreateNew);
+				var fs = new FileStream(filePath, FileMode.Create);
 				var sw = new StreamWriter(fs);
 				foreach (var rec in mList) {
 					rec.Write(sw);
@@ -505,38 +508,8 @@ namespace UCB {
 						continue;
 					}
 					mClipBoard.Add(enableCut ? rec : rec.Clone());
-					Point begin;
-					Point end;
-					if (rec is Parts parts) {
-						var pivot = parts.Pivot;
-						switch (mRotate) {
-						case ROTATE.DEG90:
-						case ROTATE.DEG270:
-							begin = new Point(
-								(int)(rec.Begin.X - pivot.X - 0.5),
-								(int)(rec.Begin.Y - pivot.Y - 0.5)
-							);
-							end = new Point(
-								(int)(rec.End.X - pivot.X - 0.5),
-								(int)(rec.End.Y - pivot.Y - 0.5)
-							);
-							break;
-						default:
-							begin = new Point(
-								(int)(rec.Begin.X - pivot.X + 0.5),
-								(int)(rec.Begin.Y - pivot.Y + 0.5)
-							);
-							end = new Point(
-								(int)(rec.End.X - pivot.X + 0.5),
-								(int)(rec.End.Y - pivot.Y + 0.5)
-							);
-							break;
-						}
-					} else {
-						begin = rec.Begin;
-						end = rec.End;
-					}
-
+					var begin = rec.Begin;
+					var end = rec.End;
 					if (begin.X < gripPos.X) {
 						gripPos.X = begin.X;
 					}
@@ -733,8 +706,6 @@ namespace UCB {
 
 			DrawEditItem(g);
 
-			g.DrawEllipse(Pens.Red, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
-
 			var pen = new Pen(Color.Gray) {
 				DashPattern = new float[] { 4, 2 }
 			};
@@ -777,6 +748,7 @@ namespace UCB {
 				if (mIsDrag) {
 					g.DrawLine(Pens.Magenta, mBeginPos, mEndPos);
 				}
+				g.DrawEllipse(Pens.Red, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
 				break;
 			case EditMode.TERMINAL:
 				g.DrawArc(
@@ -792,23 +764,9 @@ namespace UCB {
 				);
 				break;
 			case EditMode.PARTS: {
-				var bmp = mSelectedParts.Alpha[(int)mRotate];
-				var img = mSelectedParts.BodyImage;
-				float x = mEndPos.X;
-				float y = mEndPos.Y;
-				switch (mRotate) {
-				case ROTATE.DEG90:
-				case ROTATE.DEG270:
-					x -= img.Pivot.Y + 1;
-					y -= img.Pivot.X;
-					break;
-				case ROTATE.DEG180:
-				default:
-					x -= img.Pivot.X;
-					y -= img.Pivot.Y + 1;
-					break;
-				}
-				g.DrawImage(bmp, new Point((int)x, (int)y));
+				var p = new Parts(mEndPos, mRotate, mSelectedParts.Group, mSelectedParts.Name);
+				p.Draw(g, true);
+				g.DrawEllipse(Pens.Red, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
 				break;
 			}
 			}
