@@ -559,21 +559,42 @@ namespace UCB {
 				return;
 			}
 			if (newItem is Parts parts) {
-				var terms = parts.GetTerminals();
-				for (int i = 0; i < terms.Length; i++) {
-					mList.Add(new Land(terms[i], parts, i));
+				var pTerms = parts.GetTerminals();
+				for (int i = 0; i < pTerms.Length; i++) {
+					mList.Add(new Land(pTerms[i], parts, i));
+				}
+				foreach (var pTerm in pTerms) {
+					var addList = new List<Item>();
+					foreach (var itemB in mList) {
+						if (itemB.GetType() == typeof(Wire)) {
+							var wTerms = itemB.GetTerminals();
+							foreach (var wTerm in wTerms) {
+								var sx = pTerm.X - wTerm.X;
+								var sy = pTerm.Y - wTerm.Y;
+								if (Math.Sqrt(sx * sx + sy * sy) < Item.SNAP * 0.25) {
+									addList.Add(new Land(wTerm, itemB));
+								}
+							}
+						}
+					}
+					mList.AddRange(addList);
 				}
 			}
 			if (newItem is Wire wire) {
-				var terms = wire.GetTerminals();
-				for (int i = 0; i < terms.Length; i++) {
+				var wTerms = wire.GetTerminals();
+				for (int i = 0; i < wTerms.Length; i++) {
 					var addList = new List<Item>();
 					foreach (var itemB in mList) {
 						if (itemB is Parts p) {
 							var pTerms = p.GetTerminals();
 							foreach (var pTerm in pTerms) {
-								if (pTerm.Equals(terms[i])) {
-									addList.Add(new Land(terms[i], wire, i));
+								var wTerm = wTerms[i];
+								var sx = pTerm.X - wTerm.X;
+								var sy = pTerm.Y - wTerm.Y;
+								if (Math.Sqrt(sx * sx + sy * sy) < Item.SNAP * 0.25) {
+									wTerm.X = (int)((double)wTerm.X / Item.SNAP + 0.5) * Item.SNAP;
+									wTerm.Y = (int)((double)wTerm.Y / Item.SNAP + 0.5) * Item.SNAP;
+									addList.Add(new Land(wTerm, wire));
 								}
 							}
 						}
@@ -590,14 +611,16 @@ namespace UCB {
 		void SortItems() {
 			if (Item.SolderFace) {
 				mList.Sort((a, b) => {
-					var aHeight = (a.GetType() == typeof(Pattern)) ? 0 : a.Height;
-					var bHeight = (b.GetType() == typeof(Pattern)) ? 0 : b.Height;
+					var aHeight = (a is Pattern) ? 0 : a.Height;
+					var bHeight = (b is Pattern) ? 0 : b.Height;
 					var diff = bHeight - aHeight;
 					return 0 == diff ? 0 : diff < 0 ? -1 : 1;
 				});
 			} else {
 				mList.Sort((a, b) => {
-					var diff = a.Height - b.Height;
+					var aHeight = (a is Land la) && (la.Parent is Wire) ? -a.Height : a.Height;
+					var bHeight = (b is Land lb) && (lb.Parent is Wire) ? -b.Height : b.Height;
+					var diff = aHeight - bHeight;
 					return 0 == diff ? 0 : diff < 0 ? -1 : 1;
 				});
 			}
@@ -627,12 +650,16 @@ namespace UCB {
 							Top = currentY,
 							Left = 2
 						};
+						label.MouseDown += new MouseEventHandler((s, ev) => {
+							SetEditMode(tsbSelect);
+							SetEditParts(package);
+						});
 						pnlParts.Controls.Add(label);
 
 						var picture = new PictureBox() {
 							Image = package.Solid[0],
-							Top = 2,
-							Left = 2,
+							Top = 0,
+							Left = 0,
 							Width = package.Solid[0].Width,
 							Height = package.Solid[0].Height
 						};
@@ -644,16 +671,15 @@ namespace UCB {
 						var panel = new Panel() {
 							Name = package.Name,
 							BackColor = Color.Transparent,
-							Width = picture.Width + 6,
-							Height = picture.Height + 6,
+							Width = picture.Width + 2,
+							Height = picture.Height + 2,
 							Left = 2,
 							Top = currentY + label.Height
 						};
-
 						panel.Controls.Add(picture);
 						pnlParts.Controls.Add(panel);
 
-						currentY += panel.Height + label.Height + 6;
+						currentY += panel.Height + label.Height + 4;
 					}
 				});
 				tsParts.Items.Add(tsb);

@@ -10,7 +10,7 @@ namespace UCB {
 		public Land(Point pos, Item parent) {
 			mPosition = pos;
 			if (parent is Wire) {
-				Height = -0.005;
+				Height = -0.015;
 			} else {
 				Height = -0.01;
 			}
@@ -19,11 +19,7 @@ namespace UCB {
 
 		public Land(Point pos, Item parent, int index) {
 			mPosition = pos;
-			if (parent is Wire) {
-				Height = -0.005;
-			} else {
-				Height = -0.01;
-			}
+			Height = -0.01;
 			if (parent is Parts parts) {
 				mFoot = parts.GetFoot(index, true, false);
 			}
@@ -44,16 +40,18 @@ namespace UCB {
 				g.FillEllipse(Brushes.White, px, py, d, d);
 				g.DrawEllipse(Pens.Black, px, py, d, d);
 			} else if (null == mFoot) {
-				var x1 = mPosition.X + dx - 5;
-				var y1 = mPosition.Y + dy - 5;
-				var x2 = mPosition.X + dx - 2;
-				var y2 = mPosition.Y + dy - 2;
 				if (SolderFace) {
+					var x1 = mPosition.X + dx - 5;
+					var y1 = mPosition.Y + dy - 5;
+					var x2 = mPosition.X + dx - 2;
+					var y2 = mPosition.Y + dy - 2;
 					g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
-					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
-					g.DrawEllipse(Pens.Gray, x2, y2, 4, 4);
+					var x = mPosition.X + dx - 2;
+					var y = mPosition.Y + dy - 2;
+					g.FillEllipse(Brushes.White, x, y, 4, 4);
+					g.DrawEllipse(Pens.Gray, x, y, 4, 4);
 				}
 			} else {
 				if (SolderFace) {
