@@ -14,24 +14,21 @@
 		</item>
 		<item name="carbon-axial" height="3">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="8" y="33"/>
+				<pivot x="8" y="32"/>
 				<pin x="8" y="0"/>
 				<pin x="8" y="64"/>
 			</image>
 		</item>
 		<item name="carbon-radial" height="10">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="8" y="17"/>
+				<pivot x="8" y="16"/>
 				<pin x="8" y="0"/>
 				<pin x="8" y="16"/>
 			</image>
 		</item>
 		<item name="VR SF6" height="5">
 			<image>
-				<offset x="-1" y="-1"/>
-				<pivot x="22" y="22"/>
+				<pivot x="21" y="21"/>
 				<pin x="5" y="5"/>
 				<pin x="5" y="37"/>
 				<pin x="37" y="21"/>
@@ -63,18 +60,16 @@
 				<pin x="0" y="-1"/>
 			</foot>
 		</item>
-		<item name="radial-film2" height="10">
+		<item name="film-radial2" height="10">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="8" y="22"/>
+				<pivot x="8" y="21"/>
 				<pin x="8" y="5"/>
 				<pin x="8" y="37"/>
 			</image>
 		</item>
-		<item name="radial-film2w" height="10">
+		<item name="film-radial2w" height="10">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="11" y="25"/>
+				<pivot x="11" y="24"/>
 				<pin x="11" y="8"/>
 				<pin x="11" y="40"/>
 			</image>
@@ -111,16 +106,14 @@
 		</item>
 		<item name="DO-35" height="5">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="8" y="25"/>
+				<pivot x="8" y="24"/>
 				<pin x="8" y="0"/>
 				<pin x="8" y="48"/>
 			</image>
 		</item>
 		<item name="DO-41" height="5">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="8" y="25"/>
+				<pivot x="8" y="24"/>
 				<pin x="8" y="0"/>
 				<pin x="8" y="48"/>
 			</image>
@@ -136,8 +129,7 @@
 	<group name="TR">
 		<item name="SOT-23rot" height="3" type="smd">
 			<image>
-				<offset x="-1" y="-1"/>
-				<pivot x="12" y="12"/>
+				<pivot x="11" y="11"/>
 				<pin x="3" y="3"/>
 				<pin x="19" y="19"/>
 				<pin x="19" y="3"/>
@@ -370,8 +362,7 @@
 		</item>
 		<item name="DIP4" height="5">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="24" y="14"/>
+				<pivot x="24" y="13"/>
 				<pin x="0" y="5"/>
 				<pin x="0" y="21"/>
 				<pin x="48" y="21"/>
@@ -380,12 +371,30 @@
 		</item>
 		<item name="DIP8" height="5">
 			<image>
-				<offset x="0" y="-1"/>
-				<pivot x="24" y="30"/>
+				<pivot x="24" y="29"/>
 				<pin x="0" y="5"/>
 				<pin x="0" y="21"/>
 				<pin x="0" y="37"/>
 				<pin x="0" y="53"/>
+				<pin x="48" y="53"/>
+				<pin x="48" y="37"/>
+				<pin x="48" y="21"/>
+				<pin x="48" y="5"/>
+			</image>
+		</item>
+		<item name="DIP14" height="5">
+			<image>
+				<pivot x="24" y="53"/>
+				<pin x="0" y="5"/>
+				<pin x="0" y="21"/>
+				<pin x="0" y="37"/>
+				<pin x="0" y="53"/>
+				<pin x="0" y="69"/>
+				<pin x="0" y="85"/>
+				<pin x="0" y="101"/>
+				<pin x="48" y="101"/>
+				<pin x="48" y="85"/>
+				<pin x="48" y="69"/>
 				<pin x="48" y="53"/>
 				<pin x="48" y="37"/>
 				<pin x="48" y="21"/>
