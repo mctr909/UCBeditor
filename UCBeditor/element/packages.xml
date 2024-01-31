@@ -14,18 +14,24 @@
 		</item>
 		<item name="carbon-axial" height="3">
 			<image>
-				<pin x="32" y="0"/>
-				<pin x="32" y="64"/>
+				<offset x="0" y="-1"/>
+				<pivot x="8" y="33"/>
+				<pin x="8" y="0"/>
+				<pin x="8" y="64"/>
 			</image>
 		</item>
 		<item name="carbon-radial" height="10">
 			<image>
-				<pin x="16" y="0"/>
-				<pin x="16" y="16"/>
+				<offset x="0" y="-1"/>
+				<pivot x="8" y="17"/>
+				<pin x="8" y="0"/>
+				<pin x="8" y="16"/>
 			</image>
 		</item>
 		<item name="VR SF6" height="5">
 			<image>
+				<offset x="-1" y="-1"/>
+				<pivot x="22" y="22"/>
 				<pin x="5" y="5"/>
 				<pin x="5" y="37"/>
 				<pin x="37" y="21"/>
@@ -57,46 +63,20 @@
 				<pin x="0" y="-1"/>
 			</foot>
 		</item>
-		<item name="radial-ceramic1" height="10" >
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
-			</image>
-		</item>
-		<item name="radial-ceramic2" height="10">
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
-			</image>
-		</item>
 		<item name="radial-film2" height="10">
 			<image>
-				<pin x="21" y="5"/>
-				<pin x="21" y="37"/>
+				<offset x="0" y="-1"/>
+				<pivot x="8" y="22"/>
+				<pin x="8" y="5"/>
+				<pin x="8" y="37"/>
 			</image>
 		</item>
 		<item name="radial-film2w" height="10">
 			<image>
-				<pin x="24" y="8"/>
-				<pin x="24" y="40"/>
-			</image>
-		</item>
-		<item name="radial-chemical-D5mm" height="15">
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
-			</image>
-		</item>
-		<item name="radial-chemical-D6.3mm" height="15">
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
-			</image>
-		</item>
-		<item name="radial-chemical-D8mm" height="15">
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
+				<offset x="0" y="-1"/>
+				<pivot x="11" y="25"/>
+				<pin x="11" y="8"/>
+				<pin x="11" y="40"/>
 			</image>
 		</item>
 	</group>
@@ -129,37 +109,35 @@
 				<mark x="0.45" y="1.7" link="mark"/>
 			</foot>
 		</item>
-		<item name="DPAK(TO-252-2)" height="5" type="smd">
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
-			</image>
-		</item>
 		<item name="DO-35" height="5">
 			<image>
-				<offset x="8" y="0"/>
-				<pin x="24" y="0"/>
-				<pin x="24" y="48"/>
+				<offset x="0" y="-1"/>
+				<pivot x="8" y="25"/>
+				<pin x="8" y="0"/>
+				<pin x="8" y="48"/>
 			</image>
 		</item>
 		<item name="DO-41" height="5">
 			<image>
-				<offset x="8" y="0"/>
-				<pin x="24" y="0"/>
-				<pin x="24" y="48"/>
+				<offset x="0" y="-1"/>
+				<pivot x="8" y="25"/>
+				<pin x="8" y="0"/>
+				<pin x="8" y="48"/>
 			</image>
 		</item>
 		<item name="TO-220-2" height="15" >
 			<image>
-				<pin x="29" y="13"/>
-				<pin x="29" y="45"/>
+				<pivot x="13" y="29"/>
+				<pin x="13" y="13"/>
+				<pin x="13" y="45"/>
 			</image>
 		</item>
 	</group>
 	<group name="TR">
 		<item name="SOT-23rot" height="3" type="smd">
 			<image>
-				<offset x="8" y="8"/>
+				<offset x="-1" y="-1"/>
+				<pivot x="12" y="12"/>
 				<pin x="3" y="3"/>
 				<pin x="19" y="19"/>
 				<pin x="19" y="3"/>
@@ -182,7 +160,7 @@
 		</item>
 		<item name="SOT-323" height="3" type="smd">
 			<image>
-				<pivot x="10" y="9"/>
+				<pivot x="10" y="10"/>
 				<pin x="1" y="1"/>
 				<pin x="1" y="17"/>
 				<pin x="17" y="9"/>
@@ -195,13 +173,6 @@
 				<pin x="0" y="-0.9"/>
 				<pin x="1.9" y="0" link="center"/>
 			</foot>
-		</item>
-		<item name="DPAK(TO-252)" height="5" type="smd">
-			<image>
-				<pin x="1" y="1"/>
-				<pin x="2" y="2"/>
-				<pin x="3" y="3"/>
-			</image>
 		</item>
 		<item name="TO-92" height="15">
 			<image>

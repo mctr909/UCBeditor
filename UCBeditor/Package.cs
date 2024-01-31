@@ -338,6 +338,10 @@ namespace UCB {
 						if (solid.Width != alpha.Width || solid.Height != alpha.Height) {
 							break;
 						}
+						for (int i = 0; i < currentPackage.BodyImage.PinList.Count; i++) {
+							var p = currentPackage.BodyImage.PinList[i];
+							p.Y = solid.Height - p.Y;
+						}
 						currentPackage.Solid[0] = (Bitmap)solid.Clone();
 						currentPackage.Solid[1] = (Bitmap)solid.Clone();
 						currentPackage.Solid[2] = (Bitmap)solid.Clone();

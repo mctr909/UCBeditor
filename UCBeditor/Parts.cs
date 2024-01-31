@@ -23,31 +23,39 @@ namespace UCB {
 		void SetPos() {
 			var pivot = mPackage.BodyImage.Pivot;
 			var offset = mPackage.BodyImage.Offset;
+			var ofsX = (int)(pivot.X + offset.X);
+			var ofsY = (int)(pivot.Y + offset.Y);
 			switch (mRotate) {
 			case ROTATE.DEG90:
 			case ROTATE.DEG270:
-				mImagePos = new Point(-(int)(offset.Y + pivot.Y), -(int)(offset.X + pivot.X));
+				mImagePos = new Point(-ofsY, -ofsX);
 				break;
 			case ROTATE.DEG180:
 			default:
-				mImagePos = new Point(-(int)(offset.X + pivot.X), -(int)(offset.Y + pivot.Y));
+				mImagePos = new Point(-ofsX, -ofsY);
 				break;
 			}
 			var terminals = mPackage.BodyImage.PinList;
 			mTermPos = new Point[terminals.Count];
 			for (int i = 0; i < terminals.Count; i++) {
 				var term = terminals[i];
-				var p = mImagePos;
+				var p = new Point();
 				switch (mRotate) {
 				case ROTATE.DEG90:
-				case ROTATE.DEG270:
-					p.X += term.Y;
-					p.Y += term.X;
+					p.X = ofsY - term.Y;
+					p.Y = term.X - ofsX;
 					break;
 				case ROTATE.DEG180:
+					p.X = ofsX - term.X;
+					p.Y = ofsY - term.Y;
+					break;
+				case ROTATE.DEG270:
+					p.X = term.Y - ofsY;
+					p.Y = ofsX - term.X;
+					break;
 				default:
-					p.X += term.X;
-					p.Y += term.Y;
+					p.X = term.X - ofsX;
+					p.Y = term.Y - ofsY;
 					break;
 				}
 				mTermPos[i] = p;
