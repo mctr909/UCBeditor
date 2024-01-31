@@ -8,8 +8,7 @@ namespace UCB {
 		readonly PointF[] mFoot;
 
 		public Land(Point pos, Item parent) {
-			Begin = pos;
-			End = pos;
+			mPosition = pos;
 			if (parent is Wire) {
 				Height = -0.005;
 			} else {
@@ -19,8 +18,7 @@ namespace UCB {
 		}
 
 		public Land(Point pos, Item parent, int index) {
-			Begin = pos;
-			End = pos;
+			mPosition = pos;
 			if (parent is Wire) {
 				Height = -0.005;
 			} else {
@@ -41,16 +39,16 @@ namespace UCB {
 			if (Parent is Wire) {
 				var r = 2;
 				var d = r * 2;
-				var px = Begin.X + dx - r;
-				var py = Begin.Y + dy - r;
+				var px = mPosition.X + dx - r;
+				var py = mPosition.Y + dy - r;
 				g.FillEllipse(Brushes.White, px, py, d, d);
 				g.DrawEllipse(Pens.Black, px, py, d, d);
 			} else if (null == mFoot) {
-				var x1 = Begin.X + dx - 5;
-				var y1 = Begin.Y + dy - 5;
-				var x2 = Begin.X + dx - 2;
-				var y2 = Begin.Y + dy - 2;
-				if (Reverse) {
+				var x1 = mPosition.X + dx - 5;
+				var y1 = mPosition.Y + dy - 5;
+				var x2 = mPosition.X + dx - 2;
+				var y2 = mPosition.Y + dy - 2;
+				if (SolderFace) {
 					g.FillEllipse(LAND.Brush, x1, y1, 10, 10);
 					g.FillEllipse(Brushes.White, x2, y2, 4, 4);
 				} else {
@@ -58,7 +56,7 @@ namespace UCB {
 					g.DrawEllipse(Pens.Gray, x2, y2, 4, 4);
 				}
 			} else {
-				if (Reverse) {
+				if (SolderFace) {
 					g.FillPolygon(LAND.Brush, mFoot);
 				} else {
 					g.FillPolygon(PATTERN.Brush, mFoot);
@@ -69,32 +67,32 @@ namespace UCB {
 		public override void DrawPattern(PDF.Page page) {
 			if (Parent is Wire) {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, WireLandDiameter * GridScale);
+				page.FillCircle(mPosition, WireLandDiameter * GridScale);
 				page.FillColor = Color.White;
-				page.FillCircle(Begin, WireHoleDiameter * GridScale);
+				page.FillCircle(mPosition, WireHoleDiameter * GridScale);
 			} else if (mFoot != null && Parent is Parts parts) {
 				var foot = parts.GetFoot(mIndex, false, false);
 				page.FillColor = Color.Black;
 				page.FillPolygon(foot);
 			} else {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, TermLandDiameter * GridScale);
+				page.FillCircle(mPosition, TermLandDiameter * GridScale);
 				page.FillColor = Color.White;
-				page.FillCircle(Begin, TermHoleDiameter * GridScale);
+				page.FillCircle(mPosition, TermHoleDiameter * GridScale);
 			}
 		}
 
 		public override void DrawSolderMask(PDF.Page page) {
 			if (Parent is Wire) {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, (WireLandDiameter + ResistMaskClearance) * GridScale);
+				page.FillCircle(mPosition, (WireLandDiameter + ResistMaskClearance) * GridScale);
 			} else if (mFoot != null && Parent is Parts parts) {
 				var foot = parts.GetFoot(mIndex, false, true);
 				page.FillColor = Color.Black;
 				page.FillPolygon(foot);
 			} else {
 				page.FillColor = Color.Black;
-				page.FillCircle(Begin, (TermLandDiameter + ResistMaskClearance) * GridScale);
+				page.FillCircle(mPosition, (TermLandDiameter + ResistMaskClearance) * GridScale);
 			}
 		}
 	}

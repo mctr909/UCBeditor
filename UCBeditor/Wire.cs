@@ -22,53 +22,56 @@ namespace UCB {
 			YELLOW
 		}
 
-		Pen mPen;
+		protected Point mEnd;
+
+		readonly Pen mPen;
 		readonly Colors mColor;
 		readonly bool mReverse;
 
-		void SetColor() {
+		void SetColor(out Pen pen) {
 			switch (mColor) {
 			case Colors.BLACK:
-				mPen = BLACK;
+				pen = BLACK;
 				break;
 			case Colors.RED:
-				mPen = RED;
+				pen = RED;
 				break;
 			case Colors.GREEN:
-				mPen = GREEN;
+				pen = GREEN;
 				break;
 			case Colors.BLUE:
-				mPen = BLUE;
+				pen = BLUE;
 				break;
 			case Colors.MAGENTA:
-				mPen = MAGENTA;
+				pen = MAGENTA;
 				break;
 			case Colors.YELLOW:
-				mPen = YELLOW;
+				pen = YELLOW;
 				break;
 			default:
-				return;
+				pen = BLACK;
+				break;
 			}
 		}
 
 		PointF NearPoint(Point point) {
-			var abX = End.X - Begin.X;
-			var abY = End.Y - Begin.Y;
-			var apX = point.X - Begin.X;
-			var apY = point.Y - Begin.Y;
+			var abX = mEnd.X - mPosition.X;
+			var abY = mEnd.Y - mPosition.Y;
+			var apX = point.X - mPosition.X;
+			var apY = point.Y - mPosition.Y;
 			var abL2 = abX * abX + abY * abY;
 			if (0.0 == abL2) {
-				return Begin;
+				return mPosition;
 			}
 			var r = (double)(abX * apX + abY * apY) / abL2;
 			if (r <= 0.0) {
-				return Begin;
+				return mPosition;
 			} else if (1.0 <= r) {
-				return End;
+				return mEnd;
 			} else {
 				return new PointF(
-					(float)(Begin.X + r * abX),
-					(float)(Begin.Y + r * abY)
+					(float)(mPosition.X + r * abX),
+					(float)(mPosition.Y + r * abY)
 				);
 			}
 		}
@@ -78,26 +81,25 @@ namespace UCB {
 		public Wire(string[] cols) {
 			mReverse = "WRAP" == cols[0];
 			Height = mReverse ? -100 : 100;
-			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
-			End = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
+			mPosition = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
+			mEnd = new Point(int.Parse(cols[3]), int.Parse(cols[4]));
 			mColor = (Colors)Enum.Parse(typeof(Colors), cols[5]);
-			SetColor();
+			SetColor(out mPen);
 		}
-
 		public Wire(Point begin, Point end, Colors color, bool reverse) {
 			mReverse = reverse;
 			Height = mReverse ? -100 : 100;
-			Begin = begin;
-			End = end;
+			mPosition = begin;
+			mEnd = end;
 			mColor = color;
-			SetColor();
+			SetColor(out mPen);
 		}
 
-		public bool OnMiddle(Point point) {
-			var abX = End.X - Begin.X;
-			var abY = End.Y - Begin.Y;
-			var apX = point.X - Begin.X;
-			var apY = point.Y - Begin.Y;
+		public bool OnMiddle(Point point, double limit = 0) {
+			var abX = mEnd.X - mPosition.X;
+			var abY = mEnd.Y - mPosition.Y;
+			var apX = point.X - mPosition.X;
+			var apY = point.Y - mPosition.Y;
 			var abL2 = abX * abX + abY * abY;
 			if (0 == abL2) {
 				return false;
@@ -106,53 +108,58 @@ namespace UCB {
 			if (0.0 < r && r < 1.0) {
 				var px = apX - r * abX;
 				var py = apY - r * abY;
-				return 0 == (px * px + py * py);
+				return (px * px + py * py) <= limit;
 			} else {
 				return false;
 			}
 		}
 
-		public override Item Clone() {
-			return new Wire(Begin, End, mColor, mReverse);
+		public override void Move(int dx, int dy) {
+			mPosition.X += dx;
+			mPosition.Y += dy;
+			mEnd.X += dx;
+			mEnd.Y += dy;
 		}
-
-		public override Point[] GetTerminals() {
-			return new Point[] { Begin, End };
-		}
-
-		public override bool IsSelected(Point point) {
-			return Wire && mReverse == Reverse && Distance(point) < 8.0;
-		}
-
 		public override double Distance(Point point) {
 			var n = NearPoint(point);
 			var sx = point.X - n.X;
 			var sy = point.Y - n.Y;
 			return Math.Sqrt(sx * sx + sy * sy);
 		}
+		public override bool IsSelected(Point point) {
+			return Wire && mReverse == SolderFace && Distance(point) < SNAP;
+		}
+		public override bool IsSelected(Rectangle selectArea) {
+			return selectArea.Contains(mPosition) || selectArea.Contains(mEnd);
+		}
+		public override Point[] GetTerminals() {
+			return new Point[] { mPosition, mEnd };
+		}
 
+		public override Item Clone() {
+			return new Wire(mPosition, mEnd, mColor, mReverse);
+		}
 		public override void Write(StreamWriter sw) {
 			sw.WriteLine(
 				"{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
 				mReverse ? "WRAP" : "WIRE",
-				Begin.X, Begin.Y,
-				End.X, End.Y,
+				mPosition.X, mPosition.Y,
+				mEnd.X, mEnd.Y,
 				mColor
 			);
 		}
-
 		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (mReverse == Reverse && !Wire) {
+			if (mReverse == SolderFace && !Wire) {
 				return;
 			}
-			var x1 = Begin.X + dx;
-			var y1 = Begin.Y + dy;
-			var x2 = End.X + dx;
-			var y2 = End.Y + dy;
+			var x1 = mPosition.X + dx;
+			var y1 = mPosition.Y + dy;
+			var x2 = mEnd.X + dx;
+			var y2 = mEnd.Y + dy;
 			if (selected) {
 				g.DrawLine(SELECT_COLOR, x1, y1, x2, y2);
 			} else {
-				if (mReverse == Reverse) {
+				if (mReverse == SolderFace) {
 					g.DrawLine(mPen, x1, y1, x2, y2);
 				} else {
 					g.DrawLine(REVERSE, x1, y1, x2, y2);

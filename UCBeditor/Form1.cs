@@ -234,15 +234,15 @@ namespace UCB {
 		}
 
 		private void DispBoard_Click(object sender, EventArgs e) {
-			tsbBack.Checked = false;
+			tsbSolderFace.Checked = false;
 			tsbFront.Checked = false;
 			if (tsbFront == sender) {
 				tsbFront.Checked = true;
-				Item.Reverse = false;
+				Item.SolderFace = false;
 			}
-			if (tsbBack == sender) {
-				tsbBack.Checked = true;
-				Item.Reverse = true;
+			if (tsbSolderFace == sender) {
+				tsbSolderFace.Checked = true;
+				Item.SolderFace = true;
 			}
 			SortItems();
 		}
@@ -283,7 +283,7 @@ namespace UCB {
 				break;
 			case EditMode.WIRE:
 				if (mBeginPos.X != mEndPos.X || mBeginPos.Y != mEndPos.Y) {
-					AddItem(new Wire(mBeginPos, mEndPos, mWireColor, Item.Reverse));
+					AddItem(new Wire(mBeginPos, mEndPos, mWireColor, Item.SolderFace));
 				}
 				break;
 			case EditMode.TERMINAL:
@@ -405,7 +405,7 @@ namespace UCB {
 			}
 			if (null != parts) {
 				if (mSelectedParts.IsSMD) {
-					tsbBack.PerformClick();
+					tsbSolderFace.PerformClick();
 				} else {
 					tsbFront.PerformClick();
 				}
@@ -508,19 +508,14 @@ namespace UCB {
 						continue;
 					}
 					mClipBoard.Add(enableCut ? rec : rec.Clone());
-					var begin = rec.Begin;
-					var end = rec.End;
-					if (begin.X < gripPos.X) {
-						gripPos.X = begin.X;
-					}
-					if (end.X < gripPos.X) {
-						gripPos.X = end.X;
-					}
-					if (begin.Y < gripPos.Y) {
-						gripPos.Y = begin.Y;
-					}
-					if (end.Y < gripPos.Y) {
-						gripPos.Y = end.Y;
+					var terms = rec.GetTerminals();
+					foreach (var term in terms) {
+						if (term.X < gripPos.X) {
+							gripPos.X = term.X;
+						}
+						if (term.Y < gripPos.Y) {
+							gripPos.Y = term.Y;
+						}
 					}
 				} else if (enableCut) {
 					temp.Add(rec);
@@ -529,11 +524,7 @@ namespace UCB {
 			gripPos.X = gripPos.X / Item.SNAP * Item.SNAP;
 			gripPos.Y = gripPos.Y / Item.SNAP * Item.SNAP;
 			for (var i = 0; i < mClipBoard.Count; ++i) {
-				var p = mClipBoard[i];
-				p.Begin.X -= gripPos.X;
-				p.Begin.Y -= gripPos.Y;
-				p.End.X -= gripPos.X;
-				p.End.Y -= gripPos.Y;
+				mClipBoard[i].Move(-gripPos.X, -gripPos.Y);
 			}
 			if (enableCut) {
 				mList = temp;
@@ -546,10 +537,7 @@ namespace UCB {
 			var ofsY = mEndPos.Y / Item.SNAP * Item.SNAP;
 			foreach (var rec in mClipBoard) {
 				var item = rec.Clone();
-				item.Begin.X += ofsX;
-				item.Begin.Y += ofsY;
-				item.End.X += ofsX;
-				item.End.Y += ofsY;
+				item.Move(ofsX, ofsY);
 				AddItem(item, false);
 			}
 			SortItems();
@@ -600,7 +588,7 @@ namespace UCB {
 		}
 
 		void SortItems() {
-			if (Item.Reverse) {
+			if (Item.SolderFace) {
 				mList.Sort((a, b) => {
 					var aHeight = (a.GetType() == typeof(Pattern)) ? 0 : a.Height;
 					var bHeight = (b.GetType() == typeof(Pattern)) ? 0 : b.Height;

@@ -27,7 +27,7 @@ namespace UCB {
 		public const float GridScale = GridWidth / 2.54f;
 		public const int SNAP = GridWidth / 2;
 
-		public static bool Reverse { get; set; }
+		public static bool SolderFace { get; set; }
 		public static bool Pattern { get; set; }
 		public static bool Wire { get; set; }
 		public static bool Parts { get; set; }
@@ -48,32 +48,33 @@ namespace UCB {
 			}
 		}
 
-		public Point Begin;
-		public Point End;
 		public double Height { get; protected set; }
-		public bool Removed { get; set; }
+		public bool Removed { get; protected set; }
 
-		public bool IsSelected(Rectangle selectArea) {
-			return selectArea.Contains(Begin) || selectArea.Contains(End);
-		}
+		protected Point mPosition;
+
 		public void Draw(Graphics g, bool selected) {
 			Draw(g, 0, 0, selected);
 		}
+		
+		public virtual void Move(int dx, int dy) {
+			mPosition.X += dx;
+			mPosition.Y += dy;
+		}
 		public virtual double Distance(Point point) {
-			var apX = point.X - Begin.X;
-			var apY = point.Y - Begin.Y;
+			var apX = point.X - mPosition.X;
+			var apY = point.Y - mPosition.Y;
 			return Math.Sqrt(apX * apX + apY * apY);
 		}
 		public virtual bool IsSelected(Point point) {
-			if (GetType() == typeof(Terminal)) {
-				return Distance(point) < 8.0;
-			}
-			if (GetType() == typeof(Parts)) {
-				return Distance(point) < 8.0;
-			}
-			return false;
+			return Distance(point) < SNAP;
 		}
-		public virtual Point[] GetTerminals() { return new Point[] { Begin }; }
+		public virtual bool IsSelected(Rectangle selectArea) {
+			return selectArea.Contains(mPosition);
+		}
+		public virtual Point[] GetTerminals() {
+			return new Point[] { mPosition };
+		}
 
 		public virtual void DrawPattern(PDF.Page page) { }
 		public virtual void DrawSolderMask(PDF.Page page) { }

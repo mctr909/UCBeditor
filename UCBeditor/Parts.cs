@@ -55,8 +55,7 @@ namespace UCB {
 		}
 
 		public Parts(string[] cols) {
-			Begin = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
-			End = Begin;
+			mPosition = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			mRotate = (ROTATE)int.Parse(cols[3]);
 			Group = cols[4];
 			PackageName = cols[5];
@@ -72,8 +71,7 @@ namespace UCB {
 		}
 
 		public Parts(Point pos, ROTATE rotate, string group, string package) {
-			Begin = pos;
-			End = pos;
+			mPosition = pos;
 			mRotate = rotate;
 			Group = group;
 			PackageName = package;
@@ -90,7 +88,7 @@ namespace UCB {
 
 		public PointF[] GetFoot(int index, bool round, bool solder) {
 			var offset = mPackage.BodyImage.Offset;
-			var pos = Begin;
+			var pos = mPosition;
 			switch (mRotate) {
 			case ROTATE.DEG90:
 			case ROTATE.DEG270:
@@ -107,31 +105,31 @@ namespace UCB {
 		}
 
 		public List<PointF[]> GetMarks(bool round) {
-			return mPackage.FootPrint.GetMarks(Begin, mRotate, round);
+			return mPackage.FootPrint.GetMarks(mPosition, mRotate, round);
 		}
 
 		public override Item Clone() {
-			return new Parts(Begin, mRotate, Group, PackageName);
+			return new Parts(mPosition, mRotate, Group, PackageName);
 		}
 
 		public override Point[] GetTerminals() {
-			var pos = new Point[mTermPos.Length];
-			for (int i = 0; i < pos.Length; i++) {
-				pos[i] = mTermPos[i];
-				pos[i].X += Begin.X;
-				pos[i].Y += Begin.Y;
+			var terms = new Point[mTermPos.Length];
+			for (int i = 0; i < terms.Length; i++) {
+				terms[i] = mTermPos[i];
+				terms[i].X += mPosition.X;
+				terms[i].Y += mPosition.Y;
 			}
-			return pos;
+			return terms;
 		}
 
 		public override bool IsSelected(Point point) {
-			return (!Reverse ^ mPackage.IsSMD) && base.IsSelected(point);
+			return (!SolderFace ^ mPackage.IsSMD) && base.IsSelected(point);
 		}
 
 		public override void Write(StreamWriter sw) {
 			sw.WriteLine(
 				"PARTS\t{0}\t{1}\t{2}\t{3}\t{4}",
-				Begin.X, Begin.Y,
+				mPosition.X, mPosition.Y,
 				(int)mRotate,
 				Group,
 				PackageName
@@ -145,12 +143,12 @@ namespace UCB {
 			if (!selected && Display == EDisplay.INVISIBLE) {
 				return;
 			}
-			var px = Begin.X + mImagePos.X + dx;
-			var py = Begin.Y + mImagePos.Y + dy;
+			var px = mPosition.X + mImagePos.X + dx;
+			var py = mPosition.Y + mImagePos.Y + dy;
 			if (Display == EDisplay.TRANSPARENT) {
 				var bmp = selected ? mPackage.Solid: mPackage.Alpha;
 				g.DrawImage(bmp[(int)mRotate], px, py);
-			} else if (selected || (Reverse ^ mPackage.IsSMD)) {
+			} else if (selected || (SolderFace ^ mPackage.IsSMD)) {
 				g.DrawImage(mPackage.Alpha[(int)mRotate], px, py);
 			} else {
 				g.DrawImage(mPackage.Solid[(int)mRotate], px, py);

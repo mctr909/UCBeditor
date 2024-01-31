@@ -33,7 +33,7 @@
 			this.tsbSelect = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbFront = new System.Windows.Forms.ToolStripButton();
-			this.tsbBack = new System.Windows.Forms.ToolStripButton();
+			this.tsbSolderFace = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbPattern = new System.Windows.Forms.ToolStripButton();
 			this.tsbPatternThick = new System.Windows.Forms.ToolStripButton();
@@ -134,7 +134,7 @@
 			this.tsBoard.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbSelect,
             this.toolStripSeparator2,
-            this.tsbBack,
+            this.tsbSolderFace,
             this.tsbFront,
             this.toolStripSeparator3,
             this.tsbPattern,
@@ -187,17 +187,17 @@
 			this.tsbFront.Text = "正面";
 			this.tsbFront.Click += new System.EventHandler(this.DispBoard_Click);
 			// 
-			// tsbBack
+			// tsbSolderFace
 			// 
-			this.tsbBack.Checked = true;
-			this.tsbBack.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.tsbBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbBack.Image = ((System.Drawing.Image)(resources.GetObject("tsbBack.Image")));
-			this.tsbBack.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbBack.Name = "tsbBack";
-			this.tsbBack.Size = new System.Drawing.Size(23, 22);
-			this.tsbBack.Text = "銅箔面";
-			this.tsbBack.Click += new System.EventHandler(this.DispBoard_Click);
+			this.tsbSolderFace.Checked = true;
+			this.tsbSolderFace.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.tsbSolderFace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbSolderFace.Image = ((System.Drawing.Image)(resources.GetObject("tsbBack.Image")));
+			this.tsbSolderFace.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbSolderFace.Name = "tsbSolderFace";
+			this.tsbSolderFace.Size = new System.Drawing.Size(23, 22);
+			this.tsbSolderFace.Text = "半田面";
+			this.tsbSolderFace.Click += new System.EventHandler(this.DispBoard_Click);
 			// 
 			// toolStripSeparator3
 			// 
@@ -600,7 +600,7 @@
 		private System.Windows.Forms.ToolStripButton tsbPartsTransparent;
 		private System.Windows.Forms.ToolStripButton tsbPartsInvisible;
 		private System.Windows.Forms.ToolStripButton tsbFront;
-		private System.Windows.Forms.ToolStripButton tsbBack;
+		private System.Windows.Forms.ToolStripButton tsbSolderFace;
 		private System.Windows.Forms.ToolStripSeparator tssDispBoard;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
