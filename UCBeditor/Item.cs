@@ -27,7 +27,7 @@ namespace UCB {
 		public const float GridScale = GridWidth / 2.54f;
 		public const int SNAP = GridWidth / 2;
 
-		public static bool SolderFace { get; set; }
+		public static bool SolderFace { get; set; } = true;
 		public static bool Pattern { get; set; }
 		public static bool Wire { get; set; }
 		public static bool Parts { get; set; }
