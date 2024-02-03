@@ -60,6 +60,20 @@
 				<pin x="0" y="-1"/>
 			</foot>
 		</item>
+		<item name="ceramic-radial1" height="10">
+			<image>
+				<pivot x="8" y="13"/>
+				<pin x="8" y="5"/>
+				<pin x="8" y="21"/>
+			</image>
+		</item>
+		<item name="ceramic-radial2" height="10">
+			<image>
+				<pivot x="8" y="21"/>
+				<pin x="8" y="5"/>
+				<pin x="8" y="37"/>
+			</image>
+		</item>
 		<item name="film-radial2" height="10">
 			<image>
 				<pivot x="8" y="21"/>
@@ -120,9 +134,9 @@
 		</item>
 		<item name="TO-220-2" height="15" >
 			<image>
-				<pivot x="13" y="29"/>
-				<pin x="13" y="13"/>
-				<pin x="13" y="45"/>
+				<pivot x="13" y="28"/>
+				<pin x="13" y="12"/>
+				<pin x="13" y="44"/>
 			</image>
 		</item>
 	</group>
@@ -176,10 +190,10 @@
 		</item>
 		<item name="TO-220" height="15">
 			<image>
-				<pivot x="13" y="29"/>
-				<pin x="13" y="13"/>
-				<pin x="13" y="29"/>
-				<pin x="13" y="45"/>
+				<pivot x="13" y="28"/>
+				<pin x="13" y="12"/>
+				<pin x="13" y="28"/>
+				<pin x="13" y="44"/>
 			</image>
 		</item>
 	</group>
