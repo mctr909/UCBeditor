@@ -7,27 +7,25 @@ public class PDF {
 	const string FontName = "Arial";
 
 	public struct PAGE_SIZE {
-		public double Scale;
-		public PointF Size;
-		public PointF Pixel;
+		public readonly double Scale;
+		public readonly PointF Size;
+		public readonly PointF Pixel;
 
-		static PAGE_SIZE ToPix(double dpi, double width, double height) {
+		PAGE_SIZE(double dpi, double width, double height) {
 			var scale = dpi / 25.4;
-			return new PAGE_SIZE() {
-				Scale = scale,
-				Size = new PointF((float)width, (float)height),
-				Pixel = new PointF((float)(width * scale), (float)(height * scale))
-			};
+			Scale = scale;
+			Size = new PointF((float)width, (float)height);
+			Pixel = new PointF((float)(width * scale), (float)(height * scale));
 		}
 
-		public static PAGE_SIZE A4_H = ToPix(72, 297, 210);
-		public static PAGE_SIZE A4_V = ToPix(72, 210, 297);
-		public static PAGE_SIZE A5_H = ToPix(72, 210, 148);
-		public static PAGE_SIZE A5_V = ToPix(72, 148, 210);
-		public static PAGE_SIZE POST_H = ToPix(72, 148, 100);
-		public static PAGE_SIZE POST_V = ToPix(72, 100, 148);
-		public static PAGE_SIZE L_H = ToPix(72, 127, 89);
-		public static PAGE_SIZE L_V = ToPix(72, 89, 127);
+		public static readonly PAGE_SIZE A4_H = new PAGE_SIZE(72, 297, 210);
+		public static readonly PAGE_SIZE A4_V = new PAGE_SIZE(72, 210, 297);
+		public static readonly PAGE_SIZE A5_H = new PAGE_SIZE(72, 210, 148);
+		public static readonly PAGE_SIZE A5_V = new PAGE_SIZE(72, 148, 210);
+		public static readonly PAGE_SIZE POST_H = new PAGE_SIZE(72, 148, 100);
+		public static readonly PAGE_SIZE POST_V = new PAGE_SIZE(72, 100, 148);
+		public static readonly PAGE_SIZE L_H = new PAGE_SIZE(72, 127, 89);
+		public static readonly PAGE_SIZE L_V = new PAGE_SIZE(72, 89, 127);
 	}
 
 	public class Page {

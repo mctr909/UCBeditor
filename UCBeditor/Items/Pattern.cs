@@ -12,7 +12,7 @@ namespace Items {
 			foreach (var divTerm in divTerms) {
 				var addList = new List<Item>();
 				foreach (var item in list) {
-					if (item is Pattern pattern && pattern.OnMiddle(divTerm, SNAP * 0.5)) {
+					if (item is Pattern pattern && pattern.OnMiddle(divTerm, SNAP * 0.1)) {
 						var divPos = divTerm;
 						divPos.X = (int)((double)divPos.X / SNAP + 0.5) * SNAP;
 						divPos.Y = (int)((double)divPos.Y / SNAP + 0.5) * SNAP;

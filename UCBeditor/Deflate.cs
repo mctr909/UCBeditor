@@ -3,6 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 
 class Deflate {
+	enum BTYPE {
+		UNCOMPRESSED = 0,
+		FIXED = 1,
+		DYNAMIC = 2
+	}
+
+	const int BLOCK_MAX_BUFFER_LEN = 131072;
+
+	static readonly Dictionary<int, Dictionary<int, int>> FIXED_HUFFMAN_TABLE
+		= generateHuffmanTable(makeFixedHuffmanCodelenValues());
+	static readonly int[] LENGTH_EXTRA_BIT_BASE = {
+		3, 4, 5, 6, 7, 8, 9, 10, 11, 13,
+		15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
+		67, 83, 99, 115, 131, 163, 195, 227, 258,
+	};
+	static readonly int[] DISTANCE_EXTRA_BIT_BASE = {
+		1, 2, 3, 4, 5, 7, 9, 13, 17, 25,
+		33, 49, 65, 97, 129, 193, 257, 385, 513, 769,
+		1025, 1537, 2049, 3073, 4097, 6145,
+		8193, 12289, 16385, 24577,
+	};
+	static readonly int[] LENGTH_EXTRA_BIT_LEN = {
+		0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
+		4, 4, 4, 4, 5, 5, 5, 5, 0,
+	};
+	static readonly int[] DISTANCE_EXTRA_BIT_LEN = {
+		0, 0, 0, 0, 1, 1, 2, 2, 3, 3,
+		4, 4, 5, 5, 6, 6, 7, 7, 8, 8,
+		9, 9, 10, 10, 11, 11, 12, 12, 13, 13,
+	};
+	static readonly int[] CODELEN_VALUES = {
+		16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15,
+	};
+
+	struct Code {
+		public int Value;
+		public int BitLen;
+		public Code(int value, int length) {
+			Value = value;
+			BitLen = length;
+		}
+	}
+
+	struct Pack {
+		public int Count;
+		public List<int> Simbles;
+		public Pack(int count, int[] simbles) {
+			Count = count;
+			Simbles = new List<int>();
+			Simbles.AddRange(simbles);
+		}
+	}
+
 	class ByteStream {
 		byte[] buffer;
 		int maxSize;
@@ -146,15 +200,6 @@ class Deflate {
 		}
 	}
 
-	struct Code {
-		public int Value;
-		public int BitLen;
-		public Code(int value, int length) {
-			Value = value;
-			BitLen = length;
-		}
-	}
-
 	class LZ77 {
 		const int REPEAT_LEN_MIN = 3;
 		const int FAST_INDEX_CHECK_MAX = 128;
@@ -258,14 +303,14 @@ class Deflate {
 
 				if (repeatLengthMax >= 3 && nowIndex + repeatLengthMax <= endIndex) {
 					var distance = nowIndex - repeatLengthMaxIndex;
-					for (int i = 0; i < Deflate.LENGTH_EXTRA_BIT_BASE.Length; i++) {
-						if (Deflate.LENGTH_EXTRA_BIT_BASE[i] > repeatLengthMax) {
+					for (int i = 0; i < LENGTH_EXTRA_BIT_BASE.Length; i++) {
+						if (LENGTH_EXTRA_BIT_BASE[i] > repeatLengthMax) {
 							break;
 						}
 						repeatLengthCodeValue = i;
 					}
-					for (int i = 0; i < Deflate.DISTANCE_EXTRA_BIT_BASE.Length; i++) {
-						if (Deflate.DISTANCE_EXTRA_BIT_BASE[i] > distance) {
+					for (int i = 0; i < DISTANCE_EXTRA_BIT_BASE.Length; i++) {
+						if (DISTANCE_EXTRA_BIT_BASE[i] > distance) {
 							break;
 						}
 						repeatDistanceCodeValue = i;
@@ -286,52 +331,6 @@ class Deflate {
 			codeTargetValues.Add(new int[] { input[nowIndex] });
 			codeTargetValues.Add(new int[] { input[nowIndex + 1] });
 			return codeTargetValues;
-		}
-	}
-
-	const int BLOCK_MAX_BUFFER_LEN = 131072;
-
-	static readonly Dictionary<int, Dictionary<int, int>> FIXED_HUFFMAN_TABLE
-		= generateHuffmanTable(makeFixedHuffmanCodelenValues());
-
-	public static readonly int[] LENGTH_EXTRA_BIT_BASE = {
-		3, 4, 5, 6, 7, 8, 9, 10, 11, 13,
-		15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
-		67, 83, 99, 115, 131, 163, 195, 227, 258,
-	};
-	public static readonly int[] DISTANCE_EXTRA_BIT_BASE = {
-		1, 2, 3, 4, 5, 7, 9, 13, 17, 25,
-		33, 49, 65, 97, 129, 193, 257, 385, 513, 769,
-		1025, 1537, 2049, 3073, 4097, 6145,
-		8193, 12289, 16385, 24577,
-	};
-	static readonly int[] LENGTH_EXTRA_BIT_LEN = {
-		0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-		1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
-		4, 4, 4, 4, 5, 5, 5, 5, 0,
-	};
-	static readonly int[] DISTANCE_EXTRA_BIT_LEN = {
-		0, 0, 0, 0, 1, 1, 2, 2, 3, 3,
-		4, 4, 5, 5, 6, 6, 7, 7, 8, 8,
-		9, 9, 10, 10, 11, 11, 12, 12, 13, 13,
-	};
-	static readonly int[] CODELEN_VALUES = {
-		16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15,
-	};
-
-	enum BTYPE {
-		UNCOMPRESSED = 0,
-		FIXED = 1,
-		DYNAMIC = 2
-	}
-
-	struct Pack {
-		public int Count;
-		public List<int> Simbles;
-		public Pack(int count, int[] simbles) {
-			Count = count;
-			Simbles = new List<int>();
-			Simbles.AddRange(simbles);
 		}
 	}
 
