@@ -31,7 +31,7 @@ namespace Items {
 
 		public override void Write(StreamWriter sw) { }
 
-		public override void Draw(Graphics g, int dx, int dy, bool selected) {
+		public override void DrawDisplay(Graphics g, int dx, int dy, bool selected) {
 			if (Parent is Wire) {
 				var r = 2;
 				var d = r * 2;
@@ -62,35 +62,35 @@ namespace Items {
 			}
 		}
 
-		public override void DrawPattern(PDF.Page page) {
+		public override void DrawPattern(IDrawer g) {
 			if (Parent is Wire) {
-				page.FillColor = Color.Black;
-				page.FillCircle(mPosition, WireLandDiameter * GridScale);
-				page.FillColor = Color.White;
-				page.FillCircle(mPosition, WireHoleDiameter * GridScale);
+				g.FillColor = Color.Black;
+				g.FillCircle(mPosition, WireLandDiameter * GridScale);
+				g.FillColor = Color.White;
+				g.FillCircle(mPosition, WireHoleDiameter * GridScale);
 			} else if (mFoot != null && Parent is Parts parts) {
 				var foot = parts.GetFoot(mIndex, false, false);
-				page.FillColor = Color.Black;
-				page.FillPolygon(foot);
+				g.FillColor = Color.Black;
+				g.FillPolygon(foot);
 			} else {
-				page.FillColor = Color.Black;
-				page.FillCircle(mPosition, TermLandDiameter * GridScale);
-				page.FillColor = Color.White;
-				page.FillCircle(mPosition, TermHoleDiameter * GridScale);
+				g.FillColor = Color.Black;
+				g.FillCircle(mPosition, TermLandDiameter * GridScale);
+				g.FillColor = Color.White;
+				g.FillCircle(mPosition, TermHoleDiameter * GridScale);
 			}
 		}
 
-		public override void DrawSolderMask(PDF.Page page) {
+		public override void DrawSolderMask(IDrawer g) {
 			if (Parent is Wire) {
-				page.FillColor = Color.Black;
-				page.FillCircle(mPosition, (WireLandDiameter + ResistMaskClearance) * GridScale);
+				g.FillColor = Color.Black;
+				g.FillCircle(mPosition, (WireLandDiameter + ResistMaskClearance) * GridScale);
 			} else if (mFoot != null && Parent is Parts parts) {
 				var foot = parts.GetFoot(mIndex, false, true);
-				page.FillColor = Color.Black;
-				page.FillPolygon(foot);
+				g.FillColor = Color.Black;
+				g.FillPolygon(foot);
 			} else {
-				page.FillColor = Color.Black;
-				page.FillCircle(mPosition, (TermLandDiameter + ResistMaskClearance) * GridScale);
+				g.FillColor = Color.Black;
+				g.FillCircle(mPosition, (TermLandDiameter + ResistMaskClearance) * GridScale);
 			}
 		}
 	}

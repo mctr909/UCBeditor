@@ -56,7 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Deflate.cs" />
+    <Compile Include="Items\Package.cs" />
+    <Compile Include="Items\PartsBody.cs" />
+    <Compile Include="Items\PartsFoot.cs" />
+    <Compile Include="Pdf\Deflate.cs" />
+    <Compile Include="IDrawer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,10 +75,11 @@
     <Compile Include="OutputSettings.Designer.cs">
       <DependentUpon>OutputSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Items\Package.cs" />
     <Compile Include="Items\Parts.cs" />
     <Compile Include="Items\Pattern.cs" />
-    <Compile Include="PDF.cs" />
+    <Compile Include="Pdf\PageSize.cs" />
+    <Compile Include="Pdf\PdfPage.cs" />
+    <Compile Include="Pdf\PdfFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Items\Terminal.cs" />

@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using Items;
+using Pdf;
 
 namespace UCB {
 	public partial class OutputSettings : Form {
@@ -24,32 +25,30 @@ namespace UCB {
 			if (string.IsNullOrEmpty(filePath) || !Directory.Exists(Path.GetDirectoryName(filePath))) {
 				return;
 			}
-			PDF.PAGE_SIZE size = PDF.PAGE_SIZE.L_H;
+			var size = PageSize.L_H;
 			if (rbPrintA4.Checked) {
-				size = PDF.PAGE_SIZE.A4_H;
+				size = PageSize.A4_H;
 			}
 			if (rbPrintA5.Checked) {
-				size = PDF.PAGE_SIZE.A5_H;
+				size = PageSize.A5_H;
 			}
 			if (rbPrintPost.Checked) {
-				size = PDF.PAGE_SIZE.POST_H;
+				size = PageSize.POST_H;
 			}
-			var pdf = new PDF();
+			var pdf = new PdfFile();
 			{
-				var page = new PDF.Page(size);
-				page.Scale = 2.54 / Item.GridWidth;
+				var page = new PdfPage(size, 2.54 / Item.GridWidth);
 				foreach (var rec in mList) {
 					rec.DrawPattern(page);
 				}
-				pdf.AddPage(page);
+				pdf.Add(page);
 			}
 			if (chkResistMask.Checked) {
-				var page = new PDF.Page(size);
-				page.Scale = 2.54 / Item.GridWidth;
+				var page = new PdfPage(size, 2.54 / Item.GridWidth);
 				foreach (var rec in mList) {
 					rec.DrawSolderMask(page);
 				}
-				pdf.AddPage(page);
+				pdf.Add(page);
 			}
 			pdf.Save(filePath);
 			Close();

@@ -21,7 +21,7 @@ namespace Items {
 			sw.WriteLine("TERM\t{0}\t{1}", mPosition.X, mPosition.Y);
 		}
 
-		public override void Draw(Graphics g, int dx, int dy, bool selected) {
+		public override void DrawDisplay(Graphics g, int dx, int dy, bool selected) {
 			var x1 = mPosition.X + dx - 5;
 			var y1 = mPosition.Y + dy - 5;
 			var x2 = mPosition.X + dx - 2;
@@ -40,16 +40,16 @@ namespace Items {
 			}
 		}
 
-		public override void DrawPattern(PDF.Page page) {
-			page.FillColor = Color.Black;
-			page.FillCircle(mPosition, TermLandDiameter * GridScale);
-			page.FillColor = Color.White;
-			page.FillCircle(mPosition, TermHoleDiameter * GridScale);
+		public override void DrawPattern(IDrawer g) {
+			g.FillColor = Color.Black;
+			g.FillCircle(mPosition, TermLandDiameter * GridScale);
+			g.FillColor = Color.White;
+			g.FillCircle(mPosition, TermHoleDiameter * GridScale);
 		}
 
-		public override void DrawSolderMask(PDF.Page page) {
-			page.FillColor = Color.Black;
-			page.FillCircle(mPosition, (TermLandDiameter + ResistMaskClearance) * GridScale);
+		public override void DrawSolderMask(IDrawer g) {
+			g.FillColor = Color.Black;
+			g.FillCircle(mPosition, (TermLandDiameter + ResistMaskClearance) * GridScale);
 		}
 	}
 }

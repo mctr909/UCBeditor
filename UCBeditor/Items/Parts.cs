@@ -1,137 +1,99 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
 namespace Items {
-	class Parts : Item {
+	public class Parts : Item {
 		public enum EDisplay {
 			INVISIBLE,
 			TRANSPARENT,
-			SOLID,
+			VISIBLE,
 		}
+
 		public static EDisplay Display { get; set; }
 
 		public readonly string Group;
-		public readonly string Name;
 		public readonly string PackageName;
+		public readonly bool IsSMD;
 
-		readonly ROTATE mRotate;
-		readonly Package mPackage;
-		Point mImagePos;
-		Point[] mTermPos;
+		private ROTATE mRotate;
+		private Point mImageOfs;
+		private PartsBody.Pin[] mPins;
+		private readonly PartsBody mBody = new PartsBody();
+		private readonly PartsFoot mFoot = new PartsFoot();
+		private readonly Bitmap[] mSolid = new Bitmap[4];
+		private readonly Bitmap[] mAlpha = new Bitmap[4];
 
-		void SetPos() {
-			var pivot = mPackage.BodyImage.Pivot;
-			var offset = mPackage.BodyImage.Offset;
-			var ofsX = (int)(pivot.X + offset.X);
-			var ofsY = (int)(pivot.Y + offset.Y);
-			switch (mRotate) {
-			case ROTATE.DEG90:
-			case ROTATE.DEG270:
-				mImagePos = new Point(-ofsY, -ofsX);
-				break;
-			case ROTATE.DEG180:
-			default:
-				mImagePos = new Point(-ofsX, -ofsY);
-				break;
-			}
-			var terminals = mPackage.BodyImage.PinList;
-			mTermPos = new Point[terminals.Count];
-			for (int i = 0; i < terminals.Count; i++) {
-				var term = terminals[i];
-				var p = new Point();
-				switch (mRotate) {
-				case ROTATE.DEG90:
-					p.X = ofsY - term.Y;
-					p.Y = term.X - ofsX;
-					break;
-				case ROTATE.DEG180:
-					p.X = ofsX - term.X;
-					p.Y = ofsY - term.Y;
-					break;
-				case ROTATE.DEG270:
-					p.X = term.Y - ofsY;
-					p.Y = ofsX - term.X;
-					break;
-				default:
-					p.X = term.X - ofsX;
-					p.Y = term.Y - ofsY;
-					break;
-				}
-				mTermPos[i] = p;
-			}
+		public Parts() {
 		}
 
 		public Parts(string[] cols) {
-			mPosition = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			mRotate = (ROTATE)int.Parse(cols[3]);
+			mPosition = new Point(int.Parse(cols[1]), int.Parse(cols[2]));
 			Group = cols[4];
 			PackageName = cols[5];
-			Name = "";
-			if (Package.Find(Group, PackageName)) {
-				mPackage = Package.Get(Group, PackageName);
-				Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
+			if (Package.Get(Group, PackageName, out Package package)) {
+				Height = package.IsSMD ? -package.Height : package.Height;
+				IsSMD = package.IsSMD;
+				mFoot.CopyFrom(package.Foot);
+				mBody.CopyFrom(package.Body);
+				mBody.Get(mRotate, out mImageOfs, out mPins);
+				Array.Copy(package.Solid, mSolid, mSolid.Length);
+				Array.Copy(package.Alpha, mAlpha, mAlpha.Length);
 			} else {
-				mPackage = null;
-				Height = 0;
+				throw new Exception($"パッケージが見つかりません。\r\n\tグループ:{Group}\r\n\tパッケージ:{PackageName}");
 			}
-			SetPos();
 		}
 
-		public Parts(Point pos, ROTATE rotate, string group, string package) {
-			mPosition = pos;
-			mRotate = rotate;
+		public Parts(string group, string packageName) {
 			Group = group;
-			PackageName = package;
-			Name = "";
-			if (Package.Find(group, package)) {
-				mPackage = Package.Get(group, package);
-				Height = mPackage.IsSMD ? -mPackage.Height : mPackage.Height;
+			PackageName = packageName;
+			if (Package.Get(Group, PackageName, out Package package)) {
+				Height = package.IsSMD ? -package.Height : package.Height;
+				IsSMD = package.IsSMD;
+				mFoot.CopyFrom(package.Foot);
+				mBody.CopyFrom(package.Body);
+				mBody.Get(mRotate, out mImageOfs, out mPins);
+				Array.Copy(package.Solid, mSolid, mSolid.Length);
+				Array.Copy(package.Alpha, mAlpha, mAlpha.Length);
 			} else {
-				mPackage = null;
-				Height = 0;
+				throw new Exception($"パッケージが見つかりません。\r\n\tグループ:{Group}\r\n\tパッケージ:{PackageName}");
 			}
-			SetPos();
+		}
+
+		public void SetPosition(ROTATE r, Point p) {
+			mRotate = r;
+			mPosition = p;
+			mBody.Get(mRotate, out mImageOfs, out mPins);
 		}
 
 		public PointF[] GetFoot(int index, bool round, bool solder) {
-			var offset = mPackage.BodyImage.Offset;
-			var pos = mPosition;
-			switch (mRotate) {
-			case ROTATE.DEG90:
-			case ROTATE.DEG270:
-				pos.X -= offset.Y;
-				pos.Y -= offset.X;
-				break;
-			case ROTATE.DEG180:
-			default:
-				pos.X -= offset.X;
-				pos.Y -= offset.Y;
-				break;
-			}
-			return mPackage.FootPrint.Get(pos, mRotate, index, round, solder);
+			mBody.GetTranslatedPos(mRotate, mPosition, out Point p);
+			return mFoot.Get(mRotate, p, index, round, solder);
 		}
 
-		public List<PointF[]> GetMarks(bool round) {
-			return mPackage.FootPrint.GetMarks(mPosition, mRotate, round);
+		public List<PointF[]> GetMarks() {
+			return mFoot.GetMarks(mRotate, mPosition);
 		}
 
 		public override Item Clone() {
-			return new Parts(mPosition, mRotate, Group, PackageName);
+			var ret = new Parts(Group, PackageName);
+			ret.SetPosition(mRotate, mPosition);
+			return ret;
 		}
 
 		public override Point[] GetTerminals() {
-			var terms = new Point[mTermPos.Length];
-			for (int i = 0; i < terms.Length; i++) {
-				terms[i] = mTermPos[i];
-				terms[i].X += mPosition.X;
-				terms[i].Y += mPosition.Y;
+			var terms = new Point[mPins.Length];
+			for (int i = 0; i < mPins.Length; i++) {
+				terms[i].X = mPosition.X + mPins[i].X;
+				terms[i].Y = mPosition.Y + mPins[i].Y;
 			}
 			return terms;
 		}
 
 		public override bool IsSelected(Point point) {
-			return (!SolderFace ^ mPackage.IsSMD) && base.IsSelected(point);
+			return (!SolderFace ^ IsSMD) && base.IsSelected(point);
 		}
 
 		public override void Write(StreamWriter sw) {
@@ -144,31 +106,31 @@ namespace Items {
 			);
 		}
 
-		public override void Draw(Graphics g, int dx, int dy, bool selected) {
-			if (null == mPackage) {
-				return;
-			}
+		public override void DrawDisplay(Graphics g, int dx, int dy, bool selected) {
 			if (!selected && Display == EDisplay.INVISIBLE) {
 				return;
 			}
-			var px = mPosition.X + mImagePos.X + dx;
-			var py = mPosition.Y + mImagePos.Y + dy;
+			var px = mPosition.X + mImageOfs.X + dx;
+			var py = mPosition.Y + mImageOfs.Y + dy;
 			if (Display == EDisplay.TRANSPARENT) {
-				var bmp = selected ? mPackage.Solid: mPackage.Alpha;
+				var bmp = selected ? mSolid: mAlpha;
 				g.DrawImage(bmp[(int)mRotate], px, py);
-			} else if (selected || (SolderFace ^ mPackage.IsSMD)) {
-				g.DrawImage(mPackage.Alpha[(int)mRotate], px, py);
+			} else if (selected || (SolderFace ^ IsSMD)) {
+				g.DrawImage(mAlpha[(int)mRotate], px, py);
 			} else {
-				g.DrawImage(mPackage.Solid[(int)mRotate], px, py);
+				g.DrawImage(mSolid[(int)mRotate], px, py);
 			}
 		}
 
-		public override void DrawPattern(PDF.Page page) {
-			var marks = GetMarks(false);
-			page.FillColor = Color.Black;
+		public override void DrawPattern(IDrawer g) {
+			var marks = GetMarks();
+			g.FillColor = Color.Black;
 			foreach (var mark in marks) {
-				page.FillPolygon(mark);
+				g.FillPolygon(mark);
 			}
+		}
+
+		public override void DrawSilk(IDrawer g) {
 		}
 	}
 }

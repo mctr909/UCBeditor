@@ -150,7 +150,7 @@ namespace Items {
 			);
 		}
 
-		public override void Draw(Graphics g, int dx, int dy, bool selected) {
+		public override void DrawDisplay(Graphics g, int dx, int dy, bool selected) {
 			var x1 = mPosition.X + dx;
 			var y1 = mPosition.Y + dy;
 			var x2 = mEnd.X + dx;
@@ -166,22 +166,10 @@ namespace Items {
 			}
 		}
 
-		public override void DrawPattern(PDF.Page page) {
+		public override void DrawPattern(IDrawer g) {
 			var d = Thick * GridScale;
-			var sx = mEnd.X - mPosition.X;
-			var sy = mEnd.Y - mPosition.Y;
-			var th = Math.Atan2(sy, sx) + Math.PI / 2;
-			var rx = (float)(Math.Cos(th) * d * 0.5);
-			var ry = (float)(Math.Sin(th) * d * 0.5);
-			page.FillColor = Color.Black;
-			page.FillPolygon(new PointF[] {
-				new PointF(mPosition.X + rx, mPosition.Y + ry),
-				new PointF(mEnd.X + rx, mEnd.Y + ry),
-				new PointF(mEnd.X - rx, mEnd.Y - ry),
-				new PointF(mPosition.X - rx, mPosition.Y - ry)
-			});
-			page.FillCircle(mPosition, d);
-			page.FillCircle(mEnd, d);
+			g.FillColor = Color.Black;
+			g.FillLine(mPosition, mEnd, d);
 		}
 	}
 }

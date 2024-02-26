@@ -148,7 +148,7 @@ namespace Items {
 				mColor
 			);
 		}
-		public override void Draw(Graphics g, int dx, int dy, bool selected) {
+		public override void DrawDisplay(Graphics g, int dx, int dy, bool selected) {
 			if (mReverse == SolderFace && !Wire) {
 				return;
 			}

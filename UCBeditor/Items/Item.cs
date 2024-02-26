@@ -48,13 +48,13 @@ namespace Items {
 			}
 		}
 
-		public double Height { get; protected set; }
+		public double Height { get; set; }
 		public bool Removed { get; protected set; }
 
 		protected Point mPosition;
 
 		public void Draw(Graphics g, bool selected) {
-			Draw(g, 0, 0, selected);
+			DrawDisplay(g, 0, 0, selected);
 		}
 		
 		public virtual void Move(int dx, int dy) {
@@ -76,11 +76,12 @@ namespace Items {
 			return new Point[] { mPosition };
 		}
 
-		public virtual void DrawPattern(PDF.Page page) { }
-		public virtual void DrawSolderMask(PDF.Page page) { }
+		public virtual void DrawPattern(IDrawer g) { }
+		public virtual void DrawSolderMask(IDrawer g) { }
+		public virtual void DrawSilk(IDrawer g) { }
 
 		public abstract Item Clone();
 		public abstract void Write(StreamWriter sw);
-		public abstract void Draw(Graphics g, int dx, int dy, bool selected);
+		public abstract void DrawDisplay(Graphics g, int dx, int dy, bool selected);
 	}
 }

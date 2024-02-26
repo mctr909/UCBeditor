@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 
 using Items;
+using Pdf;
 
 namespace UCB {
 	public partial class MainForm : Form {
@@ -25,7 +26,7 @@ namespace UCB {
 		EditMode mEditMode = EditMode.WIRE;
 		Wire.Colors mWireColor = Wire.Colors.BLACK;
 		ROTATE mRotate = ROTATE.NONE;
-		Package mSelectedParts;
+		Parts mSelectedParts;
 
 		bool mIsDrag;
 		Point mMousePos = new Point();
@@ -47,11 +48,11 @@ namespace UCB {
 
 			Panel_Resize();
 
-			var size = PDF.PAGE_SIZE.A4_H.Size;
+			var size = PageSize.A4_H.Size;
 			picBoard.Width = (int)(size.X * Item.GridScale);
 			picBoard.Height = (int)(size.Y * Item.GridScale);
 
-			Package.LoadXML(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
+			Package.Load(AppDomain.CurrentDomain.BaseDirectory, "packages.xml");
 			SetPackageList();
 			SetEditMode(tsbSelect);
 
@@ -229,7 +230,7 @@ namespace UCB {
 			}
 			if (tsbPartsSolid == sender) {
 				tsbPartsSolid.Checked = true;
-				Parts.Display = Parts.EDisplay.SOLID;
+				Parts.Display = Parts.EDisplay.VISIBLE;
 			}
 			Item.Parts = tsbPartsSolid.Checked || tsbPartsTransparent.Checked;
 		}
@@ -290,15 +291,16 @@ namespace UCB {
 			case EditMode.TERMINAL:
 				AddItem(new Terminal(mEndPos));
 				break;
-			case EditMode.PARTS:
-				AddItem(new Parts(
-					mEndPos, mRotate,
+			case EditMode.PARTS: {
+				var p = new Parts(
 					mSelectedParts.Group,
-					mSelectedParts.Name
-				));
+					mSelectedParts.PackageName
+				);
+				p.SetPosition(mRotate, mEndPos);
+				AddItem(p);
 				break;
 			}
-
+			}
 			PasteItems();
 		}
 
@@ -381,11 +383,11 @@ namespace UCB {
 			SetEditParts(null);
 		}
 
-		void SetEditParts(Package parts) {
-			if (null == parts) {
-				mSelectedParts = new Package();
+		void SetEditParts(Package package) {
+			if (null == package) {
+				mSelectedParts = new Parts();
 			} else {
-				mSelectedParts = parts;
+				mSelectedParts = new Parts(package.Group, package.Name);
 			}
 			mIsDrag = false;
 			mSelectArea = new Rectangle();
@@ -394,7 +396,7 @@ namespace UCB {
 					continue;
 				}
 				var panel = (Panel)ctrl;
-				if (panel.Name == mSelectedParts.Name) {
+				if (panel.Name == mSelectedParts.PackageName) {
 					panel.BackColor = SystemColors.ButtonHighlight;
 					panel.BorderStyle = BorderStyle.FixedSingle;
 					mEditMode = EditMode.PARTS;
@@ -404,7 +406,7 @@ namespace UCB {
 					panel.BorderStyle = BorderStyle.None;
 				}
 			}
-			if (null != parts) {
+			if (null != package) {
 				if (mSelectedParts.IsSMD) {
 					tsbSolderFace.PerformClick();
 				} else {
@@ -632,7 +634,7 @@ namespace UCB {
 			foreach (var group in Package.List) {
 				var tsb = new ToolStripButton() {
 					Name = group.Key,
-					Image = new Bitmap(Package.GroupPath + group.Key + ".png")
+					Image = new Bitmap($"{Package.Path}{group.Key}.png")
 				};
 				tsb.Click += new EventHandler((object sender, EventArgs e) => {
 					for (var j = 0; j < tsParts.Items.Count; ++j) {
@@ -657,12 +659,13 @@ namespace UCB {
 						});
 						pnlParts.Controls.Add(label);
 
+						var previewImage = package.GetPreviewImage();
 						var picture = new PictureBox() {
-							Image = package.Solid[0],
+							Image = previewImage,
 							Top = 0,
 							Left = 0,
-							Width = package.Solid[0].Width,
-							Height = package.Solid[0].Height
+							Width = previewImage.Width,
+							Height = previewImage.Height
 						};
 						picture.MouseDown += new MouseEventHandler((s, ev) => {
 							SetEditMode(tsbSelect);
@@ -712,7 +715,7 @@ namespace UCB {
 				rec.Draw(g, rec == nearestItem || rec.IsSelected(mSelectArea));
 			}
 			foreach (var rec in mClipBoard) {
-				rec.Draw(g,
+				rec.DrawDisplay(g,
 					mEndPos.X / Item.SNAP * Item.SNAP,
 					mEndPos.Y / Item.SNAP * Item.SNAP,
 					true
@@ -725,20 +728,20 @@ namespace UCB {
 				DashPattern = new float[] { 4, 2 }
 			};
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.L_H.Size.X * Item.GridScale,
-				PDF.PAGE_SIZE.L_H.Size.Y * Item.GridScale
+				PageSize.L_H.Size.X * Item.GridScale,
+				PageSize.L_H.Size.Y * Item.GridScale
 			);
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.POST_H.Size.X * Item.GridScale,
-				PDF.PAGE_SIZE.POST_H.Size.Y * Item.GridScale
+				PageSize.POST_H.Size.X * Item.GridScale,
+				PageSize.POST_H.Size.Y * Item.GridScale
 			);
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.A5_H.Size.X * Item.GridScale,
-				PDF.PAGE_SIZE.A5_H.Size.Y * Item.GridScale
+				PageSize.A5_H.Size.X * Item.GridScale,
+				PageSize.A5_H.Size.Y * Item.GridScale
 			);
 			g.DrawRectangle(pen, 0, 0,
-				PDF.PAGE_SIZE.A4_H.Size.X * Item.GridScale,
-				PDF.PAGE_SIZE.A4_H.Size.Y * Item.GridScale
+				PageSize.A4_H.Size.X * Item.GridScale,
+				PageSize.A4_H.Size.Y * Item.GridScale
 			);
 
 			picBoard.Image = bmp;
@@ -779,8 +782,8 @@ namespace UCB {
 				);
 				break;
 			case EditMode.PARTS: {
-				var p = new Parts(mEndPos, mRotate, mSelectedParts.Group, mSelectedParts.Name);
-				p.Draw(g, true);
+				mSelectedParts.SetPosition(mRotate, mEndPos);
+				mSelectedParts.Draw(g, true);
 				g.DrawEllipse(Pens.Red, mEndPos.X - 2, mEndPos.Y - 2, 4, 4);
 				break;
 			}
